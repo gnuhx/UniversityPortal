@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UniversityPortal.Application.Interfaces;
+using UniversityPortal.Application.Interfaces.Services;
 using UniversityPortal.Infrastructure.Persistence;
+using UniversityPortal.Infrastructure.Services;
 
 namespace UniversityPortal.Infrastructure;
 
@@ -19,6 +21,7 @@ public static class DependencyInjection
             options.UseMySql(connStr, serverVersion));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         return services;
     }

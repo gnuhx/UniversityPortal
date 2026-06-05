@@ -13,3 +13,4 @@
 /home/gnuh/UniversityPortal/src/UniversityPortal.Application/obj/Debug/net10.0/refint/UniversityPortal.Application.dll
 /home/gnuh/UniversityPortal/src/UniversityPortal.Application/obj/Debug/net10.0/UniversityPortal.Application.pdb
 /home/gnuh/UniversityPortal/src/UniversityPortal.Application/obj/Debug/net10.0/ref/UniversityPortal.Application.dll
+/home/gnuh/UniversityPortal/src/UniversityPortal.Application/obj/Debug/net10.0/UniversityPortal.Application.sourcelink.json

@@ -637,6 +637,7 @@
       "UniversityPortal.Application/1.0.0": {
         "dependencies": {
           "AutoMapper": "13.0.1",
+          "BCrypt.Net-Next": "4.0.3",
           "FluentValidation.DependencyInjectionExtensions": "11.11.0",
           "UniversityPortal.Domain": "1.0.0"
         },
@@ -657,6 +658,7 @@
       },
       "UniversityPortal.Infrastructure/1.0.0": {
         "dependencies": {
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.0",
           "Pomelo.EntityFrameworkCore.MySql": "9.0.0",
           "UniversityPortal.Application": "1.0.0",
           "UniversityPortal.Domain": "1.0.0"

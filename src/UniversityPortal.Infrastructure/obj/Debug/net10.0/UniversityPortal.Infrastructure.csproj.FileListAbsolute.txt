@@ -17,3 +17,4 @@
 /home/gnuh/UniversityPortal/src/UniversityPortal.Infrastructure/obj/Debug/net10.0/UniversityPortal.Infrastructure.pdb
 /home/gnuh/UniversityPortal/src/UniversityPortal.Infrastructure/obj/Debug/net10.0/UniversityPortal.Infrastructure.genruntimeconfig.cache
 /home/gnuh/UniversityPortal/src/UniversityPortal.Infrastructure/obj/Debug/net10.0/ref/UniversityPortal.Infrastructure.dll
+/home/gnuh/UniversityPortal/src/UniversityPortal.Infrastructure/obj/Debug/net10.0/UniversityPortal.Infrastructure.sourcelink.json

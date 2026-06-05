@@ -9,3 +9,4 @@
 /home/gnuh/UniversityPortal/src/UniversityPortal.Domain/obj/Debug/net10.0/refint/UniversityPortal.Domain.dll
 /home/gnuh/UniversityPortal/src/UniversityPortal.Domain/obj/Debug/net10.0/UniversityPortal.Domain.pdb
 /home/gnuh/UniversityPortal/src/UniversityPortal.Domain/obj/Debug/net10.0/ref/UniversityPortal.Domain.dll
+/home/gnuh/UniversityPortal/src/UniversityPortal.Domain/obj/Debug/net10.0/UniversityPortal.Domain.sourcelink.json
