@@ -17,4 +17,5 @@ RUN dotnet publish src/UniversityPortal.API/UniversityPortal.API.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /out .
+RUN mkdir -p /app/uploads
 ENTRYPOINT ["dotnet", "UniversityPortal.API.dll"]

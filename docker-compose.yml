@@ -15,3 +15,7 @@ services:
       - "8080:8080"
     volumes:
       - ./src/UniversityPortal.API/appsettings.Development.json:/app/appsettings.Development.json:ro
+      - uploads_data:/app/uploads
+
+volumes:
+  uploads_data:
