@@ -81,6 +81,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+
+// Phục vụ ảnh đại diện tĩnh từ thư mục /uploads (được mount vào Docker volume)
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(app.Environment.ContentRootPath, "uploads")),
+    RequestPath = "/uploads"
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
