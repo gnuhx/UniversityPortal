@@ -1,0 +1,312 @@
+// ==========================================
+// 1. TAI KHOAN & PHONG BAN
+// ==========================================
+Table vai_tro {
+  id int [pk, increment]
+  ten_vai_tro varchar 
+}
+
+Table phong_ban {
+  id int [pk, increment]
+  ten_phong_ban varchar 
+}
+
+Table tai_khoan {
+  id int [pk, increment]
+  ten_dang_nhap varchar [unique] 
+  mat_khau varchar
+  vai_tro_id int [ref: > vai_tro.id]
+  phong_ban_id int [ref: > phong_ban.id] 
+  ho_ten varchar
+  email varchar
+  anh_dai_dien varchar 
+  trang_thai boolean [default: true]
+}
+
+Table giao_vien {
+  id int [pk, increment]
+  tai_khoan_id int [ref: - tai_khoan.id]
+  ma_gv varchar [unique]
+}
+
+Table sinh_vien {
+  id int [pk, increment]
+  tai_khoan_id int [ref: - tai_khoan.id]
+  mssv varchar [unique]
+  lop_id int [ref: > lop_sinh_hoat.id]
+}
+
+Table ket_qua_anh_van_dau_vao {
+  id int [pk, increment]
+  sinh_vien_id int [ref: - sinh_vien.id]
+  hinh_thuc_xet varchar 
+  diem_thi float 
+  diem_ta1 float 
+  diem_ta2 float 
+  diem_ta3 float 
+  ghi_chu varchar 
+}
+
+// ==========================================
+// 2. LOP SINH HOAT & CHUONG TRINH DAO TAO
+// ==========================================
+Table lop_sinh_hoat {
+  id int [pk, increment]
+  ma_lop varchar 
+  gvcn_id int [ref: > giao_vien.id]
+  thu_ky_id int [ref: > sinh_vien.id]
+  chuong_trinh_dt_id int [ref: > chuong_trinh_dt.id]
+}
+
+Table nganh_hoc {
+  id int [pk, increment]
+  ma_nganh varchar
+  ten_nganh varchar
+  nganh_cha_id int [ref: > nganh_hoc.id]
+}
+
+Table chuong_trinh_dt {
+  id int [pk, increment]
+  ma_ctdt varchar [unique]
+  nganh_id int [ref: > nganh_hoc.id]
+  khoa_hoc varchar 
+}
+
+Table mon_hoc {
+  id int [pk, increment]
+  ma_mon varchar [unique]
+  ten_mon varchar
+}
+
+Table chi_tiet_ctdt {
+  id int [pk, increment]
+  ctdt_id int [ref: > chuong_trinh_dt.id]
+  mon_hoc_id int [ref: > mon_hoc.id]
+  hoc_ky_id int [ref: > hoc_ky.id]
+  so_tin_chi int
+  tinh_diem_tb boolean 
+}
+
+// ==========================================
+// 3. THOI GIAN, HOC VU & LOP HOC PHAN
+// ==========================================
+Table nam_hoc {
+  id int [pk, increment]
+  ten_nam_hoc varchar
+}
+
+Table hoc_ky {
+  id int [pk, increment]
+  ten_hoc_ky varchar
+  nam_hoc_id int [ref: > nam_hoc.id]
+  ngay_bat_dau date
+}
+
+// BẢNG MỚI: Quản lý chi tiết 52 tuần học theo năm học
+Table tuan_hoc {
+  id int [pk, increment]
+  nam_hoc_id int [ref: > nam_hoc.id]
+  ma_tuan varchar // VD: T01_2425
+  so_thu_tu_tuan int // Đánh số từ 1 đến 52
+  ngay_bat_dau date
+  ngay_ket_thuc date
+}
+
+Table lop_hoc_phan { 
+  id int [pk, increment]
+  chi_tiet_ctdt_id int [ref: > chi_tiet_ctdt.id]
+  hoc_ky_id int [ref: > hoc_ky.id]
+  giao_vien_id int [ref: > giao_vien.id]
+  ma_lop_hp varchar
+  khoa_bang_diem boolean [default: false]
+  trang_thai_ket_thuc boolean [default: false] // Đã kết thúc môn chưa
+}
+
+// ==========================================
+// 4. DANH SÁCH LỚP HP (ĐÃ GỘP BẢNG ĐIỂM) & THI LẠI
+// ==========================================
+Table danh_sach_lop_hp { 
+  id int [pk, increment]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  lop_hp_id int [ref: > lop_hoc_phan.id]
+  loai_dang_ky varchar // "Hoc chinh", "Hoc lai", "Hoc ghep", "Cai thien"
+  
+  // Trạng thái phê duyệt
+  trang_thai_duyet varchar 
+  nguoi_duyet_id int [ref: > tai_khoan.id] // Bổ sung người duyệt
+
+  // GỘP BẢNG ĐIỂM VÀO ĐÂY
+  diem_qt1 float
+  diem_qt2 float
+  diem_thi float
+  diem_tong_ket float
+
+  // Liên quan đến Học lại / Học ghép
+  so_tien_phai_dong decimal
+  trang_thai_dong_tien varchar // "Chua dong", "Da dong"
+}
+
+// BẢNG MỚI: Quản lý sinh viên rớt (Dưới 5đ) đăng ký Thi lại
+Table danh_sach_thi_lai {
+  id int [pk, increment]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  lop_hp_id int [ref: > lop_hoc_phan.id] // Lấy lại thông tin môn rớt
+  diem_thi_lai float
+  so_tien_phai_dong decimal
+  trang_thai_dong_tien varchar // Phải đóng tiền thi lại mới được thi
+  nguoi_duyet_id int [ref: > tai_khoan.id]
+}
+
+Table hoc_ba {
+  id int [pk, increment]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  ctdt_id int [ref: > chuong_trinh_dt.id]
+  diem_tbc_tich_luy float
+  so_tin_chi_tich_luy int
+}
+
+Table diem_ren_luyen {
+  id int [pk, increment]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  hoc_ky_id int [ref: > hoc_ky.id]
+  diem_tong int
+  xep_loai varchar
+}
+
+// ==========================================
+// 5. THOI KHOA BIEU & HOC PHI
+// ==========================================
+Table thoi_khoa_bieu {
+  id int [pk, increment]
+  lop_hp_id int [ref: > lop_hoc_phan.id]
+  tuan_hoc_id int [ref: > tuan_hoc.id] // Liên kết với bảng tuần học mới
+  thu int
+  tiet_bat_dau int
+  tiet_ket_thuc int
+  phong_hoc varchar
+}
+
+Table hoc_phi {
+  id int [pk, increment]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  hoc_ky_id int [ref: > hoc_ky.id]
+  so_tien decimal
+  trang_thai_dong varchar
+}
+
+// ==========================================
+// 6. THONG BAO & BÌNH LUẬN
+// ==========================================
+Table thong_bao {
+  id int [pk, increment]
+  loai_thong_bao varchar // "Hoc vu", "Doan Hoi", "Hoc phi"
+  muc_do varchar // "Binh thuong", "Quan trong", "Khan cap"
+  tieu_de varchar
+  noi_dung text
+  nguoi_tao_id int [ref: > tai_khoan.id]
+  lop_nhan_id int [ref: > lop_sinh_hoat.id] 
+  ngay_tao timestamp
+}
+
+// BẢNG MỚI: Đánh dấu trạng thái SV đã đọc thông báo chưa
+Table thong_bao_da_doc {
+  id int [pk, increment]
+  thong_bao_id int [ref: > thong_bao.id]
+  tai_khoan_id int [ref: > tai_khoan.id]
+  da_doc boolean [default: false]
+  ngay_doc timestamp
+}
+
+// BẢNG MỚI: Tính năng bình luận của thông báo
+Table binh_luan_thong_bao {
+  id int [pk, increment]
+  thong_bao_id int [ref: > thong_bao.id]
+  tai_khoan_id int [ref: > tai_khoan.id]
+  noi_dung text
+  ngay_binh_luan timestamp
+}
+
+// ==========================================
+// 7. BIÊN BẢN SINH HOẠT CHỦ NHIỆM
+// ==========================================
+Table bien_ban_shcn { // Đổi tên từ bao_cao_tuan cho chuẩn nghiệp vụ
+  id int [pk, increment]
+  lop_id int [ref: > lop_sinh_hoat.id]
+  tuan_hoc_id int [ref: > tuan_hoc.id]
+  thoi_gian datetime // Bổ sung
+  dia_diem varchar // Bổ sung
+  gvcn_id int [ref: > giao_vien.id] // Bổ sung
+  thu_ky_id int [ref: > sinh_vien.id] // Bổ sung
+  noi_dung text
+  phan_hoi_gvcn text
+}
+
+Table chi_tiet_cong_viec {
+  id int [pk, increment]
+  bien_ban_id int [ref: > bien_ban_shcn.id]
+  ten_cong_viec varchar
+  trang_thai_viec varchar
+}
+
+// BẢNG MỚI: Chi tiết vắng sinh hoạt chủ nhiệm
+Table chi_tiet_vang_shcn {
+  id int [pk, increment]
+  bien_ban_id int [ref: > bien_ban_shcn.id]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  ly_do varchar
+  co_phep boolean
+}
+
+// ==========================================
+// 8. HANH CHINH & YEU CAU (CÓ NGƯỜI DUYỆT)
+// ==========================================
+Table yeu_cau_hanh_chinh {
+  id int [pk, increment]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  loai_yeu_cau varchar 
+  noi_dung text 
+  file_dinh_kem varchar
+  trang_thai varchar
+  nguoi_duyet_id int [ref: > tai_khoan.id] // Bổ sung người duyệt
+  ngay_tao timestamp
+}
+
+Table yeu_cau_sua_diem { 
+  id int [pk, increment]
+  lop_hp_id int [ref: > lop_hoc_phan.id]
+  giao_vien_id int [ref: > giao_vien.id]
+  ly_do text
+  trang_thai varchar
+  nguoi_duyet_id int [ref: > tai_khoan.id] // Bổ sung người duyệt
+}
+
+Table dat_phong_thuc_hanh {
+  id int [pk, increment]
+  giao_vien_id int [ref: > giao_vien.id]
+  phong_hoc varchar
+  ngay_dat date
+  ca_hoc int
+  ly_do text
+  trang_thai varchar
+  nguoi_duyet_id int [ref: > tai_khoan.id] // Bổ sung người duyệt
+}
+
+// ==========================================
+// 9. KHAO SAT & DIEN DAN
+// ==========================================
+Table khao_sat_y_kien {
+  id int [pk, increment]
+  sinh_vien_id int [ref: > sinh_vien.id]
+  lop_hp_id int [ref: > lop_hoc_phan.id]
+  diem_danh_gia int
+  gop_y text
+}
+
+Table dien_dan_giao_vien {
+  id int [pk, increment]
+  lop_id int [ref: > lop_sinh_hoat.id]
+  giao_vien_id int [ref: > giao_vien.id]
+  noi_dung text
+  ngay_gui timestamp
+} 
+Đang hiển thị 3249784018420447604.

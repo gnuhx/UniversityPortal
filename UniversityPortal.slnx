@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/UniversityPortal.API/UniversityPortal.API.csproj" />
+    <Project Path="src/UniversityPortal.Application/UniversityPortal.Application.csproj" />
+    <Project Path="src/UniversityPortal.Domain/UniversityPortal.Domain.csproj" />
+    <Project Path="src/UniversityPortal.Infrastructure/UniversityPortal.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/UniversityPortal.Tests/UniversityPortal.Tests.csproj" />
+  </Folder>
+</Solution>

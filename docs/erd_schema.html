@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>ERD - University Portal Schema</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #7d8590;
+    --pk: #f78166;
+    --fk: #79c0ff;
+
+    --c1: #388bfd; /* Tài khoản */
+    --c2: #3fb950; /* Đào tạo */
+    --c3: #d2a8ff; /* Thời gian & Học vụ */
+    --c4: #ffa657; /* Điểm & Học bạ */
+    --c5: #ff7b72; /* TKB & Học phí */
+    --c6: #79c0ff; /* Thông báo */
+    --c7: #56d364; /* Biên bản SHCN */
+    --c8: #e3b341; /* Hành chính */
+    --c9: #bc8cff; /* Khảo sát */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  /* TOOLBAR */
+  #toolbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 48px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    z-index: 1000;
+  }
+  #toolbar h1 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    color: var(--text);
+    flex: 1;
+  }
+  #toolbar span { color: var(--muted); font-size: 11px; }
+
+  .legend {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .leg-item {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 10px; color: var(--muted);
+  }
+  .leg-dot {
+    width: 8px; height: 8px; border-radius: 2px;
+  }
+
+  .btn {
+    background: var(--border);
+    border: none; color: var(--text);
+    padding: 4px 10px; border-radius: 4px;
+    font-size: 11px; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:hover { background: #3d4450; }
+
+  /* CANVAS */
+  #canvas-wrap {
+    position: fixed;
+    top: 48px; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    cursor: grab;
+  }
+  #canvas-wrap.grabbing { cursor: grabbing; }
+
+  #canvas {
+    position: absolute;
+    transform-origin: 0 0;
+  }
+
+  /* SVG LINES */
+  #svg-lines {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .rel-line {
+    fill: none;
+    stroke: #30363d;
+    stroke-width: 1.5;
+    opacity: 0.7;
+  }
+  .rel-line.highlight {
+    stroke: #ffd700;
+    stroke-width: 2.5;
+    opacity: 1;
+  }
+
+  /* TABLE CARDS */
+  .table-card {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    min-width: 190px;
+    cursor: move;
+    transition: box-shadow 0.15s;
+    z-index: 10;
+  }
+  .table-card:hover {
+    box-shadow: 0 0 0 1px var(--border), 0 8px 24px rgba(0,0,0,.5);
+    z-index: 20;
+  }
+  .table-card.dragging {
+    box-shadow: 0 0 0 2px #fff3, 0 16px 40px rgba(0,0,0,.7);
+    z-index: 100;
+  }
+
+  .card-header {
+    padding: 7px 10px;
+    border-radius: 7px 7px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-header .table-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex: 1;
+  }
+  .card-header .row-count {
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    background: rgba(0,0,0,0.3);
+    padding: 1px 5px;
+    border-radius: 10px;
+  }
+
+  .card-body {
+    padding: 4px 0;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    padding: 2px 10px;
+    gap: 6px;
+    font-size: 10px;
+  }
+  .field-row:hover { background: rgba(255,255,255,0.04); }
+
+  .field-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+    min-width: 22px;
+    text-align: center;
+  }
+  .pk { background: rgba(247,129,102,0.2); color: var(--pk); }
+  .fk { background: rgba(121,192,255,0.2); color: var(--fk); }
+  .fd { background: transparent; color: transparent; min-width: 22px; }
+
+  .field-name {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    flex: 1;
+    font-size: 10px;
+  }
+  .field-type {
+    color: var(--muted);
+    font-size: 9px;
+  }
+
+  /* ZOOM */
+  #zoom-ctrl {
+    position: fixed;
+    bottom: 16px; right: 16px;
+    display: flex; gap: 4px;
+    z-index: 999;
+  }
+  #zoom-ctrl button {
+    width: 30px; height: 30px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+  }
+  #zoom-ctrl button:hover { background: #2d333b; }
+  #zoom-info {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 0 8px;
+    font-size: 11px;
+    display: flex; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* GROUP LABELS */
+  .group-label {
+    position: absolute;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>🗄️ ERD — University Portal</h1>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#388bfd"></div>Tài khoản</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#3fb950"></div>Đào tạo</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d2a8ff"></div>Học vụ</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ffa657"></div>Điểm</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ff7b72"></div>TKB/HP</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#79c0ff"></div>Thông báo</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#56d364"></div>SHCN</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e3b341"></div>Hành chính</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#bc8cff"></div>Khảo sát</div>
+  </div>
+  <span>Drag để di chuyển bảng · Scroll để zoom</span>
+  <button class="btn" onclick="resetView()">Reset View</button>
+</div>
+
+<div id="canvas-wrap">
+  <div id="canvas">
+    <svg id="svg-lines" width="6000" height="5000"></svg>
+  </div>
+</div>
+
+<div id="zoom-ctrl">
+  <button onclick="zoom(0.1)">+</button>
+  <div id="zoom-info">100%</div>
+  <button onclick="zoom(-0.1)">−</button>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const GROUPS = {
+  'Tài khoản & Phòng ban': { color: '#388bfd', tables: ['vai_tro','phong_ban','tai_khoan','giao_vien','sinh_vien','ket_qua_anh_van_dau_vao'] },
+  'Lớp & Chương trình ĐT': { color: '#3fb950', tables: ['lop_sinh_hoat','nganh_hoc','chuong_trinh_dt','mon_hoc','chi_tiet_ctdt'] },
+  'Thời gian & Học vụ': { color: '#d2a8ff', tables: ['nam_hoc','hoc_ky','tuan_hoc','lop_hoc_phan'] },
+  'Điểm & Học bạ': { color: '#ffa657', tables: ['danh_sach_lop_hp','danh_sach_thi_lai','hoc_ba','diem_ren_luyen'] },
+  'TKB & Học phí': { color: '#ff7b72', tables: ['thoi_khoa_bieu','hoc_phi'] },
+  'Thông báo': { color: '#79c0ff', tables: ['thong_bao','thong_bao_da_doc','binh_luan_thong_bao'] },
+  'Biên bản SHCN': { color: '#56d364', tables: ['bien_ban_shcn','chi_tiet_cong_viec','chi_tiet_vang_shcn'] },
+  'Hành chính': { color: '#e3b341', tables: ['yeu_cau_hanh_chinh','yeu_cau_sua_diem','dat_phong_thuc_hanh'] },
+  'Khảo sát & Diễn đàn': { color: '#bc8cff', tables: ['khao_sat_y_kien','dien_dan_giao_vien'] },
+};
+
+const TABLES = {
+  vai_tro: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ten_vai_tro',t:'varchar',k:''}
+  ]},
+  phong_ban: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ten_phong_ban',t:'varchar',k:''}
+  ]},
+  tai_khoan: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ten_dang_nhap',t:'varchar',k:''},{n:'mat_khau',t:'varchar',k:''},
+    {n:'vai_tro_id',t:'int',k:'fk'},{n:'phong_ban_id',t:'int',k:'fk'},
+    {n:'ho_ten',t:'varchar',k:''},{n:'email',t:'varchar',k:''},
+    {n:'anh_dai_dien',t:'varchar',k:''},{n:'trang_thai',t:'bool',k:''}
+  ]},
+  giao_vien: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'tai_khoan_id',t:'int',k:'fk'},{n:'ma_gv',t:'varchar',k:''}
+  ]},
+  sinh_vien: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'tai_khoan_id',t:'int',k:'fk'},
+    {n:'mssv',t:'varchar',k:''},{n:'lop_id',t:'int',k:'fk'}
+  ]},
+  ket_qua_anh_van_dau_vao: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'hinh_thuc_xet',t:'varchar',k:''},{n:'diem_thi',t:'float',k:''},
+    {n:'diem_ta1',t:'float',k:''},{n:'diem_ta2',t:'float',k:''},
+    {n:'diem_ta3',t:'float',k:''},{n:'ghi_chu',t:'varchar',k:''}
+  ]},
+  lop_sinh_hoat: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ma_lop',t:'varchar',k:''},
+    {n:'gvcn_id',t:'int',k:'fk'},{n:'thu_ky_id',t:'int',k:'fk'},
+    {n:'chuong_trinh_dt_id',t:'int',k:'fk'}
+  ]},
+  nganh_hoc: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ma_nganh',t:'varchar',k:''},
+    {n:'ten_nganh',t:'varchar',k:''},{n:'nganh_cha_id',t:'int',k:'fk'}
+  ]},
+  chuong_trinh_dt: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ma_ctdt',t:'varchar',k:''},
+    {n:'nganh_id',t:'int',k:'fk'},{n:'khoa_hoc',t:'varchar',k:''}
+  ]},
+  mon_hoc: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ma_mon',t:'varchar',k:''},
+    {n:'ten_mon',t:'varchar',k:''}
+  ]},
+  chi_tiet_ctdt: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ctdt_id',t:'int',k:'fk'},
+    {n:'mon_hoc_id',t:'int',k:'fk'},{n:'hoc_ky_id',t:'int',k:'fk'},
+    {n:'so_tin_chi',t:'int',k:''},{n:'tinh_diem_tb',t:'bool',k:''}
+  ]},
+  nam_hoc: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ten_nam_hoc',t:'varchar',k:''}
+  ]},
+  hoc_ky: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'ten_hoc_ky',t:'varchar',k:''},
+    {n:'nam_hoc_id',t:'int',k:'fk'},{n:'ngay_bat_dau',t:'date',k:''}
+  ]},
+  tuan_hoc: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'nam_hoc_id',t:'int',k:'fk'},
+    {n:'ma_tuan',t:'varchar',k:''},{n:'so_thu_tu_tuan',t:'int',k:''},
+    {n:'ngay_bat_dau',t:'date',k:''},{n:'ngay_ket_thuc',t:'date',k:''}
+  ]},
+  lop_hoc_phan: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'chi_tiet_ctdt_id',t:'int',k:'fk'},
+    {n:'hoc_ky_id',t:'int',k:'fk'},{n:'giao_vien_id',t:'int',k:'fk'},
+    {n:'ma_lop_hp',t:'varchar',k:''},{n:'khoa_bang_diem',t:'bool',k:''},
+    {n:'trang_thai_ket_thuc',t:'bool',k:''}
+  ]},
+  danh_sach_lop_hp: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'lop_hp_id',t:'int',k:'fk'},{n:'loai_dang_ky',t:'varchar',k:''},
+    {n:'trang_thai_duyet',t:'varchar',k:''},{n:'nguoi_duyet_id',t:'int',k:'fk'},
+    {n:'diem_qt1',t:'float',k:''},{n:'diem_qt2',t:'float',k:''},
+    {n:'diem_thi',t:'float',k:''},{n:'diem_tong_ket',t:'float',k:''},
+    {n:'so_tien_phai_dong',t:'decimal',k:''},{n:'trang_thai_dong_tien',t:'varchar',k:''}
+  ]},
+  danh_sach_thi_lai: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'lop_hp_id',t:'int',k:'fk'},{n:'diem_thi_lai',t:'float',k:''},
+    {n:'so_tien_phai_dong',t:'decimal',k:''},{n:'trang_thai_dong_tien',t:'varchar',k:''},
+    {n:'nguoi_duyet_id',t:'int',k:'fk'}
+  ]},
+  hoc_ba: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'ctdt_id',t:'int',k:'fk'},{n:'diem_tbc_tich_luy',t:'float',k:''},
+    {n:'so_tin_chi_tich_luy',t:'int',k:''}
+  ]},
+  diem_ren_luyen: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'hoc_ky_id',t:'int',k:'fk'},{n:'diem_tong',t:'int',k:''},
+    {n:'xep_loai',t:'varchar',k:''}
+  ]},
+  thoi_khoa_bieu: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'lop_hp_id',t:'int',k:'fk'},
+    {n:'tuan_hoc_id',t:'int',k:'fk'},{n:'thu',t:'int',k:''},
+    {n:'tiet_bat_dau',t:'int',k:''},{n:'tiet_ket_thuc',t:'int',k:''},
+    {n:'phong_hoc',t:'varchar',k:''}
+  ]},
+  hoc_phi: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'hoc_ky_id',t:'int',k:'fk'},{n:'so_tien',t:'decimal',k:''},
+    {n:'trang_thai_dong',t:'varchar',k:''}
+  ]},
+  thong_bao: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'loai_thong_bao',t:'varchar',k:''},
+    {n:'muc_do',t:'varchar',k:''},{n:'tieu_de',t:'varchar',k:''},
+    {n:'noi_dung',t:'text',k:''},{n:'nguoi_tao_id',t:'int',k:'fk'},
+    {n:'lop_nhan_id',t:'int',k:'fk'},{n:'ngay_tao',t:'timestamp',k:''}
+  ]},
+  thong_bao_da_doc: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'thong_bao_id',t:'int',k:'fk'},
+    {n:'tai_khoan_id',t:'int',k:'fk'},{n:'da_doc',t:'bool',k:''},
+    {n:'ngay_doc',t:'timestamp',k:''}
+  ]},
+  binh_luan_thong_bao: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'thong_bao_id',t:'int',k:'fk'},
+    {n:'tai_khoan_id',t:'int',k:'fk'},{n:'noi_dung',t:'text',k:''},
+    {n:'ngay_binh_luan',t:'timestamp',k:''}
+  ]},
+  bien_ban_shcn: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'lop_id',t:'int',k:'fk'},
+    {n:'tuan_hoc_id',t:'int',k:'fk'},{n:'thoi_gian',t:'datetime',k:''},
+    {n:'dia_diem',t:'varchar',k:''},{n:'gvcn_id',t:'int',k:'fk'},
+    {n:'thu_ky_id',t:'int',k:'fk'},{n:'noi_dung',t:'text',k:''},
+    {n:'phan_hoi_gvcn',t:'text',k:''}
+  ]},
+  chi_tiet_cong_viec: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'bien_ban_id',t:'int',k:'fk'},
+    {n:'ten_cong_viec',t:'varchar',k:''},{n:'trang_thai_viec',t:'varchar',k:''}
+  ]},
+  chi_tiet_vang_shcn: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'bien_ban_id',t:'int',k:'fk'},
+    {n:'sinh_vien_id',t:'int',k:'fk'},{n:'ly_do',t:'varchar',k:''},
+    {n:'co_phep',t:'bool',k:''}
+  ]},
+  yeu_cau_hanh_chinh: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'loai_yeu_cau',t:'varchar',k:''},{n:'noi_dung',t:'text',k:''},
+    {n:'file_dinh_kem',t:'varchar',k:''},{n:'trang_thai',t:'varchar',k:''},
+    {n:'nguoi_duyet_id',t:'int',k:'fk'},{n:'ngay_tao',t:'timestamp',k:''}
+  ]},
+  yeu_cau_sua_diem: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'lop_hp_id',t:'int',k:'fk'},
+    {n:'giao_vien_id',t:'int',k:'fk'},{n:'ly_do',t:'text',k:''},
+    {n:'trang_thai',t:'varchar',k:''},{n:'nguoi_duyet_id',t:'int',k:'fk'}
+  ]},
+  dat_phong_thuc_hanh: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'giao_vien_id',t:'int',k:'fk'},
+    {n:'phong_hoc',t:'varchar',k:''},{n:'ngay_dat',t:'date',k:''},
+    {n:'ca_hoc',t:'int',k:''},{n:'ly_do',t:'text',k:''},
+    {n:'trang_thai',t:'varchar',k:''},{n:'nguoi_duyet_id',t:'int',k:'fk'}
+  ]},
+  khao_sat_y_kien: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'sinh_vien_id',t:'int',k:'fk'},
+    {n:'lop_hp_id',t:'int',k:'fk'},{n:'diem_danh_gia',t:'int',k:''},
+    {n:'gop_y',t:'text',k:''}
+  ]},
+  dien_dan_giao_vien: { fields: [
+    {n:'id',t:'int',k:'pk'},{n:'lop_id',t:'int',k:'fk'},
+    {n:'giao_vien_id',t:'int',k:'fk'},{n:'noi_dung',t:'text',k:''},
+    {n:'ngay_gui',t:'timestamp',k:''}
+  ]},
+};
+
+// FK relationships [from_table, fk_field, to_table]
+const RELATIONS = [
+  ['tai_khoan','vai_tro_id','vai_tro'],
+  ['tai_khoan','phong_ban_id','phong_ban'],
+  ['giao_vien','tai_khoan_id','tai_khoan'],
+  ['sinh_vien','tai_khoan_id','tai_khoan'],
+  ['sinh_vien','lop_id','lop_sinh_hoat'],
+  ['ket_qua_anh_van_dau_vao','sinh_vien_id','sinh_vien'],
+  ['lop_sinh_hoat','gvcn_id','giao_vien'],
+  ['lop_sinh_hoat','thu_ky_id','sinh_vien'],
+  ['lop_sinh_hoat','chuong_trinh_dt_id','chuong_trinh_dt'],
+  ['nganh_hoc','nganh_cha_id','nganh_hoc'],
+  ['chuong_trinh_dt','nganh_id','nganh_hoc'],
+  ['chi_tiet_ctdt','ctdt_id','chuong_trinh_dt'],
+  ['chi_tiet_ctdt','mon_hoc_id','mon_hoc'],
+  ['chi_tiet_ctdt','hoc_ky_id','hoc_ky'],
+  ['hoc_ky','nam_hoc_id','nam_hoc'],
+  ['tuan_hoc','nam_hoc_id','nam_hoc'],
+  ['lop_hoc_phan','chi_tiet_ctdt_id','chi_tiet_ctdt'],
+  ['lop_hoc_phan','hoc_ky_id','hoc_ky'],
+  ['lop_hoc_phan','giao_vien_id','giao_vien'],
+  ['danh_sach_lop_hp','sinh_vien_id','sinh_vien'],
+  ['danh_sach_lop_hp','lop_hp_id','lop_hoc_phan'],
+  ['danh_sach_lop_hp','nguoi_duyet_id','tai_khoan'],
+  ['danh_sach_thi_lai','sinh_vien_id','sinh_vien'],
+  ['danh_sach_thi_lai','lop_hp_id','lop_hoc_phan'],
+  ['danh_sach_thi_lai','nguoi_duyet_id','tai_khoan'],
+  ['hoc_ba','sinh_vien_id','sinh_vien'],
+  ['hoc_ba','ctdt_id','chuong_trinh_dt'],
+  ['diem_ren_luyen','sinh_vien_id','sinh_vien'],
+  ['diem_ren_luyen','hoc_ky_id','hoc_ky'],
+  ['thoi_khoa_bieu','lop_hp_id','lop_hoc_phan'],
+  ['thoi_khoa_bieu','tuan_hoc_id','tuan_hoc'],
+  ['hoc_phi','sinh_vien_id','sinh_vien'],
+  ['hoc_phi','hoc_ky_id','hoc_ky'],
+  ['thong_bao','nguoi_tao_id','tai_khoan'],
+  ['thong_bao','lop_nhan_id','lop_sinh_hoat'],
+  ['thong_bao_da_doc','thong_bao_id','thong_bao'],
+  ['thong_bao_da_doc','tai_khoan_id','tai_khoan'],
+  ['binh_luan_thong_bao','thong_bao_id','thong_bao'],
+  ['binh_luan_thong_bao','tai_khoan_id','tai_khoan'],
+  ['bien_ban_shcn','lop_id','lop_sinh_hoat'],
+  ['bien_ban_shcn','tuan_hoc_id','tuan_hoc'],
+  ['bien_ban_shcn','gvcn_id','giao_vien'],
+  ['bien_ban_shcn','thu_ky_id','sinh_vien'],
+  ['chi_tiet_cong_viec','bien_ban_id','bien_ban_shcn'],
+  ['chi_tiet_vang_shcn','bien_ban_id','bien_ban_shcn'],
+  ['chi_tiet_vang_shcn','sinh_vien_id','sinh_vien'],
+  ['yeu_cau_hanh_chinh','sinh_vien_id','sinh_vien'],
+  ['yeu_cau_hanh_chinh','nguoi_duyet_id','tai_khoan'],
+  ['yeu_cau_sua_diem','lop_hp_id','lop_hoc_phan'],
+  ['yeu_cau_sua_diem','giao_vien_id','giao_vien'],
+  ['yeu_cau_sua_diem','nguoi_duyet_id','tai_khoan'],
+  ['dat_phong_thuc_hanh','giao_vien_id','giao_vien'],
+  ['dat_phong_thuc_hanh','nguoi_duyet_id','tai_khoan'],
+  ['khao_sat_y_kien','sinh_vien_id','sinh_vien'],
+  ['khao_sat_y_kien','lop_hp_id','lop_hoc_phan'],
+  ['dien_dan_giao_vien','lop_id','lop_sinh_hoat'],
+  ['dien_dan_giao_vien','giao_vien_id','giao_vien'],
+];
+
+// Initial positions (x, y) per table
+const POSITIONS = {
+  // Group 1: Tài khoản (left side)
+  vai_tro:         { x: 40,   y: 80  },
+  phong_ban:       { x: 40,   y: 200 },
+  tai_khoan:       { x: 230,  y: 80  },
+  giao_vien:       { x: 490,  y: 80  },
+  sinh_vien:       { x: 490,  y: 260 },
+  ket_qua_anh_van_dau_vao: { x: 700, y: 260 },
+
+  // Group 2: Đào tạo (middle-top)
+  nganh_hoc:       { x: 940,  y: 80  },
+  chuong_trinh_dt: { x: 1140, y: 80  },
+  mon_hoc:         { x: 1350, y: 80  },
+  lop_sinh_hoat:   { x: 700,  y: 80  },
+  chi_tiet_ctdt:   { x: 1140, y: 260 },
+
+  // Group 3: Thời gian & Học vụ
+  nam_hoc:         { x: 40,   y: 460 },
+  hoc_ky:          { x: 230,  y: 460 },
+  tuan_hoc:        { x: 460,  y: 460 },
+  lop_hoc_phan:    { x: 700,  y: 460 },
+
+  // Group 4: Điểm
+  danh_sach_lop_hp:  { x: 940,  y: 460 },
+  danh_sach_thi_lai: { x: 1200, y: 460 },
+  hoc_ba:            { x: 940,  y: 720 },
+  diem_ren_luyen:    { x: 1200, y: 720 },
+
+  // Group 5: TKB & Học phí
+  thoi_khoa_bieu:  { x: 40,   y: 720 },
+  hoc_phi:         { x: 260,  y: 720 },
+
+  // Group 6: Thông báo
+  thong_bao:            { x: 460,  y: 720 },
+  thong_bao_da_doc:     { x: 700,  y: 720 },
+  binh_luan_thong_bao:  { x: 700,  y: 900 },
+
+  // Group 7: SHCN
+  bien_ban_shcn:       { x: 40,   y: 980 },
+  chi_tiet_cong_viec:  { x: 280,  y: 980 },
+  chi_tiet_vang_shcn:  { x: 470,  y: 980 },
+
+  // Group 8: Hành chính
+  yeu_cau_hanh_chinh:  { x: 700,  y: 1060 },
+  yeu_cau_sua_diem:    { x: 940,  y: 1060 },
+  dat_phong_thuc_hanh: { x: 1160, y: 1060 },
+
+  // Group 9: Khảo sát
+  khao_sat_y_kien:    { x: 940,  y: 900 },
+  dien_dan_giao_vien: { x: 460,  y: 900 },
+};
+
+// ============================================================
+// RENDER
+// ============================================================
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('svg-lines');
+
+// Map table -> color
+const tableColor = {};
+Object.values(GROUPS).forEach(g => g.tables.forEach(t => tableColor[t] = g.color));
+
+// Create cards
+const cardEls = {};
+Object.entries(TABLES).forEach(([name, def]) => {
+  const color = tableColor[name] || '#888';
+  const pos = POSITIONS[name] || { x: 100, y: 100 };
+
+  const card = document.createElement('div');
+  card.className = 'table-card';
+  card.id = 'tbl_' + name;
+  card.style.left = pos.x + 'px';
+  card.style.top = pos.y + 'px';
+
+  const fieldsHTML = def.fields.map(f => `
+    <div class="field-row">
+      <span class="field-badge ${f.k || 'fd'}">${f.k ? f.k.toUpperCase() : ''}</span>
+      <span class="field-name">${f.n}</span>
+      <span class="field-type">${f.t}</span>
+    </div>`).join('');
+
+  card.innerHTML = `
+    <div class="card-header" style="background:${color}22; border-bottom-color:${color}44;">
+      <div style="width:8px;height:8px;border-radius:2px;background:${color};flex-shrink:0;"></div>
+      <span class="table-name">${name}</span>
+      <span class="row-count">${def.fields.length} cols</span>
+    </div>
+    <div class="card-body">${fieldsHTML}</div>
+  `;
+
+  canvas.appendChild(card);
+  cardEls[name] = card;
+});
+
+// ============================================================
+// DRAG CARDS
+// ============================================================
+let dragging = null, dragOX = 0, dragOY = 0;
+
+Object.entries(cardEls).forEach(([name, card]) => {
+  card.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+    dragging = { name, card };
+    const rect = card.getBoundingClientRect();
+    const wrap = document.getElementById('canvas-wrap').getBoundingClientRect();
+    dragOX = (e.clientX - wrap.left - panX) / scale - parseInt(card.style.left);
+    dragOY = (e.clientY - wrap.top  - panY) / scale - parseInt(card.style.top);
+    card.classList.add('dragging');
+  });
+});
+
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const wrap = document.getElementById('canvas-wrap').getBoundingClientRect();
+  const nx = (e.clientX - wrap.left - panX) / scale - dragOX;
+  const ny = (e.clientY - wrap.top  - panY) / scale - dragOY;
+  dragging.card.style.left = nx + 'px';
+  dragging.card.style.top  = ny + 'px';
+  drawLines();
+});
+
+document.addEventListener('mouseup', () => {
+  if (dragging) {
+    dragging.card.classList.remove('dragging');
+    dragging = null;
+  }
+  isPanning = false;
+  document.getElementById('canvas-wrap').classList.remove('grabbing');
+});
+
+// ============================================================
+// PAN & ZOOM
+// ============================================================
+let scale = 0.72, panX = 20, panY = 10;
+let isPanning = false, panSX = 0, panSY = 0;
+
+function applyTransform() {
+  canvas.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+  document.getElementById('zoom-info').textContent = Math.round(scale * 100) + '%';
+}
+
+const wrap = document.getElementById('canvas-wrap');
+
+wrap.addEventListener('mousedown', e => {
+  if (e.button === 0 && !dragging) {
+    isPanning = true;
+    panSX = e.clientX - panX;
+    panSY = e.clientY - panY;
+    wrap.classList.add('grabbing');
+  }
+});
+
+document.addEventListener('mousemove', e => {
+  if (!isPanning || dragging) return;
+  panX = e.clientX - panSX;
+  panY = e.clientY - panSY;
+  applyTransform();
+});
+
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.08 : 0.08;
+  const rect = wrap.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const newScale = Math.min(2, Math.max(0.2, scale + delta));
+  panX = mx - (mx - panX) * (newScale / scale);
+  panY = my - (my - panY) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+  drawLines();
+}, { passive: false });
+
+function zoom(d) {
+  scale = Math.min(2, Math.max(0.2, scale + d));
+  applyTransform();
+  drawLines();
+}
+
+function resetView() {
+  scale = 0.72; panX = 20; panY = 10;
+  applyTransform();
+  drawLines();
+}
+
+// ============================================================
+// DRAW LINES
+// ============================================================
+function getCardCenter(name) {
+  const el = cardEls[name];
+  if (!el) return null;
+  const x = parseInt(el.style.left) + el.offsetWidth / 2;
+  const y = parseInt(el.style.top) + el.offsetHeight / 2;
+  return { x, y, w: el.offsetWidth, h: el.offsetHeight,
+           left: parseInt(el.style.left), top: parseInt(el.style.top) };
+}
+
+function drawLines() {
+  svg.innerHTML = '';
+  RELATIONS.forEach(([from, , to]) => {
+    if (from === to) return;
+    const a = getCardCenter(from);
+    const b = getCardCenter(to);
+    if (!a || !b) return;
+
+    // Pick edge points
+    const dx = b.x - a.x;
+    const ax = dx > 0 ? a.left + a.w : a.left;
+    const bx = dx > 0 ? b.left : b.left + b.w;
+    const ay = a.top + a.h / 2;
+    const by = b.top + b.h / 2;
+    const cx = (ax + bx) / 2;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M${ax},${ay} C${cx},${ay} ${cx},${by} ${bx},${by}`);
+    path.setAttribute('class','rel-line');
+    svg.appendChild(path);
+  });
+}
+
+applyTransform();
+setTimeout(drawLines, 100);
+</script>
+</body>
+</html>
