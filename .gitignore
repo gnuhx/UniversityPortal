@@ -58,7 +58,7 @@ TestResult.xml
 # ============================================================
 appsettings.*.json
 !appsettings.json
-!appsettings.Development.json
+!appsettings.*.example.json
 secrets.json
 *.pfx
 *.p12
