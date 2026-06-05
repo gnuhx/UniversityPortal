@@ -18,7 +18,11 @@ public static class DependencyInjection
         // MySQL 8.0 — Aiven uses MySQL 8.x
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
         services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(connStr, serverVersion));
+            options.UseMySql(connStr, serverVersion,
+                mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 10,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: null)));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();

@@ -1,0 +1,33 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: university_portal
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: "Server=mysql;Port=3306;Database=university_portal;Uid=root;Pwd=rootpass;SslMode=None;AllowPublicKeyRetrieval=True;"
+      JWT__Secret: "docker-local-secret-change-in-production-32chars"
+      JWT__Issuer: UniversityPortal
+      JWT__Audience: UniversityPortal
+      JWT__ExpiryMinutes: "60"
+      JWT__RefreshTokenExpiryDays: "7"
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
