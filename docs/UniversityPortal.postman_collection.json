@@ -1,0 +1,1189 @@
+{
+  "info": {
+    "_postman_id": "up-api-v1-manual-tests",
+    "name": "University Portal API",
+    "description": "Bộ test thủ công cho University Portal API.\n\n**Cách dùng nhanh:**\n1. Import file này vào Postman.\n2. Chạy request **\"[Admin] Đăng nhập thành công\"** — token tự lưu vào biến `accessToken`.\n3. Mọi request tiếp theo tự dùng token đó (Bearer auth cấp collection).\n4. Đổi biến `baseUrl` nếu chạy Docker (`http://localhost:8080`).\n\n**Tài khoản seed mặc định:**\n- Admin: `admin` / `Admin@123`\n- Giáo vụ: `giaovu01` / `Giaovu@123`\n- Giáo viên: `gv.tuan` / `Giaovien@123`\n- Sinh viên: `sv.an` / `Sinhvien@123`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl",       "value": "http://localhost:5277", "type": "default" },
+    { "key": "accessToken",   "value": "",                      "type": "default" },
+    { "key": "refreshToken",  "value": "",                      "type": "default" }
+  ],
+  "item": [
+
+    {
+      "name": "Auth - Xac thuc",
+      "description": "Đăng nhập, làm mới token, đăng xuất",
+      "item": [
+        {
+          "name": "[Admin] Dang nhap thanh cong",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Co accessToken', () => pm.expect(res.data.accessToken).to.be.a('string').and.not.empty);",
+                  "pm.test('Co refreshToken', () => pm.expect(res.data.refreshToken).to.be.a('string').and.not.empty);",
+                  "pm.test('VaiTro la Admin', () => pm.expect(res.data.userInfo.vaiTro).to.equal('Admin'));",
+                  "if (res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  console.log('accessToken da luu tu dong.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"admin\",\n  \"matKhau\": \"Admin@123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "[Giao vu] Dang nhap thanh cong",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('VaiTro la Giao vu', () => pm.expect(pm.response.json().data.userInfo.vaiTro).to.equal('Giao vu'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"giaovu01\",\n  \"matKhau\": \"Giaovu@123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "[That bai] Dang nhap sai mat khau",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 hoac 401', () => pm.expect(pm.response.code).to.be.oneOf([400,401]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"admin\",\n  \"matKhau\": \"SaiMatKhau\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "[That bai] Dang nhap tai khoan khong ton tai",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 hoac 404', () => pm.expect(pm.response.code).to.be.oneOf([400,404]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"khongtontai\",\n  \"matKhau\": \"BatKyMatKhau\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Lam moi token (refresh)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "if (res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api","auth","refresh"] }
+          }
+        },
+        {
+          "name": "Dang xuat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('accessToken', '');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api","auth","logout"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Tai Khoan",
+      "description": "Quản lý tài khoản người dùng. Cần đăng nhập Admin trước.",
+      "item": [
+        {
+          "name": "Danh sach tai khoan (trang 1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('Co truong data', () => pm.expect(pm.response.json().data).to.exist);"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tai-khoan?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","tai-khoan"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach tai khoan (loc vai tro Giao vien - vaiTroId=2)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tai-khoan?vaiTroId=2&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"], "path": ["api","tai-khoan"],
+              "query": [{ "key": "vaiTroId", "value": "2" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach tai khoan (loc trang thai hoat dong)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tai-khoan?trangThai=true&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"], "path": ["api","tai-khoan"],
+              "query": [{ "key": "trangThai", "value": "true" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach tai khoan (tim kiem theo ten)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tai-khoan?keyword=Tuan&page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","tai-khoan"],
+              "query": [{ "key": "keyword", "value": "Tuan" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Chi tiet tai khoan id=1 (admin)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('Id = 1', () => pm.expect(pm.response.json().data.id).to.equal(1));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/1", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","1"] }
+          }
+        },
+        {
+          "name": "[That bai] Chi tiet tai khoan khong ton tai (id=9999)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 404', () => pm.response.to.have.status(404));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/9999", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","9999"] }
+          }
+        },
+        {
+          "name": "Tao tai khoan moi (Giao vu test)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));",
+                     "const res = pm.response.json();",
+                     "pm.test('Co id moi', () => pm.expect(res.data.id).to.be.a('number').and.above(0));",
+                     "pm.collectionVariables.set('newTaiKhoanId', res.data.id);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"giaovu.test01\",\n  \"matKhau\": \"Test@12345\",\n  \"vaiTroId\": 4,\n  \"phongBanId\": 1,\n  \"hoTen\": \"Nguyen Thi Test\",\n  \"email\": \"test.giaovu@uni.edu.vn\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan"] }
+          }
+        },
+        {
+          "name": "[That bai] Tao tai khoan trung ten dang nhap",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"admin\",\n  \"matKhau\": \"Test@12345\",\n  \"vaiTroId\": 4,\n  \"hoTen\": \"Trung Ten DangNhap\",\n  \"email\": \"trung@uni.edu.vn\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan"] }
+          }
+        },
+        {
+          "name": "Cap nhat tai khoan id=2 (giaovu01)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vaiTroId\": 4,\n  \"phongBanId\": 1,\n  \"hoTen\": \"Nguyen Thi Lan (Cap nhat)\",\n  \"email\": \"lan.nt@uni.edu.vn\",\n  \"trangThai\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/2", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","2"] }
+          }
+        },
+        {
+          "name": "Khoa - mo tai khoan id=12 (sv.quan)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/12/trang-thai", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","12","trang-thai"] }
+          }
+        },
+        {
+          "name": "Doi mat khau tai khoan id=6 (sv.an)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matKhauCu\": \"Sinhvien@123\",\n  \"matKhauMoi\": \"Sinhvien@456\",\n  \"xacNhanMatKhau\": \"Sinhvien@456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/6/doi-mat-khau", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","6","doi-mat-khau"] }
+          }
+        },
+        {
+          "name": "[That bai] Doi mat khau sai mat khau cu",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matKhauCu\": \"SaiMatKhau\",\n  \"matKhauMoi\": \"NewPass@123\",\n  \"xacNhanMatKhau\": \"NewPass@123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/1/doi-mat-khau", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","1","doi-mat-khau"] }
+          }
+        },
+        {
+          "name": "Upload avatar tai khoan id=1",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "/path/to/avatar.jpg", "description": "Thay /path/to/avatar.jpg bang duong dan file anh thuc te (jpg/png/webp, toi da 2MB)" }]
+            },
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/1/avatar", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","1","avatar"] }
+          }
+        },
+        {
+          "name": "[That bai] Upload avatar sai dinh dang (txt file)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "/path/to/test.txt", "description": "Thay bang duong dan file .txt bat ky" }]
+            },
+            "url": { "raw": "{{baseUrl}}/api/tai-khoan/1/avatar", "host": ["{{baseUrl}}"], "path": ["api","tai-khoan","1","avatar"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Sinh Vien",
+      "description": "Quản lý sinh viên. Cần token Admin hoặc Giáo vụ.",
+      "item": [
+        {
+          "name": "Danh sach sinh vien (trang 1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('Co items', () => pm.expect(pm.response.json().data.items).to.be.an('array'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sinh-vien?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","sinh-vien"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach sinh vien (loc theo lop KTPM22A - lopId=1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sinh-vien?lopId=1&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"], "path": ["api","sinh-vien"],
+              "query": [{ "key": "lopId", "value": "1" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach sinh vien (tim kiem theo MSSV 'SV2200')",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sinh-vien?keyword=SV2200&page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","sinh-vien"],
+              "query": [{ "key": "keyword", "value": "SV2200" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Chi tiet sinh vien id=1 (Nguyen Van An)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('Mssv la SV2200001', () => pm.expect(pm.response.json().data.mssv).to.equal('SV2200001'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/sinh-vien/1", "host": ["{{baseUrl}}"], "path": ["api","sinh-vien","1"] }
+          }
+        },
+        {
+          "name": "Tao sinh vien moi",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));",
+                     "pm.test('Co id moi', () => pm.expect(pm.response.json().data.id).to.be.above(0));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"sv.test001\",\n  \"matKhau\": \"Sinhvien@123\",\n  \"hoTen\": \"Le Van Test\",\n  \"email\": \"test001@sv.uni.edu.vn\",\n  \"mssv\": \"SV2400001\",\n  \"lopId\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/sinh-vien", "host": ["{{baseUrl}}"], "path": ["api","sinh-vien"] }
+          }
+        },
+        {
+          "name": "[That bai] Tao sinh vien trung MSSV",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"sv.trungmssv\",\n  \"matKhau\": \"Sinhvien@123\",\n  \"hoTen\": \"Trung MSSV\",\n  \"email\": \"trungmssv@sv.uni.edu.vn\",\n  \"mssv\": \"SV2200001\",\n  \"lopId\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/sinh-vien", "host": ["{{baseUrl}}"], "path": ["api","sinh-vien"] }
+          }
+        },
+        {
+          "name": "Cap nhat sinh vien id=1",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hoTen\": \"Nguyen Van An (Cap nhat)\",\n  \"email\": \"an.nv22@sv.uni.edu.vn\",\n  \"lopId\": 1,\n  \"trangThai\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/sinh-vien/1", "host": ["{{baseUrl}}"], "path": ["api","sinh-vien","1"] }
+          }
+        },
+        {
+          "name": "Khoa tai khoan sinh vien id=7 (sv.quan — it lien ket nhat)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/sinh-vien/7", "host": ["{{baseUrl}}"], "path": ["api","sinh-vien","7"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Giao Vien",
+      "description": "Quản lý giáo viên. Cần token Admin.",
+      "item": [
+        {
+          "name": "Danh sach giao vien (trang 1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/giao-vien?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","giao-vien"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach giao vien (tim kiem 'Tuan')",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/giao-vien?keyword=Tuan&page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","giao-vien"],
+              "query": [{ "key": "keyword", "value": "Tuan" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Chi tiet giao vien id=1 (TS. Tran Van Tuan)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('MaGv la GV001', () => pm.expect(pm.response.json().data.maGv).to.equal('GV001'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/giao-vien/1", "host": ["{{baseUrl}}"], "path": ["api","giao-vien","1"] }
+          }
+        },
+        {
+          "name": "Tao giao vien moi",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"gv.test01\",\n  \"matKhau\": \"Giaovien@123\",\n  \"hoTen\": \"ThS. Nguyen Van Test\",\n  \"email\": \"test01.gv@uni.edu.vn\",\n  \"maGv\": \"GV099\",\n  \"phongBanId\": 3\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/giao-vien", "host": ["{{baseUrl}}"], "path": ["api","giao-vien"] }
+          }
+        },
+        {
+          "name": "[That bai] Tao giao vien trung ma GV",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenDangNhap\": \"gv.trung\",\n  \"matKhau\": \"Giaovien@123\",\n  \"hoTen\": \"Trung Ma GV\",\n  \"email\": \"trungma@uni.edu.vn\",\n  \"maGv\": \"GV001\",\n  \"phongBanId\": 3\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/giao-vien", "host": ["{{baseUrl}}"], "path": ["api","giao-vien"] }
+          }
+        },
+        {
+          "name": "Cap nhat giao vien id=1",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hoTen\": \"TS. Tran Van Tuan (Cap nhat)\",\n  \"email\": \"tuan.tv@uni.edu.vn\",\n  \"maGv\": \"GV001\",\n  \"phongBanId\": 3,\n  \"trangThai\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/giao-vien/1", "host": ["{{baseUrl}}"], "path": ["api","giao-vien","1"] }
+          }
+        },
+        {
+          "name": "Khoa tai khoan giao vien id=3 (gv.minh — chua lam GVCN)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/giao-vien/3", "host": ["{{baseUrl}}"], "path": ["api","giao-vien","3"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Nganh Hoc",
+      "description": "Quản lý ngành học. Xem: mọi user đã đăng nhập. CRUD: Admin.",
+      "item": [
+        {
+          "name": "Danh sach nganh hoc (phan trang)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/nganh-hoc?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach nganh hoc (tim kiem 'CNTT')",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/nganh-hoc?keyword=CNTT&page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc"],
+              "query": [{ "key": "keyword", "value": "CNTT" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Tat ca nganh hoc (dung dropdown)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('Tra ve array', () => pm.expect(pm.response.json().data).to.be.an('array'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc/all", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc","all"] }
+          }
+        },
+        {
+          "name": "Chi tiet nganh hoc id=1 (CNTT)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('MaNganh la CNTT', () => pm.expect(pm.response.json().data.maNganh).to.equal('CNTT'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc/1", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc","1"] }
+          }
+        },
+        {
+          "name": "Tao nganh hoc moi",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));",
+                     "const res = pm.response.json();",
+                     "pm.collectionVariables.set('newNganhHocId', res.data.id);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maNganh\": \"TMDT\",\n  \"tenNganh\": \"Thuong mai Dien tu\",\n  \"nganhChaId\": null\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc"] }
+          }
+        },
+        {
+          "name": "Tao nganh hoc con (thuoc nganh CNTT id=1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maNganh\": \"ATTT\",\n  \"tenNganh\": \"An toan Thong tin\",\n  \"nganhChaId\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc"] }
+          }
+        },
+        {
+          "name": "[That bai] Tao nganh hoc trung ma nganh",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maNganh\": \"CNTT\",\n  \"tenNganh\": \"Trung Ma Nganh\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc"] }
+          }
+        },
+        {
+          "name": "Cap nhat nganh hoc id=4 (QTKD — chua co CTDT)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maNganh\": \"QTKD\",\n  \"tenNganh\": \"Quan tri Kinh doanh (Cap nhat)\",\n  \"nganhChaId\": null\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc/4", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc","4"] }
+          }
+        },
+        {
+          "name": "Xoa nganh hoc vua tao (dung bien newNganhHocId)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc/{{newNganhHocId}}", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc","{{newNganhHocId}}"] }
+          }
+        },
+        {
+          "name": "[That bai] Xoa nganh hoc con co CTDT (id=2 - KTPM co KTPM-K22)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/nganh-hoc/2", "host": ["{{baseUrl}}"], "path": ["api","nganh-hoc","2"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Mon Hoc",
+      "description": "Quản lý môn học. Xem: mọi user. CRUD: Admin.",
+      "item": [
+        {
+          "name": "Danh sach mon hoc (phan trang)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mon-hoc?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","mon-hoc"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach mon hoc (tim kiem 'INT')",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mon-hoc?keyword=INT&page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","mon-hoc"],
+              "query": [{ "key": "keyword", "value": "INT" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Tat ca mon hoc (dung dropdown)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('Tra ve array', () => pm.expect(pm.response.json().data).to.be.an('array'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/mon-hoc/all", "host": ["{{baseUrl}}"], "path": ["api","mon-hoc","all"] }
+          }
+        },
+        {
+          "name": "Chi tiet mon hoc id=1 (INT101 - Nhap mon Lap trinh)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('MaMon la INT101', () => pm.expect(pm.response.json().data.maMon).to.equal('INT101'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/mon-hoc/1", "host": ["{{baseUrl}}"], "path": ["api","mon-hoc","1"] }
+          }
+        },
+        {
+          "name": "Tao mon hoc moi",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));",
+                     "pm.collectionVariables.set('newMonHocId', pm.response.json().data.id);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maMon\": \"TEST501\",\n  \"tenMon\": \"Mon Hoc Test\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/mon-hoc", "host": ["{{baseUrl}}"], "path": ["api","mon-hoc"] }
+          }
+        },
+        {
+          "name": "Cap nhat mon hoc vua tao",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maMon\": \"TEST501\",\n  \"tenMon\": \"Mon Hoc Test (Da cap nhat)\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/mon-hoc/{{newMonHocId}}", "host": ["{{baseUrl}}"], "path": ["api","mon-hoc","{{newMonHocId}}"] }
+          }
+        },
+        {
+          "name": "Xoa mon hoc vua tao",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/mon-hoc/{{newMonHocId}}", "host": ["{{baseUrl}}"], "path": ["api","mon-hoc","{{newMonHocId}}"] }
+          }
+        },
+        {
+          "name": "[That bai] Xoa mon hoc dang dung trong CTDT (id=1 - INT101)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/mon-hoc/1", "host": ["{{baseUrl}}"], "path": ["api","mon-hoc","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Lop Sinh Hoat",
+      "description": "Quản lý lớp sinh hoạt. Cần token Admin hoặc Giáo vụ.",
+      "item": [
+        {
+          "name": "Danh sach lop sinh hoat (phan trang)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/lop-sinh-hoat?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach lop (loc GVCN id=1 - TS. Tran Van Tuan)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/lop-sinh-hoat?gvcnId=1&page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat"],
+              "query": [{ "key": "gvcnId", "value": "1" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Tat ca lop sinh hoat (dung dropdown)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/lop-sinh-hoat/all", "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat","all"] }
+          }
+        },
+        {
+          "name": "Chi tiet lop sinh hoat id=1 (KTPM22A)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('MaLop la KTPM22A', () => pm.expect(pm.response.json().data.maLop).to.equal('KTPM22A'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/lop-sinh-hoat/1", "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat","1"] }
+          }
+        },
+        {
+          "name": "Tao lop sinh hoat moi (thu ky = null)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));",
+                     "pm.collectionVariables.set('newLopId', pm.response.json().data.id);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maLop\": \"KTPM22B\",\n  \"gvcnId\": 2,\n  \"chuongTrinhDtId\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/lop-sinh-hoat", "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat"] }
+          }
+        },
+        {
+          "name": "Cap nhat lop id=1 (gan thu ky - thuKyId=1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maLop\": \"KTPM22A\",\n  \"gvcnId\": 1,\n  \"thuKyId\": 1,\n  \"chuongTrinhDtId\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/lop-sinh-hoat/1", "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat","1"] }
+          }
+        },
+        {
+          "name": "Xoa lop moi tao (con trong - dung bien newLopId)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/lop-sinh-hoat/{{newLopId}}", "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat","{{newLopId}}"] }
+          }
+        },
+        {
+          "name": "[That bai] Xoa lop con sinh vien (id=1 - KTPM22A)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/lop-sinh-hoat/1", "host": ["{{baseUrl}}"], "path": ["api","lop-sinh-hoat","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Chuong Trinh Dao Tao",
+      "description": "Quản lý CTDT. Xem: mọi user. CRUD: Admin.",
+      "item": [
+        {
+          "name": "Danh sach CTDT (phan trang)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chuong-trinh-dt?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach CTDT (loc theo nganh KTPM - nganhId=2)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chuong-trinh-dt?nganhId=2&page=1&pageSize=10",
+              "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt"],
+              "query": [{ "key": "nganhId", "value": "2" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Tat ca CTDT (dung dropdown)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/chuong-trinh-dt/all", "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt","all"] }
+          }
+        },
+        {
+          "name": "Chi tiet CTDT id=1 (KTPM-K22)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('MaCtdt la KTPM-K22', () => pm.expect(pm.response.json().data.maCtdt).to.equal('KTPM-K22'));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/chuong-trinh-dt/1", "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt","1"] }
+          }
+        },
+        {
+          "name": "Tao CTDT moi",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));",
+                     "pm.collectionVariables.set('newCtdtId', pm.response.json().data.id);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maCtdt\": \"QTKD-K25\",\n  \"nganhId\": 4,\n  \"khoaHoc\": \"2025-2029\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/chuong-trinh-dt", "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt"] }
+          }
+        },
+        {
+          "name": "Cap nhat CTDT vua tao",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maCtdt\": \"QTKD-K25\",\n  \"nganhId\": 4,\n  \"khoaHoc\": \"2025-2030\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/chuong-trinh-dt/{{newCtdtId}}", "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt","{{newCtdtId}}"] }
+          }
+        },
+        {
+          "name": "Xoa CTDT vua tao (chua co chi tiet)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/chuong-trinh-dt/{{newCtdtId}}", "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt","{{newCtdtId}}"] }
+          }
+        },
+        {
+          "name": "[That bai] Xoa CTDT con chi tiet mon hoc (id=1 - KTPM-K22)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/chuong-trinh-dt/1", "host": ["{{baseUrl}}"], "path": ["api","chuong-trinh-dt","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Chi Tiet CTDT",
+      "description": "Quản lý danh sách môn trong CTDT. Xem: mọi user. CRUD: Admin.",
+      "item": [
+        {
+          "name": "Danh sach chi tiet CTDT id=1 (KTPM-K22)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chi-tiet-ctdt?ctdtId=1&page=1&pageSize=50",
+              "host": ["{{baseUrl}}"], "path": ["api","chi-tiet-ctdt"],
+              "query": [{ "key": "ctdtId", "value": "1" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "50" }]
+            }
+          }
+        },
+        {
+          "name": "Danh sach chi tiet CTDT id=2 (HTTT-K23)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chi-tiet-ctdt?ctdtId=2&page=1&pageSize=50",
+              "host": ["{{baseUrl}}"], "path": ["api","chi-tiet-ctdt"],
+              "query": [{ "key": "ctdtId", "value": "2" }, { "key": "page", "value": "1" }, { "key": "pageSize", "value": "50" }]
+            }
+          }
+        },
+        {
+          "name": "Chi tiet 1 dong ctdt (id=1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('SoTinChi = 3', () => pm.expect(pm.response.json().data.soTinChi).to.equal(3));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/chi-tiet-ctdt/1", "host": ["{{baseUrl}}"], "path": ["api","chi-tiet-ctdt","1"] }
+          }
+        },
+        {
+          "name": "Them mon INT401 vao CTDT id=1 (HK2, 4 tin chi)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));",
+                     "pm.collectionVariables.set('newChiTietId', pm.response.json().data.id);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ctdtId\": 1,\n  \"monHocId\": 5,\n  \"hocKyId\": 2,\n  \"soTinChi\": 4,\n  \"tinhDiemTb\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/chi-tiet-ctdt", "host": ["{{baseUrl}}"], "path": ["api","chi-tiet-ctdt"] }
+          }
+        },
+        {
+          "name": "[That bai] Them mon trung (INT101 da co trong CTDT 1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 400 hoac 409', () => pm.expect(pm.response.code).to.be.oneOf([400,409]));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ctdtId\": 1,\n  \"monHocId\": 1,\n  \"hocKyId\": 1,\n  \"soTinChi\": 3,\n  \"tinhDiemTb\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/chi-tiet-ctdt", "host": ["{{baseUrl}}"], "path": ["api","chi-tiet-ctdt"] }
+          }
+        },
+        {
+          "name": "Cap nhat so tin chi dong chi tiet vua them",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"soTinChi\": 3,\n  \"tinhDiemTb\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/chi-tiet-ctdt/{{newChiTietId}}", "host": ["{{baseUrl}}"], "path": ["api","chi-tiet-ctdt","{{newChiTietId}}"] }
+          }
+        },
+        {
+          "name": "Xoa mon vua them khoi CTDT",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/chi-tiet-ctdt/{{newChiTietId}}", "host": ["{{baseUrl}}"], "path": ["api","chi-tiet-ctdt","{{newChiTietId}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript",
+            "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));",
+                     "pm.test('Status healthy', () => pm.expect(pm.response.json().status).to.equal('healthy'));"] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    }
+
+  ]
+}

@@ -4,6 +4,7 @@ using UniversityPortal.Infrastructure.Persistence;
 using UniversityPortal.Infrastructure.Persistence.Seed;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 using UniversityPortal.API.Middleware;
 using UniversityPortal.Application;
@@ -19,14 +20,21 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "University Portal API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "University Portal API",
+        Version = "v1",
+        Description = "API quản lý sinh viên, giáo viên, chương trình đào tạo và các nghiệp vụ của cổng thông tin trường đại học."
+    });
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"), includeControllerXmlComments: true);
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header
+        In = ParameterLocation.Header,
+        Description = "Nhập access token nhận được từ /api/auth/login. Ví dụ: Bearer eyJhbGci..."
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
