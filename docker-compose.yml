@@ -4,18 +4,33 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: on-failure
+    depends_on:
+      - mysql
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: "Server=mysql;Port=3306;Database=university_portal;Uid=root;Pwd=root;SslMode=None;AllowPublicKeyRetrieval=True;"
       JWT__Issuer: UniversityPortal
       JWT__Audience: UniversityPortal
       JWT__ExpiryMinutes: "60"
       JWT__RefreshTokenExpiryDays: "7"
+      JWT__Secret: "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARS"
     ports:
       - "8080:8080"
     volumes:
-      - ./src/UniversityPortal.API/appsettings.Development.json:/app/appsettings.Development.json:ro
       - uploads_data:/app/uploads
+
+  mysql:
+    image: mysql:8.0
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: university_portal
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
 volumes:
   uploads_data:
+  mysql_data:

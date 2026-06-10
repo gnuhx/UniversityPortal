@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using UniversityPortal.Infrastructure.Persistence;
-using UniversityPortal.Infrastructure.Persistence.Seed;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -72,12 +71,19 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Auto-migrate + seed on startup
+// Auto-migrate on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
-    await DbSeeder.SeedAsync(db);
+
+    if (!await db.VaiTros.AnyAsync())
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(
+            "Database trống. Chạy lệnh sau để tạo dữ liệu mẫu: " +
+            "docker compose exec -T mysql mysql -uroot -proot university_portal < docs/seed_data.sql");
+    }
 }
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
