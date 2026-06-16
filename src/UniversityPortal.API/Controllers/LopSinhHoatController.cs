@@ -30,7 +30,7 @@ public class LopSinhHoatController(ILopSinhHoatService service) : ControllerBase
     /// Lọc theo mã lớp (keyword) hoặc GVCN (gvcnId).
     /// </summary>
     [HttpGet]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<LopSinhHoatDto>>>> GetPaged(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -66,7 +66,7 @@ public class LopSinhHoatController(ILopSinhHoatService service) : ControllerBase
     /// ThuKyId luôn = null khi tạo — gán thư ký sau qua PUT khi sinh viên đã có lớp.
     /// </summary>
     [HttpPost]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<LopSinhHoatDto>>> Create([FromBody] CreateLopSinhHoatDto dto)
     {
         var result = await service.CreateAsync(dto);
@@ -79,7 +79,7 @@ public class LopSinhHoatController(ILopSinhHoatService service) : ControllerBase
     /// Dùng endpoint này để gán thư ký sau khi sinh viên đã được thêm vào lớp.
     /// </summary>
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<LopSinhHoatDto>>> Update(int id, [FromBody] UpdateLopSinhHoatDto dto)
     {
         var result = await service.UpdateAsync(id, dto);
