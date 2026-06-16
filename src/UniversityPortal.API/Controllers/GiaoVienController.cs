@@ -29,7 +29,7 @@ public class GiaoVienController(IGiaoVienService service) : ControllerBase
     /// Tìm kiếm theo họ tên hoặc mã GV.
     /// </summary>
     [HttpGet]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<GiaoVienDto>>>> GetPaged(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -43,7 +43,7 @@ public class GiaoVienController(IGiaoVienService service) : ControllerBase
     /// Lấy chi tiết giáo viên theo id.
     /// </summary>
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<GiaoVienDto>>> GetById(int id)
     {
         var result = await service.GetByIdAsync(id);

@@ -29,7 +29,7 @@ public class SinhVienController(ISinhVienService service) : ControllerBase
     /// Lọc theo họ tên / MSSV (keyword) hoặc lớp sinh hoạt (lopId).
     /// </summary>
     [HttpGet]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<SinhVienDto>>>> GetPaged(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -44,7 +44,7 @@ public class SinhVienController(ISinhVienService service) : ControllerBase
     /// Lấy chi tiết sinh viên theo id.
     /// </summary>
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<SinhVienDto>>> GetById(int id)
     {
         var result = await service.GetByIdAsync(id);
@@ -67,7 +67,7 @@ public class SinhVienController(ISinhVienService service) : ControllerBase
     /// Cập nhật thông tin sinh viên và tài khoản liên kết.
     /// </summary>
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<SinhVienDto>>> Update(int id, [FromBody] UpdateSinhVienDto dto)
     {
         var result = await service.UpdateAsync(id, dto);

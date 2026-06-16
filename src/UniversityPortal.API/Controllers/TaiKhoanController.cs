@@ -31,7 +31,7 @@ public class TaiKhoanController(ITaiKhoanService service) : ControllerBase
     /// Chỉ Admin và GiaoVu được truy cập.
     /// </summary>
     [HttpGet]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<TaiKhoanDto>>>> GetPaged(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -47,7 +47,7 @@ public class TaiKhoanController(ITaiKhoanService service) : ControllerBase
     /// Lấy thông tin chi tiết một tài khoản theo id.
     /// </summary>
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Admin,Giao vu")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
     public async Task<ActionResult<ApiResponseDto<TaiKhoanDto>>> GetById(int id)
     {
         var result = await service.GetByIdAsync(id);
