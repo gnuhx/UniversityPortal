@@ -3,6 +3,7 @@ using AutoMapper;
 using UniversityPortal.Application.DTOs.Auth;
 using UniversityPortal.Application.DTOs.ChiTietCTDT;
 using UniversityPortal.Application.DTOs.ChuongTrinhDT;
+using UniversityPortal.Application.DTOs.DanhSachLopHP;
 using UniversityPortal.Application.DTOs.GiaoVien;
 using UniversityPortal.Application.DTOs.LopSinhHoat;
 using UniversityPortal.Application.DTOs.MonHoc;
@@ -68,6 +69,16 @@ public class MappingProfile : Profile
             .ForMember(d => d.MaMon,    o => o.MapFrom(s => s.MonHoc != null ? s.MonHoc.MaMon : string.Empty))
             .ForMember(d => d.TenMon,   o => o.MapFrom(s => s.MonHoc != null ? s.MonHoc.TenMon : string.Empty))
             .ForMember(d => d.TenHocKy, o => o.MapFrom(s => s.HocKy != null ? s.HocKy.TenHocKy : string.Empty));
+
+        // ── DanhSachLopHP ─────────────────────────────────────────────────────
+        CreateMap<DanhSachLopHP, DanhSachLopHPDto>()
+            .ForMember(d => d.MaLopHp,          o => o.MapFrom(s => s.LopHocPhan.MaLopHp))
+            .ForMember(d => d.MaMon,             o => o.MapFrom(s => s.LopHocPhan.ChiTietCTDT.MonHoc.MaMon))
+            .ForMember(d => d.TenMon,            o => o.MapFrom(s => s.LopHocPhan.ChiTietCTDT.MonHoc.TenMon))
+            .ForMember(d => d.HocKyId,           o => o.MapFrom(s => s.LopHocPhan.HocKyId))
+            .ForMember(d => d.TenHocKy,          o => o.MapFrom(s => s.LopHocPhan.HocKy.TenHocKy))
+            .ForMember(d => d.TenGiaoVien,       o => o.MapFrom(s => s.LopHocPhan.GiaoVien.TaiKhoan.HoTen))
+            .ForMember(d => d.KhoaBangDiem,      o => o.MapFrom(s => s.LopHocPhan.KhoaBangDiem));
 
         // ── LopSinhHoat ───────────────────────────────────────────────────────
         CreateMap<LopSinhHoat, LopSinhHoatDto>()

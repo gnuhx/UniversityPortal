@@ -24,4 +24,7 @@ public interface ISinhVienService
 
     /// <summary>Xoá sinh viên; không xoá tài khoản, chỉ khoá tài khoản liên kết.</summary>
     Task DeleteAsync(int id);
+
+    /// <summary>Lấy thông tin sinh viên theo tài khoản đăng nhập hiện tại (dùng cho sinh viên xem hồ sơ).</summary>
+    Task<SinhVienDto> GetMeAsync(int taiKhoanId);
 }

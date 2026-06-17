@@ -220,6 +220,27 @@ export interface UpdateTaiKhoan {
   trangThai: boolean;
 }
 
+// ===== Danh sach lop hoc phan (bang diem) =====
+export interface DanhSachLopHP {
+  id: number;
+  lopHpId: number;
+  maLopHp: string;
+  maMon: string;
+  tenMon: string;
+  hocKyId: number;
+  tenHocKy: string;
+  tenGiaoVien: string;
+  loaiDangKy: string;
+  trangThaiDuyet: string;
+  diemQt1?: number | null;
+  diemQt2?: number | null;
+  diemThi?: number | null;
+  diemTongKet?: number | null;
+  soTienPhaiDong?: number | null;
+  trangThaiDongTien?: string | null;
+  khoaBangDiem: boolean;
+}
+
 export const VAI_TRO_OPTIONS = [
   { id: 1, label: "Admin" },
   { id: 2, label: "Giáo viên" },

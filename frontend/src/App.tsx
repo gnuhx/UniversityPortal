@@ -3,6 +3,8 @@ import { AppLayout } from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { HoSoPage } from "./pages/HoSoPage";
+import { BangDiemPage } from "./pages/BangDiemPage";
 import { SinhVienPage } from "./pages/SinhVienPage";
 import { GiaoVienPage } from "./pages/GiaoVienPage";
 import { LopSinhHoatPage } from "./pages/LopSinhHoatPage";
@@ -27,6 +29,13 @@ function App() {
             <Route path="/chuong-trinh-dt/:id" element={<ChiTietCTDTPage />} />
             <Route path="/mon-hoc" element={<MonHocPage />} />
 
+            {/* Sinh viên */}
+            <Route element={<ProtectedRoute allowedRoles={[ROLES.SINH_VIEN]} />}>
+              <Route path="/ho-so" element={<HoSoPage />} />
+              <Route path="/bang-diem" element={<BangDiemPage />} />
+            </Route>
+
+            {/* Admin / Giáo vụ */}
             <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.GIAO_VU]} />}>
               <Route path="/sinh-vien" element={<SinhVienPage />} />
               <Route path="/giao-vien" element={<GiaoVienPage />} />

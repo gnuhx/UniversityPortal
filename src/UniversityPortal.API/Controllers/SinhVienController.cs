@@ -11,6 +11,7 @@
  *   PUT    /api/sinh-vien/{id}   — Cập nhật thông tin                          [Admin, GiaoVu]
  *   DELETE /api/sinh-vien/{id}   — Khoá tài khoản (soft delete)               [Admin]
  */
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UniversityPortal.Application.DTOs.Common;
@@ -24,6 +25,18 @@ namespace UniversityPortal.API.Controllers;
 [Authorize]
 public class SinhVienController(ISinhVienService service) : ControllerBase
 {
+    /// <summary>
+    /// Lấy thông tin hồ sơ của sinh viên đang đăng nhập.
+    /// </summary>
+    [HttpGet("me")]
+    [Authorize(Roles = "Sinh viên")]
+    public async Task<ActionResult<ApiResponseDto<SinhVienDto>>> GetMe()
+    {
+        var taiKhoanId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await service.GetMeAsync(taiKhoanId);
+        return Ok(ApiResponseDto<SinhVienDto>.Ok(result));
+    }
+
     /// <summary>
     /// Lấy danh sách sinh viên có phân trang.
     /// Lọc theo họ tên / MSSV (keyword) hoặc lớp sinh hoạt (lopId).

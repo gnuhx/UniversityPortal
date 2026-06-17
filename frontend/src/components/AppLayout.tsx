@@ -8,6 +8,8 @@ import {
   IdcardOutlined,
   BankOutlined,
   LogoutOutlined,
+  ReadOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
@@ -18,13 +20,22 @@ const { Header, Sider, Content } = Layout;
 
 const allMenuItems = [
   { key: "/", icon: <DashboardOutlined />, label: "Tổng quan", roles: undefined },
+
+  // Sinh viên
+  { key: "/ho-so", icon: <UserOutlined />, label: "Hồ sơ cá nhân", roles: [ROLES.SINH_VIEN] },
+  { key: "/bang-diem", icon: <ReadOutlined />, label: "Bảng điểm", roles: [ROLES.SINH_VIEN] },
+  { key: "/yeu-cau-hanh-chinh", icon: <FileTextOutlined />, label: "Yêu cầu hành chính", roles: [ROLES.SINH_VIEN] },
+
+  // Admin / Giáo vụ
   { key: "/sinh-vien", icon: <UserOutlined />, label: "Sinh viên", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/giao-vien", icon: <IdcardOutlined />, label: "Giáo viên", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/lop-sinh-hoat", icon: <TeamOutlined />, label: "Lớp sinh hoạt", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
+  { key: "/tai-khoan", icon: <BankOutlined />, label: "Tài khoản", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
+
+  // Tất cả roles
   { key: "/nganh-hoc", icon: <ApartmentOutlined />, label: "Ngành học", roles: undefined },
   { key: "/chuong-trinh-dt", icon: <BookOutlined />, label: "Chương trình đào tạo", roles: undefined },
   { key: "/mon-hoc", icon: <BookOutlined />, label: "Môn học", roles: undefined },
-  { key: "/tai-khoan", icon: <BankOutlined />, label: "Tài khoản", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
 ];
 
 export function AppLayout() {
@@ -43,7 +54,7 @@ export function AppLayout() {
   };
 
   const visibleItems = allMenuItems.filter(
-    (item) => !item.roles || (user && item.roles.includes(user.vaiTro as any)),
+    (item) => !item.roles || (user && (item.roles as string[]).includes(user.vaiTro)),
   );
 
   const selectedKey =

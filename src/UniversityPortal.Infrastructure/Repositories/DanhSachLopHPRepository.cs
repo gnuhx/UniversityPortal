@@ -8,7 +8,17 @@ namespace UniversityPortal.Infrastructure.Repositories;
 public class DanhSachLopHPRepository(AppDbContext context) : BaseRepository<DanhSachLopHP>(context), IDanhSachLopHPRepository
 {
     public async Task<IEnumerable<DanhSachLopHP>> GetBySinhVienAsync(int sinhVienId)
-        => await DbSet.Where(x => x.SinhVienId == sinhVienId).Include(x => x.LopHocPhan).ToListAsync();
+        => await DbSet
+            .Where(x => x.SinhVienId == sinhVienId)
+            .Include(x => x.LopHocPhan)
+                .ThenInclude(lhp => lhp.ChiTietCTDT)
+                    .ThenInclude(ct => ct.MonHoc)
+            .Include(x => x.LopHocPhan)
+                .ThenInclude(lhp => lhp.HocKy)
+            .Include(x => x.LopHocPhan)
+                .ThenInclude(lhp => lhp.GiaoVien)
+                    .ThenInclude(gv => gv.TaiKhoan)
+            .ToListAsync();
 
     public async Task<IEnumerable<DanhSachLopHP>> GetByLopHocPhanAsync(int lopHpId)
         => await DbSet.Where(x => x.LopHpId == lopHpId).Include(x => x.SinhVien).ToListAsync();
