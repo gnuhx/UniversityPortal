@@ -16,8 +16,8 @@ public class BienBanSHCNConfiguration : IEntityTypeConfiguration<BienBanSHCN>
         builder.Property(x => x.DiaDiem).IsRequired().HasMaxLength(150).HasColumnName("dia_diem");
         builder.Property(x => x.GvcnId).HasColumnName("gvcn_id");
         builder.Property(x => x.ThuKyId).HasColumnName("thu_ky_id");
-        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("text").HasColumnName("noi_dung");
-        builder.Property(x => x.PhanHoiGvcn).HasColumnType("text").HasColumnName("phan_hoi_gvcn");
+        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("nvarchar(max)").HasColumnName("noi_dung");
+        builder.Property(x => x.PhanHoiGvcn).HasColumnType("nvarchar(max)").HasColumnName("phan_hoi_gvcn");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");
 
