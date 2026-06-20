@@ -13,7 +13,7 @@ public class KhaoSatYKienConfiguration : IEntityTypeConfiguration<KhaoSatYKien>
         builder.Property(x => x.SinhVienId).HasColumnName("sinh_vien_id");
         builder.Property(x => x.LopHpId).HasColumnName("lop_hp_id");
         builder.Property(x => x.DiemDanhGia).HasColumnName("diem_danh_gia");
-        builder.Property(x => x.GopY).HasColumnType("text").HasColumnName("gop_y");
+        builder.Property(x => x.GopY).HasColumnType("nvarchar(max)").HasColumnName("gop_y");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");
 

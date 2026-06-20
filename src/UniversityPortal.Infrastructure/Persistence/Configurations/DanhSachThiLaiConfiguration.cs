@@ -21,6 +21,6 @@ public class DanhSachThiLaiConfiguration : IEntityTypeConfiguration<DanhSachThiL
 
         builder.HasOne(x => x.SinhVien).WithMany(s => s.DanhSachThiLais).HasForeignKey(x => x.SinhVienId).OnDelete(DeleteBehavior.Cascade);
         builder.HasOne(x => x.LopHocPhan).WithMany(l => l.DanhSachThiLais).HasForeignKey(x => x.LopHpId).OnDelete(DeleteBehavior.Cascade);
-        builder.HasOne(x => x.NguoiDuyet).WithMany().HasForeignKey(x => x.NguoiDuyetId).OnDelete(DeleteBehavior.SetNull);
+        builder.HasOne(x => x.NguoiDuyet).WithMany().HasForeignKey(x => x.NguoiDuyetId).OnDelete(DeleteBehavior.NoAction);
     }
 }

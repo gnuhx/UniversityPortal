@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -12,58 +11,48 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
-
             migrationBuilder.CreateTable(
                 name: "mon_hoc",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ma_mon = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ten_mon = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ma_mon = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    ten_mon = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_mon_hoc", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "nam_hoc",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ten_nam_hoc = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ten_nam_hoc = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_nam_hoc", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "nganh_hoc",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ma_nganh = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ten_nganh = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ma_nganh = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    ten_nganh = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     nganh_cha_id = table.Column<int>(type: "int", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -74,55 +63,49 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "nganh_hoc",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "phong_ban",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ten_phong_ban = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ten_phong_ban = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_phong_ban", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "vai_tro",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ten_vai_tro = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ten_vai_tro = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_vai_tro", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "hoc_ky",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ten_hoc_ky = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ten_hoc_ky = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     nam_hoc_id = table.Column<int>(type: "int", nullable: false),
                     ngay_bat_dau = table.Column<DateOnly>(type: "date", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,23 +116,21 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "nam_hoc",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "tuan_hoc",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     nam_hoc_id = table.Column<int>(type: "int", nullable: false),
-                    ma_tuan = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ma_tuan = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     so_thu_tu_tuan = table.Column<int>(type: "int", nullable: false),
                     ngay_bat_dau = table.Column<DateOnly>(type: "date", nullable: false),
                     ngay_ket_thuc = table.Column<DateOnly>(type: "date", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -160,22 +141,19 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "nam_hoc",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "chuong_trinh_dt",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ma_ctdt = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ma_ctdt = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     nganh_id = table.Column<int>(type: "int", nullable: false),
-                    khoa_hoc = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    khoa_hoc = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -186,33 +164,26 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "nganh_hoc",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "tai_khoan",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ten_dang_nhap = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    mat_khau = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ten_dang_nhap = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    mat_khau = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     vai_tro_id = table.Column<int>(type: "int", nullable: false),
                     phong_ban_id = table.Column<int>(type: "int", nullable: true),
-                    ho_ten = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    email = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    anh_dai_dien = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    trang_thai = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
-                    refresh_token = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    refresh_token_expiry = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ho_ten = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    anh_dai_dien = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    trang_thai = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    refresh_token = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    refresh_token_expiry = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,22 +200,21 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "vai_tro",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "chi_tiet_ctdt",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ctdt_id = table.Column<int>(type: "int", nullable: false),
                     mon_hoc_id = table.Column<int>(type: "int", nullable: false),
                     hoc_ky_id = table.Column<int>(type: "int", nullable: false),
                     so_tin_chi = table.Column<int>(type: "int", nullable: false),
-                    tinh_diem_tb = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    tinh_diem_tb = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -267,20 +237,18 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "mon_hoc",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "giao_vien",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     tai_khoan_id = table.Column<int>(type: "int", nullable: false),
-                    ma_gv = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ma_gv = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -291,27 +259,23 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "tai_khoan",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "dat_phong_thuc_hanh",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     giao_vien_id = table.Column<int>(type: "int", nullable: false),
-                    phong_hoc = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    phong_hoc = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     ngay_dat = table.Column<DateOnly>(type: "date", nullable: false),
                     ca_hoc = table.Column<int>(type: "int", nullable: false),
-                    ly_do = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    trang_thai = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ly_do = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    trang_thai = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     nguoi_duyet_id = table.Column<int>(type: "int", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -326,26 +290,23 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         name: "FK_dat_phong_thuc_hanh_tai_khoan_nguoi_duyet_id",
                         column: x => x.nguoi_duyet_id,
                         principalTable: "tai_khoan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateTable(
                 name: "lop_hoc_phan",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     chi_tiet_ctdt_id = table.Column<int>(type: "int", nullable: false),
                     hoc_ky_id = table.Column<int>(type: "int", nullable: false),
                     giao_vien_id = table.Column<int>(type: "int", nullable: false),
-                    ma_lop_hp = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    khoa_bang_diem = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    trang_thai_ket_thuc = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ma_lop_hp = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    khoa_bang_diem = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    trang_thai_ket_thuc = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -368,24 +329,22 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "hoc_ky",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "thoi_khoa_bieu",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     lop_hp_id = table.Column<int>(type: "int", nullable: false),
                     tuan_hoc_id = table.Column<int>(type: "int", nullable: false),
                     thu = table.Column<int>(type: "int", nullable: false),
                     tiet_bat_dau = table.Column<int>(type: "int", nullable: false),
                     tiet_ket_thuc = table.Column<int>(type: "int", nullable: false),
-                    phong_hoc = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    phong_hoc = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -402,24 +361,21 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "tuan_hoc",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "yeu_cau_sua_diem",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     lop_hp_id = table.Column<int>(type: "int", nullable: false),
                     giao_vien_id = table.Column<int>(type: "int", nullable: false),
-                    ly_do = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    trang_thai = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ly_do = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    trang_thai = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     nguoi_duyet_id = table.Column<int>(type: "int", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -440,30 +396,25 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         name: "FK_yeu_cau_sua_diem_tai_khoan_nguoi_duyet_id",
                         column: x => x.nguoi_duyet_id,
                         principalTable: "tai_khoan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateTable(
                 name: "bien_ban_shcn",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     lop_id = table.Column<int>(type: "int", nullable: false),
                     tuan_hoc_id = table.Column<int>(type: "int", nullable: false),
-                    thoi_gian = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    dia_diem = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    thoi_gian = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    dia_diem = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     gvcn_id = table.Column<int>(type: "int", nullable: false),
                     thu_ky_id = table.Column<int>(type: "int", nullable: false),
-                    noi_dung = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    phan_hoi_gvcn = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    noi_dung = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    phan_hoi_gvcn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -480,22 +431,19 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "tuan_hoc",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "chi_tiet_cong_viec",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     bien_ban_id = table.Column<int>(type: "int", nullable: false),
-                    ten_cong_viec = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    trang_thai_viec = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ten_cong_viec = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    trang_thai_viec = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -506,22 +454,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "bien_ban_shcn",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "binh_luan_thong_bao",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     thong_bao_id = table.Column<int>(type: "int", nullable: false),
                     tai_khoan_id = table.Column<int>(type: "int", nullable: false),
-                    noi_dung = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ngay_binh_luan = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    noi_dung = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ngay_binh_luan = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -532,22 +478,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "tai_khoan",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "chi_tiet_vang_shcn",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     bien_ban_id = table.Column<int>(type: "int", nullable: false),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
-                    ly_do = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    co_phep = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ly_do = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    co_phep = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -558,31 +502,27 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "bien_ban_shcn",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "danh_sach_lop_hp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
                     lop_hp_id = table.Column<int>(type: "int", nullable: false),
-                    loai_dang_ky = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    trang_thai_duyet = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    loai_dang_ky = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    trang_thai_duyet = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     nguoi_duyet_id = table.Column<int>(type: "int", nullable: true),
-                    diem_qt1 = table.Column<float>(type: "float", nullable: true),
-                    diem_qt2 = table.Column<float>(type: "float", nullable: true),
-                    diem_thi = table.Column<float>(type: "float", nullable: true),
-                    diem_tong_ket = table.Column<float>(type: "float", nullable: true),
+                    diem_qt1 = table.Column<float>(type: "real", nullable: true),
+                    diem_qt2 = table.Column<float>(type: "real", nullable: true),
+                    diem_thi = table.Column<float>(type: "real", nullable: true),
+                    diem_tong_ket = table.Column<float>(type: "real", nullable: true),
                     so_tien_phai_dong = table.Column<decimal>(type: "decimal(12,2)", nullable: true),
-                    trang_thai_dong_tien = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    trang_thai_dong_tien = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -597,26 +537,23 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         name: "FK_danh_sach_lop_hp_tai_khoan_nguoi_duyet_id",
                         column: x => x.nguoi_duyet_id,
                         principalTable: "tai_khoan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateTable(
                 name: "danh_sach_thi_lai",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
                     lop_hp_id = table.Column<int>(type: "int", nullable: false),
-                    diem_thi_lai = table.Column<float>(type: "float", nullable: true),
+                    diem_thi_lai = table.Column<float>(type: "real", nullable: true),
                     so_tien_phai_dong = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
-                    trang_thai_dong_tien = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    trang_thai_dong_tien = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     nguoi_duyet_id = table.Column<int>(type: "int", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -631,24 +568,21 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         name: "FK_danh_sach_thi_lai_tai_khoan_nguoi_duyet_id",
                         column: x => x.nguoi_duyet_id,
                         principalTable: "tai_khoan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateTable(
                 name: "diem_ren_luyen",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
                     hoc_ky_id = table.Column<int>(type: "int", nullable: false),
                     diem_tong = table.Column<int>(type: "int", nullable: false),
-                    xep_loai = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    xep_loai = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -659,22 +593,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "hoc_ky",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "dien_dan_giao_vien",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     lop_id = table.Column<int>(type: "int", nullable: false),
                     giao_vien_id = table.Column<int>(type: "int", nullable: false),
-                    noi_dung = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ngay_gui = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    noi_dung = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ngay_gui = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -685,21 +617,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "giao_vien",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "hoc_ba",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
                     ctdt_id = table.Column<int>(type: "int", nullable: false),
-                    diem_tbc_tich_luy = table.Column<float>(type: "float", nullable: false),
+                    diem_tbc_tich_luy = table.Column<float>(type: "real", nullable: false),
                     so_tin_chi_tich_luy = table.Column<int>(type: "int", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -710,22 +641,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "chuong_trinh_dt",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "hoc_phi",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
                     hoc_ky_id = table.Column<int>(type: "int", nullable: false),
                     so_tien = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
-                    trang_thai_dong = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    trang_thai_dong = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -736,46 +665,41 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "hoc_ky",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "ket_qua_anh_van_dau_vao",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
-                    hinh_thuc_xet = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    diem_thi = table.Column<float>(type: "float", nullable: true),
-                    diem_ta1 = table.Column<float>(type: "float", nullable: true),
-                    diem_ta2 = table.Column<float>(type: "float", nullable: true),
-                    diem_ta3 = table.Column<float>(type: "float", nullable: true),
-                    ghi_chu = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    hinh_thuc_xet = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    diem_thi = table.Column<float>(type: "real", nullable: true),
+                    diem_ta1 = table.Column<float>(type: "real", nullable: true),
+                    diem_ta2 = table.Column<float>(type: "real", nullable: true),
+                    diem_ta3 = table.Column<float>(type: "real", nullable: true),
+                    ghi_chu = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ket_qua_anh_van_dau_vao", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "khao_sat_y_kien",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
                     lop_hp_id = table.Column<int>(type: "int", nullable: false),
                     diem_danh_gia = table.Column<int>(type: "int", nullable: false),
-                    gop_y = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    gop_y = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -786,22 +710,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "lop_hoc_phan",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "lop_sinh_hoat",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ma_lop = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ma_lop = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     gvcn_id = table.Column<int>(type: "int", nullable: false),
                     thu_ky_id = table.Column<int>(type: "int", nullable: true),
                     chuong_trinh_dt_id = table.Column<int>(type: "int", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -818,21 +740,19 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "giao_vien",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "sinh_vien",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     tai_khoan_id = table.Column<int>(type: "int", nullable: false),
-                    mssv = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    mssv = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     lop_id = table.Column<int>(type: "int", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -849,28 +769,23 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "tai_khoan",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "thong_bao",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    loai_thong_bao = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    muc_do = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    tieu_de = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    noi_dung = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    loai_thong_bao = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    muc_do = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    tieu_de = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    noi_dung = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     nguoi_tao_id = table.Column<int>(type: "int", nullable: false),
                     lop_nhan_id = table.Column<int>(type: "int", nullable: true),
-                    ngay_tao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ngay_tao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -887,28 +802,23 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "tai_khoan",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "yeu_cau_hanh_chinh",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     sinh_vien_id = table.Column<int>(type: "int", nullable: false),
-                    loai_yeu_cau = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    noi_dung = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    file_dinh_kem = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    trang_thai = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    loai_yeu_cau = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    noi_dung = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    file_dinh_kem = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    trang_thai = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     nguoi_duyet_id = table.Column<int>(type: "int", nullable: true),
-                    ngay_tao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    ngay_tao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -923,23 +833,21 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         name: "FK_yeu_cau_hanh_chinh_tai_khoan_nguoi_duyet_id",
                         column: x => x.nguoi_duyet_id,
                         principalTable: "tai_khoan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateTable(
                 name: "thong_bao_da_doc",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     thong_bao_id = table.Column<int>(type: "int", nullable: false),
                     tai_khoan_id = table.Column<int>(type: "int", nullable: false),
-                    da_doc = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    ngay_doc = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    da_doc = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    ngay_doc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -956,8 +864,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         principalTable: "thong_bao",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_bien_ban_shcn_gvcn_id",

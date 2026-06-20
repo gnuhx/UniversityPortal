@@ -12,7 +12,7 @@ public class DienDanGiaoVienConfiguration : IEntityTypeConfiguration<DienDanGiao
         builder.HasKey(x => x.Id);
         builder.Property(x => x.LopId).HasColumnName("lop_id");
         builder.Property(x => x.GiaoVienId).HasColumnName("giao_vien_id");
-        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("text").HasColumnName("noi_dung");
+        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("nvarchar(max)").HasColumnName("noi_dung");
         builder.Property(x => x.NgayGui).HasColumnName("ngay_gui");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");
