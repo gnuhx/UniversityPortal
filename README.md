@@ -1,130 +1,168 @@
-# Hướng dẫn cài đặt và chạy dự án
+# University Portal
+
+Hệ thống quản lý đại học gồm backend .NET 10 và frontend React + Vite.
+
+---
 
 ## Yêu cầu
 
-- [Docker](https://www.docker.com/products/docker-desktop) và Docker Compose đã được cài đặt
+| Công cụ | Phiên bản |
+|---|---|
+| [Docker](https://www.docker.com/products/docker-desktop) + Docker Compose | Bất kỳ |
+| [.NET SDK](https://dotnet.microsoft.com/download) | 10.0 (nếu chạy local không dùng Docker) |
+| [Node.js](https://nodejs.org) | 20+ (nếu chạy frontend local) |
+| SQL Server | Đã có sẵn (dùng connection string của nhóm) |
 
 ---
 
-## Bước 1 — Tạo file cấu hình
+## Cách 1 — Chạy bằng Docker Compose (khuyến nghị)
 
-Sao chép file mẫu và điền thông tin kết nối của bạn:
+### Bước 1: Cấu hình connection string
 
-```bash
-cp src/UniversityPortal.API/appsettings.Development.example.json \
-   src/UniversityPortal.API/appsettings.Development.json
-```
-
-Mở file `src/UniversityPortal.API/appsettings.Development.json` và chỉnh sửa phần `ConnectionStrings`:
-
-```json
-{
-  "ConnectionStrings": {
-    "Default": "Server=HOST;Port=3306;Database=TEN_DATABASE;Uid=USERNAME;Pwd=PASSWORD;SslMode=None;"
-  },
-  "JWT": {
-    "Secret": "THAY_BANG_1_CHUOI_BI_MAT_DAI_IT_NHAT_32_KY_TU"
-  }
-}
-```
-
-> **Lưu ý:** File này chứa thông tin nhạy cảm, **không được commit lên Git**.
-
----
-
-## Bước 2 — (Chỉ cần nếu MySQL dùng SSL)
-
-Nếu database của bạn yêu cầu SSL (ví dụ: Aiven), bạn cần thêm 2 bước sau:
-
-**2a.** Đặt file chứng chỉ SSL (`ca.pem`) vào thư mục `docs/`:
-
-```
-docs/ca.pem
-```
-
-**2b.** Tạo file `docker-compose.override.yml` ở thư mục gốc:
+Mở file `docker-compose.yml`, tìm dòng `ConnectionStrings__Default` và thay bằng thông tin SQL Server của bạn:
 
 ```yaml
-services:
-  api:
-    volumes:
-      - ./docs/ca.pem:/app/certs/ca.pem:ro
+ConnectionStrings__Default: "Data Source=HOST;Initial Catalog=DATABASE;User Id=USERNAME;Password=PASSWORD;Encrypt=True;TrustServerCertificate=True;"
 ```
 
-Và cập nhật connection string trong `appsettings.Development.json` để thêm `SslCa`:
-
-```
-SslMode=VerifyCA;SslCa=/app/certs/ca.pem;
-```
-
----
-
-## Bước 3 — Chạy ứng dụng
+### Bước 2: Chạy
 
 ```bash
 docker compose up --build
 ```
 
-API sẽ chạy tại: **http://localhost:8080**
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3100 |
+| API | http://localhost:8080 |
+| Swagger | http://localhost:8080/swagger |
 
-Swagger UI: **http://localhost:8080/swagger**
+### Dừng ứng dụng
+
+```bash
+docker compose down
+```
 
 ---
 
-## Liên hệ admin
+## Cách 2 — Chạy local không dùng Docker
 
-Nếu bạn muốn kết nối vào database chung của nhóm, hãy liên hệ admin để nhận:
+### Backend (.NET)
 
-- Thông tin kết nối MySQL (host, port, username, password)
-- File `ca.pem` nếu database dùng SSL
+**Bước 1:** Tạo file cấu hình:
+
+```bash
+cp src/UniversityPortal.API/appsettings.json \
+   src/UniversityPortal.API/appsettings.Development.json
+```
+
+**Bước 2:** Mở `src/UniversityPortal.API/appsettings.Development.json` và điền thông tin kết nối:
+
+```json
+{
+  "ConnectionStrings": {
+    "Default": "Data Source=HOST;Initial Catalog=DATABASE;User Id=USERNAME;Password=PASSWORD;Encrypt=True;TrustServerCertificate=True;"
+  },
+  "JWT": {
+    "Secret": "THAY_BANG_CHUOI_BI_MAT_IT_NHAT_32_KY_TU"
+  }
+}
+```
+
+> **Lưu ý:** Không commit file này lên Git.
+
+**Bước 3:** Chạy API:
+
+```bash
+cd src/UniversityPortal.API
+dotnet run
+```
+
+API chạy tại: **http://localhost:8080** — Swagger: **http://localhost:8080/swagger**
 
 ---
 
-## Dữ liệu mẫu (tự động seed khi khởi động)
+### Frontend (React + Vite)
 
-Khi ứng dụng chạy lần đầu, hệ thống sẽ tự động tạo dữ liệu mẫu vào database. Bạn có thể dùng ngay để test mà không cần nhập tay.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### Tài khoản đăng nhập
+Frontend chạy tại: **http://localhost:5173**
 
-| Vai trò | Tên đăng nhập | Mật khẩu | Ghi chú |
-|---|---|---|---|
-| Admin | `admin` | `Admin@123` | Quản trị toàn hệ thống |
-| Giáo vụ | `giaovu01` | `Giaovu@123` | Nguyễn Thị Lan — Phòng Đào tạo |
-| Giáo viên | `gv.tuan` | `Giaovien@123` | TS. Trần Văn Tuấn — Khoa CNTT |
-| Giáo viên | `gv.hoa` | `Giaovien@123` | ThS. Lê Thị Hoa — Khoa CNTT |
-| Giáo viên | `gv.minh` | `Giaovien@123` | TS. Phạm Văn Minh — Khoa CNTT |
-| Sinh viên | `sv.an` | `Sinhvien@123` | Nguyễn Văn An — KTPM22A |
-| Sinh viên | `sv.binh` | `Sinhvien@123` | Trần Thị Bình — KTPM22A |
-| Sinh viên | `sv.cuong` | `Sinhvien@123` | Lê Văn Cường — KTPM22A |
-| Sinh viên | `sv.dung` | `Sinhvien@123` | Phạm Thị Dung — HTTT23A |
-| Sinh viên | `sv.em` | `Sinhvien@123` | Hoàng Văn Em — HTTT23A |
-| Sinh viên | `sv.phuong` | `Sinhvien@123` | Vũ Thị Phương — HTTT23A |
-| Sinh viên | `sv.quan` | `Sinhvien@123` | Đặng Văn Quân — KTPM22A |
+> Mặc định frontend gọi API qua `/api`. Nếu chạy local riêng lẻ, tạo file `frontend/.env.local`:
+> ```
+> VITE_API_BASE_URL=http://localhost:8080
+> ```
 
-### Dữ liệu hệ thống
+---
 
-**Lớp sinh hoạt:**
-- `KTPM22A` — Kỹ thuật Phần mềm K22, GVCN: TS. Trần Văn Tuấn
-- `HTTT23A` — Hệ thống Thông tin K23, GVCN: ThS. Lê Thị Hoa
+## Cách 3 — Chạy từ GHCR (không cần source code)
 
-**Môn học:** Nhập môn Lập trình, Cấu trúc Dữ liệu & Giải thuật, Lập trình Web, Cơ sở Dữ liệu, Công nghệ Phần mềm, Toán cao cấp, Tiếng Anh cơ bản
+Dùng khi deploy lên server, không cần build từ source.
 
-**Năm học / Học kỳ:** 2024-2025 gồm HK1 (từ 02/09/2024) và HK2 (từ 03/02/2025), có đủ 20 tuần học
+**Bước 1:** Login GHCR:
 
-### Dữ liệu điểm số để test
+```bash
+echo YOUR_PAT | docker login ghcr.io -u gnuhx --password-stdin
+```
 
-| Tình huống | Sinh viên | Môn | Điểm tổng kết |
-|---|---|---|---|
-| Điểm tốt | `sv.an`, `sv.cuong` | INT101-01 | 8.0 — 8.9 |
-| Điểm trung bình | `sv.binh` | INT101-01 | 6.1 |
-| Rớt môn (< 5đ) | `sv.quan` | INT101-01 | 4.1 |
-| Học cải thiện | `sv.cuong` | INT302-01 | 8.5 |
-| Chưa có điểm thi | `sv.dung`, `sv.em` | INT101-02 | — |
-| Chờ duyệt đăng ký | `sv.phuong` | INT101-02 | — |
+**Bước 2:** Tạo `docker-compose.yml`:
 
-### Thông báo có sẵn
+```yaml
+services:
+  frontend:
+    image: ghcr.io/gnuhx/university-portal-frontend:latest
+    restart: on-failure
+    depends_on:
+      - api
+    ports:
+      - "3100:80"
 
-- **Học vụ / Quan trọng** — Lịch thi học kỳ 1 năm học 2024-2025
-- **Học phí / Khẩn cấp** — Nhắc đóng học phí hạn chót 30/11/2024
-- **Đoàn Hội / Bình thường** — Chương trình tình nguyện mùa hè xanh 2025
-- **Học vụ / Bình thường** — Kết quả xét học bổng học kỳ 1
+  api:
+    image: ghcr.io/gnuhx/university-portal-api:latest
+    restart: on-failure
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: "Data Source=HOST;Initial Catalog=DATABASE;User Id=USERNAME;Password=PASSWORD;Encrypt=True;TrustServerCertificate=True;"
+      JWT__Secret: "THAY_BANG_CHUOI_BI_MAT_IT_NHAT_32_KY_TU"
+      JWT__Issuer: UniversityPortal
+      JWT__Audience: UniversityPortal
+      JWT__ExpiryMinutes: "60"
+      JWT__RefreshTokenExpiryDays: "7"
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads_data:/app/uploads
+
+volumes:
+  uploads_data:
+```
+
+**Bước 3:** Chạy:
+
+```bash
+docker compose up -d
+```
+
+---
+
+## Tài khoản đăng nhập mẫu
+
+| Vai trò | Tên đăng nhập | Mật khẩu |
+|---|---|---|
+| Admin | `admin` | `Admin@123` |
+| Giáo vụ | `giaovu01` | `Giaovu@123` |
+| Giáo viên | `gv.tuan` | `Giaovien@123` |
+| Sinh viên | `sv.an` | `Sinhvien@123` |
+
+> Xem đầy đủ danh sách tài khoản và dữ liệu mẫu trong [docs/seed-data](docs/seed_data.sql).
+
+---
+
+## Liên hệ
+
+Để nhận thông tin kết nối SQL Server của nhóm, liên hệ admin.
