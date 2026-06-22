@@ -12,14 +12,16 @@ namespace UniversityPortal.Infrastructure;
 /// </summary>
 public class UnitOfWork(AppDbContext context) : IUnitOfWork
 {
-    // ── Tuần 1 ────────────────────────────────────────────────────────────────
+    // ── Người dùng & phân quyền ───────────────────────────────────────────────
     private ITaiKhoanRepository? _taiKhoans;
     private ISinhVienRepository? _sinhViens;
     private IGiaoVienRepository? _giaoViens;
+
+    // ── Học vụ & lớp học phần ────────────────────────────────────────────────
     private ILopHocPhanRepository? _lopHocPhans;
     private IDanhSachLopHPRepository? _danhSachLopHPs;
 
-    // ── Tuần 2 — Danh mục ─────────────────────────────────────────────────────
+    // ── Danh mục chương trình đào tạo ────────────────────────────────────────
     private INganhHocRepository? _nganhHocs;
     private IChuongTrinhDTRepository? _chuongTrinhDTs;
     private IMonHocRepository? _monHocs;

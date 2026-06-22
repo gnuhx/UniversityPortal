@@ -50,10 +50,10 @@ public class SinhVienRepository(AppDbContext context) : BaseRepository<SinhVien>
         // Lọc không phân biệt hoa thường theo họ tên hoặc MSSV
         if (!string.IsNullOrWhiteSpace(keyword))
         {
-            var kw = keyword.ToLower();
+            var tuKhoa = keyword.ToLower();
             query = query.Where(x =>
-                x.TaiKhoan.HoTen.ToLower().Contains(kw) ||
-                x.Mssv.ToLower().Contains(kw));
+                x.TaiKhoan.HoTen.ToLower().Contains(tuKhoa) ||
+                x.Mssv.ToLower().Contains(tuKhoa));
         }
 
         if (lopId.HasValue)
