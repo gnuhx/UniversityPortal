@@ -5,6 +5,7 @@ using UniversityPortal.Application.DTOs.ChiTietCTDT;
 using UniversityPortal.Application.DTOs.ChuongTrinhDT;
 using UniversityPortal.Application.DTOs.DanhSachLopHP;
 using UniversityPortal.Application.DTOs.GiaoVien;
+using UniversityPortal.Application.DTOs.LopHocPhan;
 using UniversityPortal.Application.DTOs.LopSinhHoat;
 using UniversityPortal.Application.DTOs.MonHoc;
 using UniversityPortal.Application.DTOs.NganhHoc;
@@ -72,13 +73,23 @@ public class MappingProfile : Profile
 
         // ── DanhSachLopHP ─────────────────────────────────────────────────────
         CreateMap<DanhSachLopHP, DanhSachLopHPDto>()
-            .ForMember(d => d.MaLopHp,          o => o.MapFrom(s => s.LopHocPhan.MaLopHp))
-            .ForMember(d => d.MaMon,             o => o.MapFrom(s => s.LopHocPhan.ChiTietCTDT.MonHoc.MaMon))
-            .ForMember(d => d.TenMon,            o => o.MapFrom(s => s.LopHocPhan.ChiTietCTDT.MonHoc.TenMon))
-            .ForMember(d => d.HocKyId,           o => o.MapFrom(s => s.LopHocPhan.HocKyId))
-            .ForMember(d => d.TenHocKy,          o => o.MapFrom(s => s.LopHocPhan.HocKy.TenHocKy))
-            .ForMember(d => d.TenGiaoVien,       o => o.MapFrom(s => s.LopHocPhan.GiaoVien.TaiKhoan.HoTen))
-            .ForMember(d => d.KhoaBangDiem,      o => o.MapFrom(s => s.LopHocPhan.KhoaBangDiem));
+            .ForMember(d => d.MaLopHp,          o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.MaLopHp : string.Empty))
+            .ForMember(d => d.MaMon,             o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.ChiTietCTDT.MonHoc.MaMon : string.Empty))
+            .ForMember(d => d.TenMon,            o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.ChiTietCTDT.MonHoc.TenMon : string.Empty))
+            .ForMember(d => d.HocKyId,           o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.HocKyId : 0))
+            .ForMember(d => d.TenHocKy,          o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.HocKy.TenHocKy : string.Empty))
+            .ForMember(d => d.TenGiaoVien,       o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.GiaoVien.TaiKhoan.HoTen : string.Empty))
+            .ForMember(d => d.KhoaBangDiem,      o => o.MapFrom(s => s.LopHocPhan != null && s.LopHocPhan.KhoaBangDiem))
+            .ForMember(d => d.TenSinhVien,       o => o.MapFrom(s => s.SinhVien != null ? s.SinhVien.TaiKhoan.HoTen : null))
+            .ForMember(d => d.Mssv,              o => o.MapFrom(s => s.SinhVien != null ? s.SinhVien.Mssv : null));
+
+        // ── LopHocPhan ────────────────────────────────────────────────────────
+        CreateMap<LopHocPhan, LopHocPhanDto>()
+            .ForMember(d => d.MaMon,       o => o.MapFrom(s => s.ChiTietCTDT != null ? s.ChiTietCTDT.MonHoc.MaMon : string.Empty))
+            .ForMember(d => d.TenMon,      o => o.MapFrom(s => s.ChiTietCTDT != null ? s.ChiTietCTDT.MonHoc.TenMon : string.Empty))
+            .ForMember(d => d.TenHocKy,    o => o.MapFrom(s => s.HocKy != null ? s.HocKy.TenHocKy : string.Empty))
+            .ForMember(d => d.TenGiaoVien, o => o.MapFrom(s => s.GiaoVien != null ? s.GiaoVien.TaiKhoan.HoTen : string.Empty))
+            .ForMember(d => d.SoSinhVien,  o => o.MapFrom(s => s.DanhSachLopHPs != null ? s.DanhSachLopHPs.Count : 0));
 
         // ── LopSinhHoat ───────────────────────────────────────────────────────
         CreateMap<LopSinhHoat, LopSinhHoatDto>()

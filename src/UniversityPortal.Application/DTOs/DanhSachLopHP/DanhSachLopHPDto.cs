@@ -19,4 +19,6 @@ public class DanhSachLopHPDto
     public decimal? SoTienPhaiDong { get; set; }
     public string? TrangThaiDongTien { get; set; }
     public bool KhoaBangDiem { get; set; }
+    public string? TenSinhVien { get; set; }
+    public string? Mssv { get; set; }
 }

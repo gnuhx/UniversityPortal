@@ -34,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<IChiTietCTDTService, ChiTietCTDTService>();
         services.AddScoped<ILopSinhHoatService, LopSinhHoatService>();
         services.AddScoped<IDanhSachLopHPService, DanhSachLopHPService>();
+        services.AddScoped<ILopHocPhanService, LopHocPhanService>();
+        services.AddScoped<IThongBaoService, ThongBaoService>();
+        services.AddScoped<IHocPhiService, HocPhiService>();
 
         return services;
     }

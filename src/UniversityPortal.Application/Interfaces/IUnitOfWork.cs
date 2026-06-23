@@ -23,6 +23,13 @@ public interface IUnitOfWork : IDisposable
     IChiTietCTDTRepository ChiTietCTDTs { get; }
     ILopSinhHoatRepository LopSinhHoats { get; }
 
+    // ── Thông báo ─────────────────────────────────────────────────────────────
+    IThongBaoRepository ThongBaos { get; }
+    IThongBaoDaDocRepository ThongBaoDaDocs { get; }
+
+    // ── Học phí ───────────────────────────────────────────────────────────────
+    IHocPhiRepository HocPhis { get; }
+
     /// <summary>Lưu tất cả thay đổi trong transaction hiện tại xuống database.</summary>
     Task<int> CommitAsync();
 }
