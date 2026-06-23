@@ -24,13 +24,18 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(ApiResponseDto<LoginResponseDto>.Ok(result, "Làm mới token thành công."));
     }
 
+    /// <summary>
+    /// Đăng xuất — thu hồi refresh token của người dùng đang đăng nhập.
+    /// Id tài khoản được đọc từ claim NameIdentifier trong JWT, không cần client gửi lên.
+    /// </summary>
     [HttpPost("logout")]
     [Authorize]
     public async Task<ActionResult<ApiResponseDto<object>>> Logout()
     {
-        var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (int.TryParse(idClaim, out var id))
-            await authService.RevokeTokenAsync(id);
+        // Lấy Id tài khoản từ claim trong JWT đang được dùng để gọi request này
+        var claimId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(claimId, out var taiKhoanId))
+            await authService.RevokeTokenAsync(taiKhoanId);
 
         return Ok(ApiResponseDto<object>.Ok(null, "Đăng xuất thành công."));
     }

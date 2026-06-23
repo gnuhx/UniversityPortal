@@ -39,11 +39,11 @@ public class TaiKhoanRepository(AppDbContext context) : BaseRepository<TaiKhoan>
         // Lọc theo từ khoá tìm kiếm trên họ tên, email và tên đăng nhập
         if (!string.IsNullOrWhiteSpace(keyword))
         {
-            var kw = keyword.ToLower();
+            var tuKhoa = keyword.ToLower();
             query = query.Where(x =>
-                x.HoTen.ToLower().Contains(kw) ||
-                x.Email.ToLower().Contains(kw) ||
-                x.TenDangNhap.ToLower().Contains(kw));
+                x.HoTen.ToLower().Contains(tuKhoa) ||
+                x.Email.ToLower().Contains(tuKhoa) ||
+                x.TenDangNhap.ToLower().Contains(tuKhoa));
         }
 
         if (vaiTroId.HasValue)

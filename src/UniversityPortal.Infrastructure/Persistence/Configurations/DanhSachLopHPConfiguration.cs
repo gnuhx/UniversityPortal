@@ -27,6 +27,6 @@ public class DanhSachLopHPConfiguration : IEntityTypeConfiguration<DanhSachLopHP
         builder.HasIndex(x => new { x.SinhVienId, x.LopHpId }).IsUnique();
         builder.HasOne(x => x.SinhVien).WithMany(s => s.DanhSachLopHPs).HasForeignKey(x => x.SinhVienId).OnDelete(DeleteBehavior.Cascade);
         builder.HasOne(x => x.LopHocPhan).WithMany(l => l.DanhSachLopHPs).HasForeignKey(x => x.LopHpId).OnDelete(DeleteBehavior.Cascade);
-        builder.HasOne(x => x.NguoiDuyet).WithMany().HasForeignKey(x => x.NguoiDuyetId).OnDelete(DeleteBehavior.SetNull);
+        builder.HasOne(x => x.NguoiDuyet).WithMany().HasForeignKey(x => x.NguoiDuyetId).OnDelete(DeleteBehavior.NoAction);
     }
 }

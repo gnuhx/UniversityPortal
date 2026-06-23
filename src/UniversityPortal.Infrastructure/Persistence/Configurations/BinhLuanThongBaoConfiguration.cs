@@ -12,7 +12,7 @@ public class BinhLuanThongBaoConfiguration : IEntityTypeConfiguration<BinhLuanTh
         builder.HasKey(x => x.Id);
         builder.Property(x => x.ThongBaoId).HasColumnName("thong_bao_id");
         builder.Property(x => x.TaiKhoanId).HasColumnName("tai_khoan_id");
-        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("text").HasColumnName("noi_dung");
+        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("nvarchar(max)").HasColumnName("noi_dung");
         builder.Property(x => x.NgayBinhLuan).HasColumnName("ngay_binh_luan");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");

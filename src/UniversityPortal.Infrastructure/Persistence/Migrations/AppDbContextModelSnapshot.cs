@@ -18,9 +18,9 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("UniversityPortal.Domain.Entities.BienBanSHCN", b =>
                 {
@@ -28,16 +28,16 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("DiaDiem")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("dia_diem");
 
                     b.Property<int>("GvcnId")
@@ -50,15 +50,15 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("NoiDung")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("noi_dung");
 
                     b.Property<string>("PhanHoiGvcn")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("phan_hoi_gvcn");
 
                     b.Property<DateTime>("ThoiGian")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("thoi_gian");
 
                     b.Property<int>("ThuKyId")
@@ -70,7 +70,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("tuan_hoc_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -92,19 +92,19 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<DateTime>("NgayBinhLuan")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("ngay_binh_luan");
 
                     b.Property<string>("NoiDung")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("noi_dung");
 
                     b.Property<int>("TaiKhoanId")
@@ -116,7 +116,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("thong_bao_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -134,10 +134,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("CtdtId")
@@ -158,12 +158,12 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("TinhDiemTb")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasDefaultValue(true)
                         .HasColumnName("tinh_diem_tb");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -183,30 +183,30 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BienBanId")
                         .HasColumnType("int")
                         .HasColumnName("bien_ban_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("TenCongViec")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("ten_cong_viec");
 
                     b.Property<string>("TrangThaiViec")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("varchar(30)")
+                        .HasColumnType("nvarchar(30)")
                         .HasColumnName("trang_thai_viec");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -222,23 +222,23 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BienBanId")
                         .HasColumnType("int")
                         .HasColumnName("bien_ban_id");
 
                     b.Property<bool>("CoPhep")
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasColumnName("co_phep");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("LyDo")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("ly_do");
 
                     b.Property<int>("SinhVienId")
@@ -246,7 +246,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("sinh_vien_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -264,22 +264,22 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("KhoaHoc")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("khoa_hoc");
 
                     b.Property<string>("MaCtdt")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("ma_ctdt");
 
                     b.Property<int>("NganhId")
@@ -287,7 +287,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("nganh_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -306,32 +306,32 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<float?>("DiemQt1")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_qt1");
 
                     b.Property<float?>("DiemQt2")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_qt2");
 
                     b.Property<float?>("DiemThi")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_thi");
 
                     b.Property<float?>("DiemTongKet")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_tong_ket");
 
                     b.Property<string>("LoaiDangKy")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("loai_dang_ky");
 
                     b.Property<int>("LopHpId")
@@ -352,17 +352,17 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("TrangThaiDongTien")
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trang_thai_dong_tien");
 
                     b.Property<string>("TrangThaiDuyet")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trang_thai_duyet");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -383,14 +383,14 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<float?>("DiemThiLai")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_thi_lai");
 
                     b.Property<int>("LopHpId")
@@ -412,11 +412,11 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("TrangThaiDongTien")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trang_thai_dong_tien");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -436,14 +436,14 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CaHoc")
                         .HasColumnType("int")
                         .HasColumnName("ca_hoc");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("GiaoVienId")
@@ -451,7 +451,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("giao_vien_id");
 
                     b.Property<string>("LyDo")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("ly_do");
 
                     b.Property<DateOnly>("NgayDat")
@@ -465,17 +465,17 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("PhongHoc")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("phong_hoc");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trang_thai");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -493,10 +493,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("DiemTong")
@@ -512,13 +512,13 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("sinh_vien_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.Property<string>("XepLoai")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("varchar(30)")
+                        .HasColumnType("nvarchar(30)")
                         .HasColumnName("xep_loai");
 
                     b.HasKey("Id");
@@ -537,10 +537,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("GiaoVienId")
@@ -552,16 +552,16 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("lop_id");
 
                     b.Property<DateTime>("NgayGui")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("ngay_gui");
 
                     b.Property<string>("NoiDung")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("noi_dung");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -579,16 +579,16 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("MaGv")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("ma_gv");
 
                     b.Property<int>("TaiKhoanId")
@@ -596,7 +596,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("tai_khoan_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -616,10 +616,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("CtdtId")
@@ -627,7 +627,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("ctdt_id");
 
                     b.Property<float>("DiemTbcTichLuy")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_tbc_tich_luy");
 
                     b.Property<int>("SinhVienId")
@@ -639,7 +639,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("so_tin_chi_tich_luy");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -658,10 +658,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("NamHocId")
@@ -675,11 +675,11 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("TenHocKy")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("ten_hoc_ky");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -695,10 +695,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("HocKyId")
@@ -716,11 +716,11 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("TrangThaiDong")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trang_thai_dong");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -739,37 +739,37 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<float?>("DiemTa1")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_ta1");
 
                     b.Property<float?>("DiemTa2")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_ta2");
 
                     b.Property<float?>("DiemTa3")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_ta3");
 
                     b.Property<float?>("DiemThi")
-                        .HasColumnType("float")
+                        .HasColumnType("real")
                         .HasColumnName("diem_thi");
 
                     b.Property<string>("GhiChu")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("ghi_chu");
 
                     b.Property<string>("HinhThucXet")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("hinh_thuc_xet");
 
                     b.Property<int>("SinhVienId")
@@ -777,7 +777,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("sinh_vien_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -794,10 +794,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("DiemDanhGia")
@@ -805,7 +805,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("diem_danh_gia");
 
                     b.Property<string>("GopY")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("gop_y");
 
                     b.Property<int>("LopHpId")
@@ -817,7 +817,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("sinh_vien_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -836,14 +836,14 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ChiTietCtdtId")
                         .HasColumnType("int")
                         .HasColumnName("chi_tiet_ctdt_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("GiaoVienId")
@@ -856,24 +856,24 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("KhoaBangDiem")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasDefaultValue(false)
                         .HasColumnName("khoa_bang_diem");
 
                     b.Property<string>("MaLopHp")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("varchar(30)")
+                        .HasColumnType("nvarchar(30)")
                         .HasColumnName("ma_lop_hp");
 
                     b.Property<bool>("TrangThaiKetThuc")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasDefaultValue(false)
                         .HasColumnName("trang_thai_ket_thuc");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -896,14 +896,14 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ChuongTrinhDtId")
                         .HasColumnType("int")
                         .HasColumnName("chuong_trinh_dt_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("GvcnId")
@@ -913,7 +913,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("MaLop")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("ma_lop");
 
                     b.Property<int?>("ThuKyId")
@@ -921,7 +921,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("thu_ky_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -944,26 +944,26 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("MaMon")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("ma_mon");
 
                     b.Property<string>("TenMon")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("ten_mon");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -980,20 +980,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("TenNamHoc")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("ten_nam_hoc");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1007,16 +1007,16 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("MaNganh")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("ma_nganh");
 
                     b.Property<int?>("NganhChaId")
@@ -1026,11 +1026,11 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("TenNganh")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("ten_nganh");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1049,20 +1049,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("TenPhongBan")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("ten_phong_ban");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1076,10 +1076,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int?>("LopId")
@@ -1089,7 +1089,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("Mssv")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("mssv");
 
                     b.Property<int>("TaiKhoanId")
@@ -1097,7 +1097,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("tai_khoan_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1119,33 +1119,33 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AnhDaiDien")
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(500)")
+                        .HasColumnType("nvarchar(500)")
                         .HasColumnName("anh_dai_dien");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("email");
 
                     b.Property<string>("HoTen")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
+                        .HasColumnType("nvarchar(150)")
                         .HasColumnName("ho_ten");
 
                     b.Property<string>("MatKhau")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("mat_khau");
 
                     b.Property<int?>("PhongBanId")
@@ -1154,27 +1154,27 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("RefreshToken")
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(500)")
+                        .HasColumnType("nvarchar(500)")
                         .HasColumnName("refresh_token");
 
                     b.Property<DateTime?>("RefreshTokenExpiry")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("refresh_token_expiry");
 
                     b.Property<string>("TenDangNhap")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("ten_dang_nhap");
 
                     b.Property<bool>("TrangThai")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasDefaultValue(true)
                         .HasColumnName("trang_thai");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.Property<int>("VaiTroId")
@@ -1202,10 +1202,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("LopHpId")
@@ -1215,7 +1215,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("PhongHoc")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("phong_hoc");
 
                     b.Property<int>("Thu")
@@ -1235,7 +1235,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("tuan_hoc_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1253,16 +1253,16 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("LoaiThongBao")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("varchar(30)")
+                        .HasColumnType("nvarchar(30)")
                         .HasColumnName("loai_thong_bao");
 
                     b.Property<int?>("LopNhanId")
@@ -1272,11 +1272,11 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("MucDo")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("muc_do");
 
                     b.Property<DateTime>("NgayTao")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("ngay_tao");
 
                     b.Property<int>("NguoiTaoId")
@@ -1285,17 +1285,17 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("NoiDung")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("noi_dung");
 
                     b.Property<string>("TieuDe")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("tieu_de");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1313,20 +1313,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<bool>("DaDoc")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
+                        .HasColumnType("bit")
                         .HasDefaultValue(false)
                         .HasColumnName("da_doc");
 
                     b.Property<DateTime?>("NgayDoc")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("ngay_doc");
 
                     b.Property<int>("TaiKhoanId")
@@ -1338,7 +1338,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("thong_bao_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1357,16 +1357,16 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("MaTuan")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("ma_tuan");
 
                     b.Property<int>("NamHocId")
@@ -1386,7 +1386,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnName("so_thu_tu_tuan");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1405,20 +1405,20 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("TenVaiTro")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("ten_vai_tro");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1432,25 +1432,25 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<string>("FileDinhKem")
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(500)")
+                        .HasColumnType("nvarchar(500)")
                         .HasColumnName("file_dinh_kem");
 
                     b.Property<string>("LoaiYeuCau")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("loai_yeu_cau");
 
                     b.Property<DateTime>("NgayTao")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("ngay_tao");
 
                     b.Property<int?>("NguoiDuyetId")
@@ -1459,7 +1459,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("NoiDung")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("noi_dung");
 
                     b.Property<int>("SinhVienId")
@@ -1469,11 +1469,11 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("TrangThai")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trang_thai");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1491,10 +1491,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
                     b.Property<int>("GiaoVienId")
@@ -1507,7 +1507,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("LyDo")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("ly_do");
 
                     b.Property<int?>("NguoiDuyetId")
@@ -1517,11 +1517,11 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.Property<string>("TrangThai")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("trang_thai");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)")
+                        .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -1668,7 +1668,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.HasOne("UniversityPortal.Domain.Entities.TaiKhoan", "NguoiDuyet")
                         .WithMany()
                         .HasForeignKey("NguoiDuyetId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("UniversityPortal.Domain.Entities.SinhVien", "SinhVien")
                         .WithMany("DanhSachLopHPs")
@@ -1694,7 +1694,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.HasOne("UniversityPortal.Domain.Entities.TaiKhoan", "NguoiDuyet")
                         .WithMany()
                         .HasForeignKey("NguoiDuyetId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("UniversityPortal.Domain.Entities.SinhVien", "SinhVien")
                         .WithMany("DanhSachThiLais")
@@ -1720,7 +1720,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.HasOne("UniversityPortal.Domain.Entities.TaiKhoan", "NguoiDuyet")
                         .WithMany()
                         .HasForeignKey("NguoiDuyetId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("GiaoVien");
 
@@ -2026,7 +2026,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.HasOne("UniversityPortal.Domain.Entities.TaiKhoan", "NguoiDuyet")
                         .WithMany()
                         .HasForeignKey("NguoiDuyetId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("UniversityPortal.Domain.Entities.SinhVien", "SinhVien")
                         .WithMany("YeuCauHanhChinhs")
@@ -2056,7 +2056,7 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.HasOne("UniversityPortal.Domain.Entities.TaiKhoan", "NguoiDuyet")
                         .WithMany()
                         .HasForeignKey("NguoiDuyetId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("GiaoVien");
 
