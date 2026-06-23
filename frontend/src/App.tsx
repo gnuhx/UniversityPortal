@@ -16,6 +16,8 @@ import { TaiKhoanPage } from "./pages/TaiKhoanPage";
 import { LopHocPhanPage } from "./pages/LopHocPhanPage";
 import { ThongBaoPage } from "./pages/ThongBaoPage";
 import { HocPhiPage } from "./pages/HocPhiPage";
+import { YeuCauHanhChinhPage } from "./pages/YeuCauHanhChinhPage";
+import { YeuCauSuaDiemPage } from "./pages/YeuCauSuaDiemPage";
 import { ROLES } from "./constants/roles";
 
 function App() {
@@ -38,12 +40,13 @@ function App() {
               <Route path="/bang-diem" element={<BangDiemPage />} />
               <Route path="/hoc-phi" element={<HocPhiPage />} />
               <Route path="/thong-bao" element={<ThongBaoPage />} />
-              <Route path="/yeu-cau-hanh-chinh" element={<div style={{ padding: 24 }}>Yêu cầu hành chính (coming soon)</div>} />
+              <Route path="/yeu-cau-hanh-chinh" element={<YeuCauHanhChinhPage />} />
             </Route>
 
             {/* Giáo viên */}
             <Route element={<ProtectedRoute allowedRoles={[ROLES.GIAO_VIEN]} />}>
               <Route path="/lop-hoc-phan" element={<LopHocPhanPage />} />
+              <Route path="/yeu-cau-sua-diem" element={<YeuCauSuaDiemPage />} />
             </Route>
 
             {/* Admin / Giáo vụ */}
@@ -54,6 +57,12 @@ function App() {
               <Route path="/tai-khoan" element={<TaiKhoanPage />} />
               <Route path="/thong-bao" element={<ThongBaoPage />} />
               <Route path="/hoc-phi" element={<HocPhiPage />} />
+              <Route path="/yeu-cau-hanh-chinh" element={<YeuCauHanhChinhPage />} />
+            </Route>
+
+            {/* Admin only */}
+            <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+              <Route path="/yeu-cau-sua-diem" element={<YeuCauSuaDiemPage />} />
             </Route>
           </Route>
         </Route>

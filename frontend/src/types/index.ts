@@ -307,6 +307,58 @@ export interface CreateHocPhi {
   soTien: number;
 }
 
+// ===== Yeu cau hanh chinh =====
+export interface YeuCauHanhChinh {
+  id: number;
+  sinhVienId: number;
+  tenSinhVien: string;
+  mssv: string;
+  loaiYeuCau: string;
+  noiDung: string;
+  fileDinhKem?: string | null;
+  trangThai: string;
+  nguoiDuyetId?: number | null;
+  tenNguoiDuyet?: string | null;
+  ngayTao: string;
+  createdAt: string;
+}
+
+export interface CreateYeuCauHanhChinh {
+  loaiYeuCau: string;
+  noiDung: string;
+  fileDinhKem?: string | null;
+}
+
+export interface DuyetYeuCauHanhChinh {
+  trangThai: string;
+  ghiChu?: string | null;
+}
+
+// ===== Yeu cau sua diem =====
+export interface YeuCauSuaDiem {
+  id: number;
+  lopHpId: number;
+  maLopHp: string;
+  tenMon: string;
+  tenHocKy: string;
+  giaoVienId: number;
+  tenGiaoVien: string;
+  lyDo: string;
+  trangThai: string;
+  nguoiDuyetId?: number | null;
+  tenNguoiDuyet?: string | null;
+  createdAt: string;
+}
+
+export interface CreateYeuCauSuaDiem {
+  lopHpId: number;
+  lyDo: string;
+}
+
+export interface DuyetYeuCauSuaDiem {
+  trangThai: string;
+}
+
 export const VAI_TRO_OPTIONS = [
   { id: 1, label: "Admin" },
   { id: 2, label: "Giáo viên" },

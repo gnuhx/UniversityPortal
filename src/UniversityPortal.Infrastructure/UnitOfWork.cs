@@ -35,6 +35,10 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     // ── Học phí ───────────────────────────────────────────────────────────────
     private IHocPhiRepository? _hocPhis;
 
+    // ── Yêu cầu ──────────────────────────────────────────────────────────────
+    private IYeuCauHanhChinhRepository? _yeuCauHanhChinhs;
+    private IYeuCauSuaDiemRepository? _yeuCauSuaDiems;
+
     public ITaiKhoanRepository TaiKhoans           => _taiKhoans      ??= new TaiKhoanRepository(context);
     public ISinhVienRepository SinhViens           => _sinhViens      ??= new SinhVienRepository(context);
     public IGiaoVienRepository GiaoViens           => _giaoViens      ??= new GiaoVienRepository(context);
@@ -51,6 +55,9 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IThongBaoDaDocRepository ThongBaoDaDocs => _thongBaoDaDocs ??= new ThongBaoDaDocRepository(context);
 
     public IHocPhiRepository HocPhis               => _hocPhis        ??= new HocPhiRepository(context);
+
+    public IYeuCauHanhChinhRepository YeuCauHanhChinhs => _yeuCauHanhChinhs ??= new YeuCauHanhChinhRepository(context);
+    public IYeuCauSuaDiemRepository YeuCauSuaDiems     => _yeuCauSuaDiems   ??= new YeuCauSuaDiemRepository(context);
 
     /// <summary>Commit toàn bộ thay đổi của request hiện tại vào database.</summary>
     public Task<int> CommitAsync() => context.SaveChangesAsync();

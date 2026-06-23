@@ -33,6 +33,7 @@ const allMenuItems = [
 
   // Giáo viên
   { key: "/lop-hoc-phan", icon: <ScheduleOutlined />, label: "Lớp học phần", roles: [ROLES.GIAO_VIEN] },
+  { key: "/yeu-cau-sua-diem", icon: <FileTextOutlined />, label: "Yêu cầu sửa điểm", roles: [ROLES.GIAO_VIEN] },
 
   // Admin / Giáo vụ
   { key: "/sinh-vien", icon: <UserOutlined />, label: "Sinh viên", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
@@ -41,6 +42,8 @@ const allMenuItems = [
   { key: "/tai-khoan", icon: <BankOutlined />, label: "Tài khoản", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/thong-bao", icon: <BellOutlined />, label: "Thông báo", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/hoc-phi", icon: <DollarOutlined />, label: "Học phí", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
+  { key: "/yeu-cau-hanh-chinh", icon: <FileTextOutlined />, label: "Yêu cầu hành chính", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
+  { key: "/yeu-cau-sua-diem", icon: <FileTextOutlined />, label: "Yêu cầu sửa điểm", roles: [ROLES.ADMIN] },
 
   // Tất cả roles
   { key: "/nganh-hoc", icon: <ApartmentOutlined />, label: "Ngành học", roles: undefined },

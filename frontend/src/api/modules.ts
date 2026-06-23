@@ -13,7 +13,9 @@ import type {
   LopHocPhan, NhapDiem,
   ThongBao, CreateThongBao,
   HocPhi, CreateHocPhi,
-  ApiResponse,
+  YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh,
+  YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
+  ApiResponse, PagedResult,
 } from "../types";
 
 export const sinhVienApi = createCrudApi<SinhVien, CreateSinhVien, UpdateSinhVien>("/sinh-vien");
@@ -100,6 +102,48 @@ export const hocPhiApi = {
   },
   async updateTrangThai(id: number, trangThai: string) {
     const res = await apiClient.put<ApiResponse<HocPhi>>(`/hoc-phi/${id}/trang-thai`, { trangThai });
+    return res.data.data;
+  },
+};
+
+export const yeuCauHanhChinhApi = {
+  async getMe() {
+    const res = await apiClient.get<ApiResponse<YeuCauHanhChinh[]>>("/yeu-cau-hanh-chinh/me");
+    return res.data.data;
+  },
+  async getAll(page = 1, pageSize = 20, trangThai?: string) {
+    const res = await apiClient.get<ApiResponse<PagedResult<YeuCauHanhChinh>>>("/yeu-cau-hanh-chinh", {
+      params: { page, pageSize, trangThai },
+    });
+    return res.data.data;
+  },
+  async create(dto: CreateYeuCauHanhChinh) {
+    const res = await apiClient.post<ApiResponse<YeuCauHanhChinh>>("/yeu-cau-hanh-chinh", dto);
+    return res.data.data;
+  },
+  async duyet(id: number, dto: DuyetYeuCauHanhChinh) {
+    const res = await apiClient.put<ApiResponse<YeuCauHanhChinh>>(`/yeu-cau-hanh-chinh/${id}/duyet`, dto);
+    return res.data.data;
+  },
+};
+
+export const yeuCauSuaDiemApi = {
+  async getMe() {
+    const res = await apiClient.get<ApiResponse<YeuCauSuaDiem[]>>("/yeu-cau-sua-diem/me");
+    return res.data.data;
+  },
+  async getAll(page = 1, pageSize = 20, trangThai?: string) {
+    const res = await apiClient.get<ApiResponse<PagedResult<YeuCauSuaDiem>>>("/yeu-cau-sua-diem", {
+      params: { page, pageSize, trangThai },
+    });
+    return res.data.data;
+  },
+  async create(dto: CreateYeuCauSuaDiem) {
+    const res = await apiClient.post<ApiResponse<YeuCauSuaDiem>>("/yeu-cau-sua-diem", dto);
+    return res.data.data;
+  },
+  async duyet(id: number, dto: DuyetYeuCauSuaDiem) {
+    const res = await apiClient.put<ApiResponse<YeuCauSuaDiem>>(`/yeu-cau-sua-diem/${id}/duyet`, dto);
     return res.data.data;
   },
 };

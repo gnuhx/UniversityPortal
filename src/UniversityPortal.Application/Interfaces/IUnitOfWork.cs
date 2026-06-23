@@ -30,6 +30,10 @@ public interface IUnitOfWork : IDisposable
     // ── Học phí ───────────────────────────────────────────────────────────────
     IHocPhiRepository HocPhis { get; }
 
+    // ── Yêu cầu ──────────────────────────────────────────────────────────────
+    IYeuCauHanhChinhRepository YeuCauHanhChinhs { get; }
+    IYeuCauSuaDiemRepository YeuCauSuaDiems { get; }
+
     /// <summary>Lưu tất cả thay đổi trong transaction hiện tại xuống database.</summary>
     Task<int> CommitAsync();
 }

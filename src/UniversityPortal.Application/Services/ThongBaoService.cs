@@ -45,14 +45,10 @@ public class ThongBaoService(IUnitOfWork uow) : IThongBaoService
         var list = await uow.ThongBaos.GetBySinhVienAsync(lopId);
 
         var docSet = new HashSet<int>();
-        if (sv.LopId.HasValue)
+        foreach (var tb in list)
         {
-            // Lấy danh sách thông báo đã đọc của user này từ DB
-            foreach (var tb in list)
-            {
-                var daDoc = tb.ThongBaoDaDocs?.FirstOrDefault(x => x.TaiKhoanId == taiKhoanId);
-                if (daDoc?.DaDoc == true) docSet.Add(tb.Id);
-            }
+            var daDoc = tb.ThongBaoDaDocs?.FirstOrDefault(x => x.TaiKhoanId == taiKhoanId);
+            if (daDoc?.DaDoc == true) docSet.Add(tb.Id);
         }
 
         return list.Select(x => MapToDto(x, docSet.Contains(x.Id)));

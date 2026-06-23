@@ -17,7 +17,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Default: "Data Source=SQL1002.site4now.net;Initial Catalog=db_acaeb4_datn;User Id=db_acaeb4_datn_admin;Password=Admin@123;Encrypt=True;TrustServerCertificate=True;"
+      ConnectionStrings__Default: ""
       JWT__Issuer: UniversityPortal
       JWT__Audience: UniversityPortal
       JWT__ExpiryMinutes: "60"
