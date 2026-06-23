@@ -220,6 +220,145 @@ export interface UpdateTaiKhoan {
   trangThai: boolean;
 }
 
+// ===== Danh sach lop hoc phan (bang diem) =====
+export interface DanhSachLopHP {
+  id: number;
+  lopHpId: number;
+  maLopHp: string;
+  maMon: string;
+  tenMon: string;
+  hocKyId: number;
+  tenHocKy: string;
+  tenGiaoVien: string;
+  loaiDangKy: string;
+  trangThaiDuyet: string;
+  diemQt1?: number | null;
+  diemQt2?: number | null;
+  diemThi?: number | null;
+  diemTongKet?: number | null;
+  soTienPhaiDong?: number | null;
+  trangThaiDongTien?: string | null;
+  khoaBangDiem: boolean;
+  tenSinhVien?: string | null;
+  mssv?: string | null;
+}
+
+// ===== Lop hoc phan =====
+export interface LopHocPhan {
+  id: number;
+  maLopHp: string;
+  chiTietCtdtId: number;
+  maMon: string;
+  tenMon: string;
+  hocKyId: number;
+  tenHocKy: string;
+  giaoVienId: number;
+  tenGiaoVien: string;
+  soSinhVien: number;
+  khoaBangDiem: boolean;
+  trangThaiKetThuc: boolean;
+}
+
+export interface NhapDiem {
+  diemQt1?: number | null;
+  diemQt2?: number | null;
+  diemThi?: number | null;
+}
+
+// ===== Thong bao =====
+export interface ThongBao {
+  id: number;
+  tieuDe: string;
+  noiDung: string;
+  loaiThongBao: string;
+  mucDo: string;
+  nguoiTaoId: number;
+  tenNguoiTao: string;
+  lopNhanId?: number | null;
+  tenLopNhan?: string | null;
+  ngayTao: string;
+  daDoc?: boolean | null;
+}
+
+export interface CreateThongBao {
+  tieuDe: string;
+  noiDung: string;
+  loaiThongBao: string;
+  mucDo: string;
+  lopNhanId?: number | null;
+}
+
+// ===== Hoc phi =====
+export interface HocPhi {
+  id: number;
+  sinhVienId: number;
+  tenSinhVien: string;
+  mssv: string;
+  hocKyId: number;
+  tenHocKy: string;
+  soTien: number;
+  trangThaiDong: string;
+  createdAt: string;
+}
+
+export interface CreateHocPhi {
+  sinhVienId: number;
+  hocKyId: number;
+  soTien: number;
+}
+
+// ===== Yeu cau hanh chinh =====
+export interface YeuCauHanhChinh {
+  id: number;
+  sinhVienId: number;
+  tenSinhVien: string;
+  mssv: string;
+  loaiYeuCau: string;
+  noiDung: string;
+  fileDinhKem?: string | null;
+  trangThai: string;
+  nguoiDuyetId?: number | null;
+  tenNguoiDuyet?: string | null;
+  ngayTao: string;
+  createdAt: string;
+}
+
+export interface CreateYeuCauHanhChinh {
+  loaiYeuCau: string;
+  noiDung: string;
+  fileDinhKem?: string | null;
+}
+
+export interface DuyetYeuCauHanhChinh {
+  trangThai: string;
+  ghiChu?: string | null;
+}
+
+// ===== Yeu cau sua diem =====
+export interface YeuCauSuaDiem {
+  id: number;
+  lopHpId: number;
+  maLopHp: string;
+  tenMon: string;
+  tenHocKy: string;
+  giaoVienId: number;
+  tenGiaoVien: string;
+  lyDo: string;
+  trangThai: string;
+  nguoiDuyetId?: number | null;
+  tenNguoiDuyet?: string | null;
+  createdAt: string;
+}
+
+export interface CreateYeuCauSuaDiem {
+  lopHpId: number;
+  lyDo: string;
+}
+
+export interface DuyetYeuCauSuaDiem {
+  trangThai: string;
+}
+
 export const VAI_TRO_OPTIONS = [
   { id: 1, label: "Admin" },
   { id: 2, label: "Giáo viên" },

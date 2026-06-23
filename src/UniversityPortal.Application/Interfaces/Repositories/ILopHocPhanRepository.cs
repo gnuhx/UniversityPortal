@@ -7,4 +7,6 @@ public interface ILopHocPhanRepository : IRepository<LopHocPhan>
 {
     Task<PagedResultDto<LopHocPhan>> GetPagedByHocKyAsync(int hocKyId, int page, int pageSize);
     Task<PagedResultDto<LopHocPhan>> GetPagedByGiaoVienAsync(int giaoVienId, int page, int pageSize);
+    Task<IEnumerable<LopHocPhan>> GetByGiaoVienWithDetailsAsync(int giaoVienId);
+    Task<LopHocPhan?> GetDetailAsync(int id);
 }
