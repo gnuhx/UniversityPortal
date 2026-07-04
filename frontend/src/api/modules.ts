@@ -15,6 +15,7 @@ import type {
   HocKy, HocPhi, CreateHocPhi, GenerateHocPhi, GenerateHocPhiResult,
   YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh,
   YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
+  TotNghiep,
   ApiResponse, PagedResult,
 } from "../types";
 
@@ -30,6 +31,10 @@ export const taiKhoanApi = createCrudApi<TaiKhoan, CreateTaiKhoan, UpdateTaiKhoa
 export const sinhVienMeApi = {
   async getMe() {
     const res = await apiClient.get<ApiResponse<SinhVien>>("/sinh-vien/me");
+    return res.data.data;
+  },
+  async getTotNghiep() {
+    const res = await apiClient.get<ApiResponse<TotNghiep>>("/sinh-vien/me/tot-nghiep");
     return res.data.data;
   },
 };

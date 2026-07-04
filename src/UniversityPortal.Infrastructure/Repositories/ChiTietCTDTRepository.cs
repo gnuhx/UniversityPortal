@@ -44,4 +44,13 @@ public class ChiTietCTDTRepository(AppDbContext context) : BaseRepository<ChiTie
     /// <summary>Kiểm tra môn học đã tồn tại trong CTDT để tránh thêm trùng.</summary>
     public async Task<bool> ExistsAsync(int ctdtId, int monHocId)
         => await DbSet.AnyAsync(x => x.CtdtId == ctdtId && x.MonHocId == monHocId);
+
+    /// <summary>Lấy toàn bộ danh sách môn học bắt buộc của một CTDT (dùng để đối chiếu điều kiện tốt nghiệp).</summary>
+    public async Task<IEnumerable<ChiTietCTDT>> GetByCtdtIdAsync(int ctdtId)
+        => await DbSet
+            .Where(x => x.CtdtId == ctdtId)
+            .Include(x => x.MonHoc)
+            .Include(x => x.HocKy)
+            .OrderBy(x => x.HocKyId).ThenBy(x => x.MonHoc.MaMon)
+            .ToListAsync();
 }

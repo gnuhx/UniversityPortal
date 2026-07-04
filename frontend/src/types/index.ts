@@ -243,6 +243,21 @@ export interface DanhSachLopHP {
   mssv?: string | null;
 }
 
+// ===== Kiem tra dieu kien tot nghiep =====
+export interface MonHocConThieu {
+  maMon: string;
+  tenMon: string;
+  soTinChi: number;
+  tenHocKy: string;
+}
+
+export interface TotNghiep {
+  duDieuKienTotNghiep: boolean;
+  tongSoTinChiYeuCau: number;
+  tongSoTinChiDaTichLuy: number;
+  monHocConThieu: MonHocConThieu[];
+}
+
 // ===== Lop hoc phan =====
 export interface LopHocPhan {
   id: number;

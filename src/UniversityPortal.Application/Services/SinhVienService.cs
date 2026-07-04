@@ -115,4 +115,53 @@ public class SinhVienService(IUnitOfWork uow, IMapper mapper) : ISinhVienService
         uow.SinhViens.Update(sv);
         await uow.CommitAsync();
     }
+
+    /// <summary>
+    /// Kiểm tra điều kiện tốt nghiệp của sinh viên đang đăng nhập.
+    /// Đối chiếu danh sách môn học bắt buộc của CTDT với các môn sinh viên đã học và đạt (đã duyệt, điểm tổng kết >= 5).
+    /// CTDT được xác định qua lớp sinh hoạt hiện tại; nếu sinh viên không còn thuộc lớp nào (VD: đã tốt nghiệp),
+    /// dùng CTDT ghi nhận trong bản ghi học bạ (HocBa) gần nhất.
+    /// </summary>
+    public async Task<TotNghiepDto> GetTotNghiepMeAsync(int taiKhoanId)
+    {
+        var sv = await uow.SinhViens.GetByTaiKhoanIdAsync(taiKhoanId)
+            ?? throw new NotFoundException("Không tìm thấy hồ sơ sinh viên.");
+
+        var detail = await uow.SinhViens.GetByIdWithLopCtdtAsync(sv.Id)
+            ?? throw new NotFoundException("Không tìm thấy hồ sơ sinh viên.");
+
+        int? ctdtId = detail.Lop?.ChuongTrinhDtId;
+        if (ctdtId is null)
+        {
+            var hocBa = await uow.HocBas.GetLatestBySinhVienAsync(sv.Id);
+            ctdtId = hocBa?.CtdtId;
+        }
+
+        if (ctdtId is null)
+            throw new NotFoundException("Không xác định được chương trình đào tạo của sinh viên.");
+
+        var monBatBuoc = await uow.ChiTietCTDTs.GetByCtdtIdAsync(ctdtId.Value);
+        var danhSach   = await uow.DanhSachLopHPs.GetBySinhVienAsync(sv.Id);
+
+        var daDatIds = danhSach
+            .Where(x => x.TrangThaiDuyet == "Đã duyệt" && x.DiemTongKet >= 5)
+            .Select(x => x.LopHocPhan.ChiTietCtdtId)
+            .ToHashSet();
+
+        var conThieu = monBatBuoc.Where(x => !daDatIds.Contains(x.Id)).ToList();
+
+        return new TotNghiepDto
+        {
+            DuDieuKienTotNghiep   = monBatBuoc.Any() && conThieu.Count == 0,
+            TongSoTinChiYeuCau    = monBatBuoc.Sum(x => x.SoTinChi),
+            TongSoTinChiDaTichLuy = monBatBuoc.Where(x => daDatIds.Contains(x.Id)).Sum(x => x.SoTinChi),
+            MonHocConThieu = conThieu.Select(x => new MonHocConThieuDto
+            {
+                MaMon    = x.MonHoc.MaMon,
+                TenMon   = x.MonHoc.TenMon,
+                SoTinChi = x.SoTinChi,
+                TenHocKy = x.HocKy.TenHocKy
+            }).ToList()
+        };
+    }
 }

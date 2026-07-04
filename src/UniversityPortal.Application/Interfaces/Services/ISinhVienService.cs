@@ -27,4 +27,7 @@ public interface ISinhVienService
 
     /// <summary>Lấy thông tin sinh viên theo tài khoản đăng nhập hiện tại (dùng cho sinh viên xem hồ sơ).</summary>
     Task<SinhVienDto> GetMeAsync(int taiKhoanId);
+
+    /// <summary>Kiểm tra điều kiện tốt nghiệp của sinh viên đang đăng nhập, đối chiếu với CTDT.</summary>
+    Task<TotNghiepDto> GetTotNghiepMeAsync(int taiKhoanId);
 }

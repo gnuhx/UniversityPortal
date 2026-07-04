@@ -20,6 +20,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     // ── Học vụ & lớp học phần ────────────────────────────────────────────────
     private ILopHocPhanRepository? _lopHocPhans;
     private IDanhSachLopHPRepository? _danhSachLopHPs;
+    private IHocBaRepository? _hocBas;
 
     // ── Danh mục chương trình đào tạo ────────────────────────────────────────
     private INganhHocRepository? _nganhHocs;
@@ -47,6 +48,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IGiaoVienRepository GiaoViens           => _giaoViens      ??= new GiaoVienRepository(context);
     public ILopHocPhanRepository LopHocPhans       => _lopHocPhans    ??= new LopHocPhanRepository(context);
     public IDanhSachLopHPRepository DanhSachLopHPs => _danhSachLopHPs ??= new DanhSachLopHPRepository(context);
+    public IHocBaRepository HocBas                 => _hocBas         ??= new HocBaRepository(context);
 
     public IHocKyRepository HocKys                 => _hocKys         ??= new HocKyRepository(context);
 
