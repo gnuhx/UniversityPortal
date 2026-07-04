@@ -1,5 +1,6 @@
 import { Button, Card, Form, Input, Typography, App } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { login } from "../api/auth";
 import { useAuthStore } from "../store/authStore";
 
@@ -9,15 +10,17 @@ export function LoginPage() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
 
-  const onFinish = async (values: { tenDangNhap: string; matKhau: string }) => {
-    try {
-      const result = await login(values.tenDangNhap, values.matKhau);
+  const loginMutation = useMutation({
+    mutationFn: ({ tenDangNhap, matKhau }: { tenDangNhap: string; matKhau: string }) =>
+      login(tenDangNhap, matKhau),
+    onSuccess: (result) => {
       setAuth(result.accessToken, result.refreshToken, result.userInfo);
       navigate("/");
-    } catch (err: any) {
+    },
+    onError: (err: any) => {
       message.error(err?.response?.data?.message || "Đăng nhập thất bại");
-    }
-  };
+    },
+  });
 
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#f0f2f5" }}>
@@ -25,7 +28,11 @@ export function LoginPage() {
         <Typography.Title level={3} style={{ textAlign: "center" }}>
           University Portal
         </Typography.Title>
-        <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={(v) => loginMutation.mutate(v)}
+        >
           <Form.Item name="tenDangNhap" label="Tên đăng nhập" rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập" }]}>
             <Input autoFocus />
           </Form.Item>
@@ -33,8 +40,13 @@ export function LoginPage() {
             <Input.Password />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
-              Đăng nhập
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              loading={loginMutation.isPending}
+            >
+              {loginMutation.isPending ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
           </Form.Item>
         </Form>

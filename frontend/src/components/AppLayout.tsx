@@ -15,6 +15,7 @@ import {
   DollarOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { GlobalLoader } from "./GlobalLoader";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
 import { logout as logoutApi } from "../api/auth";
@@ -74,6 +75,8 @@ export function AppLayout() {
     visibleItems.find((item) => item.key !== "/" && location.pathname.startsWith(item.key))?.key || "/";
 
   return (
+    <>
+    <GlobalLoader />
     <Layout style={{ minHeight: "100vh" }}>
       <Sider breakpoint="lg" collapsedWidth="0">
         <div style={{ color: "#fff", textAlign: "center", padding: 16, fontWeight: "bold", fontSize: 16 }}>
@@ -107,5 +110,6 @@ export function AppLayout() {
         </Content>
       </Layout>
     </Layout>
+    </>
   );
 }
