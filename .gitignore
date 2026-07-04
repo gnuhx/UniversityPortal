@@ -131,3 +131,4 @@ docker-compose.override.yml
 *.crt
 *.cer
 docs/ca.pem
+docker-compose.yml
