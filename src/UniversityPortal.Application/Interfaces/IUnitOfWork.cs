@@ -16,6 +16,9 @@ public interface IUnitOfWork : IDisposable
     ILopHocPhanRepository LopHocPhans { get; }
     IDanhSachLopHPRepository DanhSachLopHPs { get; }
 
+    // ── Học kỳ ───────────────────────────────────────────────────────────────
+    IHocKyRepository HocKys { get; }
+
     // ── Tuần 2 — Danh mục ─────────────────────────────────────────────────────
     INganhHocRepository NganhHocs { get; }
     IChuongTrinhDTRepository ChuongTrinhDTs { get; }

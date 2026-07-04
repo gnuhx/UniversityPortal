@@ -61,6 +61,53 @@ public class HocPhiService(IUnitOfWork uow) : IHocPhiService
         return MapToDto(updated);
     }
 
+    public async Task<IEnumerable<HocPhiDto>> GetAllAsync()
+    {
+        var list = await uow.HocPhis.GetAllWithDetailsAsync();
+        return list.Select(MapToDto);
+    }
+
+    public async Task<GenerateHocPhiResultDto> GenerateAsync(GenerateHocPhiDto dto)
+    {
+        // All enrollments in the semester with ChiTietCTDT for credit count
+        var enrollments = await uow.DanhSachLopHPs.GetByHocKyWithDetailsAsync(dto.HocKyId);
+
+        // Group by student, summing credits across all enrolled courses
+        var grouped = enrollments
+            .GroupBy(e => e.SinhVienId)
+            .Select(g => new
+            {
+                SinhVienId = g.Key,
+                TotalTinChi = g.Sum(e => e.LopHocPhan.ChiTietCTDT?.SoTinChi ?? 0),
+            });
+
+        int created = 0, skipped = 0;
+
+        foreach (var student in grouped)
+        {
+            var existing = await uow.HocPhis.GetBySinhVienAndHocKyAsync(student.SinhVienId, dto.HocKyId);
+            if (existing is not null)
+            {
+                skipped++;
+                continue;
+            }
+
+            var soTien = student.TotalTinChi * dto.TienMotTinChi;
+            await uow.HocPhis.AddAsync(new HocPhi
+            {
+                SinhVienId    = student.SinhVienId,
+                HocKyId       = dto.HocKyId,
+                SoTien        = soTien,
+                TrangThaiDong = "Chưa đóng",
+            });
+            created++;
+        }
+
+        if (created > 0) await uow.CommitAsync();
+
+        return new GenerateHocPhiResultDto { Created = created, Skipped = skipped };
+    }
+
     private static HocPhiDto MapToDto(HocPhi hp) => new()
     {
         Id            = hp.Id,

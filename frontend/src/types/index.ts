@@ -288,7 +288,26 @@ export interface CreateThongBao {
   lopNhanId?: number | null;
 }
 
+// ===== Hoc ky =====
+export interface HocKy {
+  id: number;
+  tenHocKy: string;
+  ngayBatDau: string;
+  tenNamHoc: string;
+}
+
 // ===== Hoc phi =====
+export interface GenerateHocPhi {
+  hocKyId: number;
+  tienMotTinChi: number;
+}
+
+export interface GenerateHocPhiResult {
+  created: number;
+  skipped: number;
+  message: string;
+}
+
 export interface HocPhi {
   id: number;
   sinhVienId: number;

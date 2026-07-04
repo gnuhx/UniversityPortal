@@ -24,4 +24,12 @@ public class HocPhiRepository(AppDbContext context) : BaseRepository<HocPhi>(con
 
     public async Task<HocPhi?> GetBySinhVienAndHocKyAsync(int sinhVienId, int hocKyId)
         => await DbSet.FirstOrDefaultAsync(x => x.SinhVienId == sinhVienId && x.HocKyId == hocKyId);
+
+    public async Task<IEnumerable<HocPhi>> GetAllWithDetailsAsync()
+        => await DbSet
+            .Include(x => x.SinhVien).ThenInclude(sv => sv.TaiKhoan)
+            .Include(x => x.HocKy)
+            .OrderByDescending(x => x.HocKy.NgayBatDau)
+            .ThenBy(x => x.SinhVien.Mssv)
+            .ToListAsync();
 }

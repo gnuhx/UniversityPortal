@@ -12,7 +12,7 @@ import type {
   DanhSachLopHP,
   LopHocPhan, NhapDiem,
   ThongBao, CreateThongBao,
-  HocPhi, CreateHocPhi,
+  HocKy, HocPhi, CreateHocPhi, GenerateHocPhi, GenerateHocPhiResult,
   YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh,
   YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
   ApiResponse, PagedResult,
@@ -87,17 +87,30 @@ export const thongBaoApi = {
   },
 };
 
+export const hocKyApi = {
+  async getAll() {
+    const res = await apiClient.get<ApiResponse<HocKy[]>>("/hoc-ky");
+    return res.data.data;
+  },
+};
+
 export const hocPhiApi = {
   async getMe() {
     const res = await apiClient.get<ApiResponse<HocPhi[]>>("/hoc-phi/me");
     return res.data.data;
   },
-  async getByHocKy(hocKyId: number) {
-    const res = await apiClient.get<ApiResponse<HocPhi[]>>("/hoc-phi", { params: { hocKyId } });
+  async getAll(hocKyId?: number) {
+    const res = await apiClient.get<ApiResponse<HocPhi[]>>("/hoc-phi", {
+      params: hocKyId ? { hocKyId } : undefined,
+    });
     return res.data.data;
   },
   async create(dto: CreateHocPhi) {
     const res = await apiClient.post<ApiResponse<HocPhi>>("/hoc-phi", dto);
+    return res.data.data;
+  },
+  async generate(dto: GenerateHocPhi) {
+    const res = await apiClient.post<ApiResponse<GenerateHocPhiResult>>("/hoc-phi/generate", dto);
     return res.data.data;
   },
   async updateTrangThai(id: number, trangThai: string) {

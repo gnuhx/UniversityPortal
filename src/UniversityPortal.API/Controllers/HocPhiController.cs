@@ -22,13 +22,24 @@ public class HocPhiController(IHocPhiService service) : ControllerBase
         return Ok(ApiResponseDto<IEnumerable<HocPhiDto>>.Ok(result));
     }
 
-    /// <summary>Admin xem học phí theo học kỳ.</summary>
+    /// <summary>Admin xem tất cả học phí (tùy chọn lọc theo học kỳ).</summary>
     [HttpGet]
     [Authorize(Roles = "Admin,Giáo vụ")]
-    public async Task<ActionResult<ApiResponseDto<IEnumerable<HocPhiDto>>>> GetByHocKy([FromQuery] int hocKyId)
+    public async Task<ActionResult<ApiResponseDto<IEnumerable<HocPhiDto>>>> GetAll([FromQuery] int? hocKyId)
     {
-        var result = await service.GetByHocKyAsync(hocKyId);
+        var result = hocKyId.HasValue
+            ? await service.GetByHocKyAsync(hocKyId.Value)
+            : await service.GetAllAsync();
         return Ok(ApiResponseDto<IEnumerable<HocPhiDto>>.Ok(result));
+    }
+
+    /// <summary>Admin tạo hàng loạt học phí theo học kỳ dựa trên đăng ký tín chỉ.</summary>
+    [HttpPost("generate")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
+    public async Task<ActionResult<ApiResponseDto<GenerateHocPhiResultDto>>> Generate([FromBody] GenerateHocPhiDto dto)
+    {
+        var result = await service.GenerateAsync(dto);
+        return Ok(ApiResponseDto<GenerateHocPhiResultDto>.Ok(result, result.Message));
     }
 
     /// <summary>Admin tạo học phí cho sinh viên.</summary>

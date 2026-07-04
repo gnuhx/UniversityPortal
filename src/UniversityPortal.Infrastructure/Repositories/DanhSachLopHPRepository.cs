@@ -29,6 +29,14 @@ public class DanhSachLopHPRepository(AppDbContext context) : BaseRepository<Danh
     public async Task<DanhSachLopHP?> GetBySinhVienAndLopAsync(int sinhVienId, int lopHpId)
         => await DbSet.FirstOrDefaultAsync(x => x.SinhVienId == sinhVienId && x.LopHpId == lopHpId);
 
+    public async Task<IEnumerable<DanhSachLopHP>> GetByHocKyWithDetailsAsync(int hocKyId)
+        => await DbSet
+            .Where(x => x.LopHocPhan.HocKyId == hocKyId)
+            .Include(x => x.SinhVien).ThenInclude(sv => sv.TaiKhoan)
+            .Include(x => x.LopHocPhan)
+                .ThenInclude(lhp => lhp.ChiTietCTDT)
+            .ToListAsync();
+
     public async Task<DanhSachLopHP?> GetByIdWithLopHocPhanAsync(int id)
         => await DbSet
             .Where(x => x.Id == id)

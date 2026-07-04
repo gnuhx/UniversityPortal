@@ -28,6 +28,9 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     private IChiTietCTDTRepository? _chiTietCTDTs;
     private ILopSinhHoatRepository? _lopSinhHoats;
 
+    // ── Học kỳ ───────────────────────────────────────────────────────────────
+    private IHocKyRepository? _hocKys;
+
     // ── Thông báo ─────────────────────────────────────────────────────────────
     private IThongBaoRepository? _thongBaos;
     private IThongBaoDaDocRepository? _thongBaoDaDocs;
@@ -44,6 +47,8 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IGiaoVienRepository GiaoViens           => _giaoViens      ??= new GiaoVienRepository(context);
     public ILopHocPhanRepository LopHocPhans       => _lopHocPhans    ??= new LopHocPhanRepository(context);
     public IDanhSachLopHPRepository DanhSachLopHPs => _danhSachLopHPs ??= new DanhSachLopHPRepository(context);
+
+    public IHocKyRepository HocKys                 => _hocKys         ??= new HocKyRepository(context);
 
     public INganhHocRepository NganhHocs           => _nganhHocs      ??= new NganhHocRepository(context);
     public IChuongTrinhDTRepository ChuongTrinhDTs => _chuongTrinhDTs ??= new ChuongTrinhDTRepository(context);
