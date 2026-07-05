@@ -37,4 +37,20 @@ public class HocKyRepository(AppDbContext context) : BaseRepository<HocKy>(conte
 
     public async Task<bool> ExistsByNamHocAsync(int namHocId)
         => await DbSet.AnyAsync(x => x.NamHocId == namHocId);
+
+    /// <summary>Học kỳ mà sinh viên có ít nhất 1 lớp học phần đã đăng ký (dùng cho dropdown TKB của sinh viên).</summary>
+    public async Task<IEnumerable<HocKy>> GetForSinhVienAsync(int sinhVienId)
+        => await DbSet
+            .Include(x => x.NamHoc)
+            .Where(hk => hk.LopHocPhans.Any(lhp => lhp.DanhSachLopHPs.Any(d => d.SinhVienId == sinhVienId)))
+            .OrderByDescending(x => x.NgayBatDau)
+            .ToListAsync();
+
+    /// <summary>Học kỳ mà giáo viên có ít nhất 1 lớp học phần đang dạy (dùng cho dropdown TKB của giáo viên).</summary>
+    public async Task<IEnumerable<HocKy>> GetForGiaoVienAsync(int giaoVienId)
+        => await DbSet
+            .Include(x => x.NamHoc)
+            .Where(hk => hk.LopHocPhans.Any(lhp => lhp.GiaoVienId == giaoVienId))
+            .OrderByDescending(x => x.NgayBatDau)
+            .ToListAsync();
 }

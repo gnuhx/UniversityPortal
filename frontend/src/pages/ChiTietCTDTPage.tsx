@@ -38,15 +38,34 @@ export function ChiTietCTDTPage() {
     enabled: !!ctdtId,
   });
 
+  // Suy ra khoảng năm học hợp lệ của CTĐT từ `khoaHoc` (định dạng "YYYY-YYYY", vd "2023-2027")
+  // để không liệt kê học kỳ trước khi CTĐT này tồn tại hay sau khi sinh viên đã tốt nghiệp.
+  // `khoaHoc` là text tự do (xem hạn chế đã ghi ở task #04) — nếu không đúng định dạng khoảng
+  // năm thì không lọc được, đành hiện toàn bộ học kỳ như trước (thà dư còn hơn ẩn nhầm).
+  const relevantNamHoc = useMemo(() => {
+    const match = ctdt?.khoaHoc?.match(/^(\d{4})-(\d{4})$/);
+    if (!match) return null;
+    const start = Number(match[1]);
+    const end = Number(match[2]);
+    const set = new Set<string>();
+    for (let y = start; y < end; y++) set.add(`${y}-${y + 1}`);
+    return set;
+  }, [ctdt?.khoaHoc]);
+
+  const relevantHocKys = useMemo(
+    () => (relevantNamHoc ? hocKys.filter((h) => relevantNamHoc.has(h.tenNamHoc)) : hocKys),
+    [hocKys, relevantNamHoc],
+  );
+
   // Sắp học kỳ tăng dần theo ngày bắt đầu (lộ trình học từ sớm đến muộn), rồi gom môn học của
   // CTĐT này vào từng học kỳ — học kỳ không có môn nào vẫn hiện ra để thấy ngay chỗ còn thiếu.
   const hocKyGroups = useMemo(() => {
-    const sorted = [...hocKys].sort((a, b) => a.ngayBatDau.localeCompare(b.ngayBatDau));
+    const sorted = [...relevantHocKys].sort((a, b) => a.ngayBatDau.localeCompare(b.ngayBatDau));
     return sorted.map((hk) => ({
       hocKy: hk,
       items: items.filter((it) => it.hocKyId === hk.id),
     }));
-  }, [hocKys, items]);
+  }, [relevantHocKys, items]);
 
   // Collapse cần activeKey điều khiển (controlled) vì nhóm chỉ có dữ liệu thật sau khi
   // 2 query trên tải xong — defaultActiveKey chỉ đọc 1 lần lúc mount nên sẽ bỏ lỡ mốc đó.
@@ -211,7 +230,7 @@ export function ChiTietCTDTPage() {
                 <Select options={(monHocOptions || []).map((m) => ({ label: `${m.maMon} - ${m.tenMon}`, value: m.id }))} />
               </Form.Item>
               <Form.Item name="hocKyId" label="Học kỳ" rules={[{ required: true, message: "Vui lòng chọn học kỳ" }]}>
-                <Select options={hocKys.map((h) => ({ label: `${h.tenHocKy} (${h.tenNamHoc})`, value: h.id }))} />
+                <Select options={relevantHocKys.map((h) => ({ label: `${h.tenHocKy} (${h.tenNamHoc})`, value: h.id }))} />
               </Form.Item>
             </>
           )}

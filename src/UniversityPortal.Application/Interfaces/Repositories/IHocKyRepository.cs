@@ -15,4 +15,10 @@ public interface IHocKyRepository : IRepository<HocKy>
 
     /// <summary>Kiểm tra còn học kỳ nào thuộc năm học này không (dùng khi xoá năm học).</summary>
     Task<bool> ExistsByNamHocAsync(int namHocId);
+
+    /// <summary>Lấy các học kỳ mà sinh viên có ít nhất 1 lớp học phần đã đăng ký, sắp giảm dần theo ngày bắt đầu.</summary>
+    Task<IEnumerable<HocKy>> GetForSinhVienAsync(int sinhVienId);
+
+    /// <summary>Lấy các học kỳ mà giáo viên có ít nhất 1 lớp học phần đang dạy, sắp giảm dần theo ngày bắt đầu.</summary>
+    Task<IEnumerable<HocKy>> GetForGiaoVienAsync(int giaoVienId);
 }

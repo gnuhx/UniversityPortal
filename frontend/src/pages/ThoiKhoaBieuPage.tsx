@@ -34,9 +34,11 @@ export function ThoiKhoaBieuPage() {
 function MyLichHoc() {
   const [hocKyId, setHocKyId] = useState<number | undefined>();
 
-  const { data: hocKys = [] } = useQuery({ queryKey: ["hoc-ky"], queryFn: () => hocKyApi.getAll() });
+  // Chỉ lấy học kỳ mà người dùng thực sự có lớp (đã đăng ký/đang dạy) — tránh liệt kê học kỳ
+  // không liên quan (vd. trước khi sinh viên nhập học). Khác với /hoc-ky/all dùng ở AdminThoiKhoaBieu.
+  const { data: hocKys = [] } = useQuery({ queryKey: ["hoc-ky-me"], queryFn: () => hocKyApi.getMe() });
 
-  // HocKyController trả về danh sách sắp xếp giảm dần theo ngày bắt đầu -> phần tử đầu là học kỳ mới nhất.
+  // Sắp giảm dần theo ngày bắt đầu -> phần tử đầu là học kỳ mới nhất của người dùng này.
   const effectiveHocKyId = hocKyId ?? hocKys[0]?.id;
   const selectedHocKy = hocKys.find((hk) => hk.id === effectiveHocKyId);
 

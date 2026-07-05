@@ -123,13 +123,13 @@ Không cần.
 - Task này giải quyết luôn nội dung của task #06
   (`06_todo_chi_tiet_ctdt_hoc_ky_dropdown.md`) — nên đánh dấu #06 là
   `done` và ghi chú trỏ sang đây thay vì làm lại riêng.
-- Nhóm hiển thị dựa trên **toàn bộ** học kỳ hiện có trong hệ thống
-  (không lọc theo năm/khoá học của CTĐT đang xem) — chấp nhận được vì
-  hiện tại tổng số học kỳ trong DB còn ít (2021-2022 → 2024-2025); nếu
-  sau này số học kỳ tăng nhiều (nhiều năm học tích luỹ), danh sách
-  nhóm sẽ dài ra và có thể cần lọc theo giai đoạn phù hợp với
-  `khoa_hoc` của CTĐT — liên quan đến hạn chế `khoa_hoc` là text tự do
-  đã ghi ở task #04.
+- ~~Nhóm hiển thị dựa trên **toàn bộ** học kỳ hiện có trong hệ thống~~
+  **(đã sửa — xem task #10)**: người dùng báo cáo đúng như dự đoán ở
+  đây — CTĐT "2023-2027" vẫn hiện đủ các học kỳ 2020-2021 → 2022-2023
+  (toàn bộ "Chưa có môn học", gây nhiễu, cả Admin lẫn sinh viên xem
+  trang này đều thấy). Đã lọc `hocKys` theo khoảng năm suy ra từ
+  `khoaHoc` (regex `YYYY-YYYY`) trước khi nhóm — xem task #10 để biết
+  chi tiết.
 - Lấy dữ liệu bằng `pageSize: 500` thay vì phân trang thật — chấp nhận
   được vì số môn học của một chương trình đào tạo thực tế rất nhỏ (vài
   chục môn); không phù hợp nếu sau này có CTDT với số môn học lớn hơn

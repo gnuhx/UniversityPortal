@@ -101,7 +101,13 @@ export const thongBaoApi = {
   },
 };
 
-export const hocKyApi = createCrudApi<HocKy, UpsertHocKy>("/hoc-ky");
+export const hocKyApi = {
+  ...createCrudApi<HocKy, UpsertHocKy>("/hoc-ky"),
+  async getMe() {
+    const res = await apiClient.get<ApiResponse<HocKy[]>>("/hoc-ky/me");
+    return res.data.data;
+  },
+};
 
 export const tuanHocApi = {
   async getAll() {

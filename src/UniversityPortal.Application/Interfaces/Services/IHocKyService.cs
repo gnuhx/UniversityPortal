@@ -26,4 +26,10 @@ public interface IHocKyService
 
     /// <summary>Xoá học kỳ; ném BadRequestException nếu còn lớp học phần, chi tiết CTĐT hoặc học phí liên kết.</summary>
     Task DeleteAsync(int id);
+
+    /// <summary>Lấy các học kỳ mà sinh viên (theo taiKhoanId đang đăng nhập) có lớp học phần đã đăng ký.</summary>
+    Task<IEnumerable<HocKyDto>> GetForSinhVienMeAsync(int taiKhoanId);
+
+    /// <summary>Lấy các học kỳ mà giáo viên (theo taiKhoanId đang đăng nhập) có lớp học phần đang dạy.</summary>
+    Task<IEnumerable<HocKyDto>> GetForGiaoVienMeAsync(int taiKhoanId);
 }

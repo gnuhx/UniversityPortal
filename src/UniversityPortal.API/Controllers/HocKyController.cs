@@ -7,11 +7,13 @@
  * Danh sách endpoint:
  *   GET    /api/hoc-ky        — Danh sách (phân trang, lọc theo năm học)  [Authenticated]
  *   GET    /api/hoc-ky/all    — Tất cả học kỳ (dùng dropdown)             [Authenticated]
+ *   GET    /api/hoc-ky/me     — Học kỳ liên quan tới người dùng hiện tại  [Sinh viên, Giáo viên]
  *   GET    /api/hoc-ky/{id}   — Chi tiết học kỳ                          [Authenticated]
  *   POST   /api/hoc-ky        — Tạo mới học kỳ                           [Admin]
  *   PUT    /api/hoc-ky/{id}   — Cập nhật học kỳ                          [Admin]
  *   DELETE /api/hoc-ky/{id}   — Xoá học kỳ                              [Admin]
  */
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UniversityPortal.Application.DTOs.Common;
@@ -47,6 +49,22 @@ public class HocKyController(IHocKyService service) : ControllerBase
     public async Task<ActionResult<ApiResponseDto<IEnumerable<HocKyDto>>>> GetAll()
     {
         var result = await service.GetAllAsync();
+        return Ok(ApiResponseDto<IEnumerable<HocKyDto>>.Ok(result));
+    }
+
+    /// <summary>
+    /// Lấy học kỳ liên quan tới người dùng đang đăng nhập: Sinh viên xem học kỳ mình có lớp
+    /// đã đăng ký, Giáo viên xem học kỳ mình có lớp đang dạy. Dùng cho dropdown chọn học kỳ ở
+    /// trang Thời khoá biểu — tránh liệt kê học kỳ không liên quan (vd. trước khi nhập học).
+    /// </summary>
+    [HttpGet("me")]
+    [Authorize(Roles = "Sinh viên,Giáo viên")]
+    public async Task<ActionResult<ApiResponseDto<IEnumerable<HocKyDto>>>> GetMe()
+    {
+        var taiKhoanId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = User.IsInRole("Sinh viên")
+            ? await service.GetForSinhVienMeAsync(taiKhoanId)
+            : await service.GetForGiaoVienMeAsync(taiKhoanId);
         return Ok(ApiResponseDto<IEnumerable<HocKyDto>>.Ok(result));
     }
 

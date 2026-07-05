@@ -90,4 +90,22 @@ public class HocKyService(IUnitOfWork uow, IMapper mapper) : IHocKyService
         uow.HocKys.Delete(hocKy);
         await uow.CommitAsync();
     }
+
+    /// <summary>Lấy các học kỳ mà sinh viên đang đăng nhập có lớp học phần đã đăng ký.</summary>
+    public async Task<IEnumerable<HocKyDto>> GetForSinhVienMeAsync(int taiKhoanId)
+    {
+        var sv = await uow.SinhViens.GetByTaiKhoanIdAsync(taiKhoanId)
+            ?? throw new NotFoundException("Không tìm thấy hồ sơ sinh viên.");
+
+        return mapper.Map<IEnumerable<HocKyDto>>(await uow.HocKys.GetForSinhVienAsync(sv.Id));
+    }
+
+    /// <summary>Lấy các học kỳ mà giáo viên đang đăng nhập có lớp học phần đang dạy.</summary>
+    public async Task<IEnumerable<HocKyDto>> GetForGiaoVienMeAsync(int taiKhoanId)
+    {
+        var gv = await uow.GiaoViens.GetByTaiKhoanIdAsync(taiKhoanId)
+            ?? throw new NotFoundException("Không tìm thấy hồ sơ giáo viên.");
+
+        return mapper.Map<IEnumerable<HocKyDto>>(await uow.HocKys.GetForGiaoVienAsync(gv.Id));
+    }
 }
