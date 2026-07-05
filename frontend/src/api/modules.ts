@@ -14,6 +14,7 @@ import type {
   LopHocPhan, NhapDiem,
   ThongBao, CreateThongBao,
   HocKy, HocPhi, CreateHocPhi, GenerateHocPhi, GenerateHocPhiResult,
+  TuanHoc, ThoiKhoaBieu, CreateThoiKhoaBieu, UpdateThoiKhoaBieu,
   YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh,
   YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
   TotNghiep,
@@ -61,6 +62,10 @@ export const lopHocPhanApi = {
     const res = await apiClient.get<ApiResponse<LopHocPhan[]>>("/lop-hoc-phan/me");
     return res.data.data;
   },
+  async getPaged(params: Record<string, unknown> = {}) {
+    const res = await apiClient.get<ApiResponse<PagedResult<LopHocPhan>>>("/lop-hoc-phan", { params });
+    return res.data.data;
+  },
   async khoaBangDiem(id: number) {
     const res = await apiClient.put<ApiResponse<null>>(`/lop-hoc-phan/${id}/khoa-bang-diem`, {});
     return res.data;
@@ -97,6 +102,23 @@ export const thongBaoApi = {
 export const hocKyApi = {
   async getAll() {
     const res = await apiClient.get<ApiResponse<HocKy[]>>("/hoc-ky");
+    return res.data.data;
+  },
+};
+
+export const tuanHocApi = {
+  async getAll() {
+    const res = await apiClient.get<ApiResponse<TuanHoc[]>>("/tuan-hoc/all");
+    return res.data.data;
+  },
+};
+
+export const thoiKhoaBieuApi = {
+  ...createCrudApi<ThoiKhoaBieu, CreateThoiKhoaBieu, UpdateThoiKhoaBieu>("/thoi-khoa-bieu"),
+  async getMe(hocKyId?: number) {
+    const res = await apiClient.get<ApiResponse<ThoiKhoaBieu[]>>("/thoi-khoa-bieu/me", {
+      params: hocKyId ? { hocKyId } : undefined,
+    });
     return res.data.data;
   },
 };

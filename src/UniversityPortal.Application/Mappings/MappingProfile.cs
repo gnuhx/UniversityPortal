@@ -12,6 +12,8 @@ using UniversityPortal.Application.DTOs.NganhHoc;
 using UniversityPortal.Application.DTOs.PhongBan;
 using UniversityPortal.Application.DTOs.SinhVien;
 using UniversityPortal.Application.DTOs.TaiKhoan;
+using UniversityPortal.Application.DTOs.ThoiKhoaBieu;
+using UniversityPortal.Application.DTOs.TuanHoc;
 using UniversityPortal.Domain.Entities;
 
 namespace UniversityPortal.Application.Mappings;
@@ -95,6 +97,23 @@ public class MappingProfile : Profile
             .ForMember(d => d.TenHocKy,    o => o.MapFrom(s => s.HocKy != null ? s.HocKy.TenHocKy : string.Empty))
             .ForMember(d => d.TenGiaoVien, o => o.MapFrom(s => s.GiaoVien != null ? s.GiaoVien.TaiKhoan.HoTen : string.Empty))
             .ForMember(d => d.SoSinhVien,  o => o.MapFrom(s => s.DanhSachLopHPs != null ? s.DanhSachLopHPs.Count : 0));
+
+        // ── TuanHoc ───────────────────────────────────────────────────────────
+        CreateMap<TuanHoc, TuanHocDto>()
+            .ForMember(d => d.TenNamHoc, o => o.MapFrom(s => s.NamHoc != null ? s.NamHoc.TenNamHoc : string.Empty));
+
+        // ── ThoiKhoaBieu ──────────────────────────────────────────────────────
+        // Thu quy ước 2..8 (2 = Thứ Hai ... 7 = Thứ Bảy, 8 = Chủ nhật); NgayHoc = NgayBatDau (thứ Hai) + (Thu - 2) ngày.
+        CreateMap<ThoiKhoaBieu, ThoiKhoaBieuDto>()
+            .ForMember(d => d.MaLopHp,      o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.MaLopHp : string.Empty))
+            .ForMember(d => d.MaMon,        o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.ChiTietCTDT.MonHoc.MaMon : string.Empty))
+            .ForMember(d => d.TenMon,       o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.ChiTietCTDT.MonHoc.TenMon : string.Empty))
+            .ForMember(d => d.TenGiaoVien,  o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.GiaoVien.TaiKhoan.HoTen : string.Empty))
+            .ForMember(d => d.HocKyId,      o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.HocKyId : 0))
+            .ForMember(d => d.TenHocKy,     o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.HocKy.TenHocKy : string.Empty))
+            .ForMember(d => d.MaTuan,       o => o.MapFrom(s => s.TuanHoc != null ? s.TuanHoc.MaTuan : string.Empty))
+            .ForMember(d => d.SoThuTuTuan,  o => o.MapFrom(s => s.TuanHoc != null ? s.TuanHoc.SoThuTuTuan : 0))
+            .ForMember(d => d.NgayHoc,      o => o.MapFrom(s => s.TuanHoc != null ? s.TuanHoc.NgayBatDau.AddDays(s.Thu - 2) : default));
 
         // ── LopSinhHoat ───────────────────────────────────────────────────────
         CreateMap<LopSinhHoat, LopSinhHoatDto>()

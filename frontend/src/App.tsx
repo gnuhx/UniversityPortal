@@ -18,6 +18,7 @@ import { ThongBaoPage } from "./pages/ThongBaoPage";
 import { HocPhiPage } from "./pages/HocPhiPage";
 import { YeuCauHanhChinhPage } from "./pages/YeuCauHanhChinhPage";
 import { YeuCauSuaDiemPage } from "./pages/YeuCauSuaDiemPage";
+import { ThoiKhoaBieuPage } from "./pages/ThoiKhoaBieuPage";
 import { ROLES } from "./constants/roles";
 
 function App() {
@@ -33,6 +34,8 @@ function App() {
             <Route path="/chuong-trinh-dt" element={<ChuongTrinhDTPage />} />
             <Route path="/chuong-trinh-dt/:id" element={<ChiTietCTDTPage />} />
             <Route path="/mon-hoc" element={<MonHocPage />} />
+            {/* ThoiKhoaBieuPage tự phân nhánh theo vai trò bên trong, không cần giới hạn allowedRoles ở route */}
+            <Route path="/thoi-khoa-bieu" element={<ThoiKhoaBieuPage />} />
 
             {/* Sinh viên */}
             <Route element={<ProtectedRoute allowedRoles={[ROLES.SINH_VIEN]} />}>

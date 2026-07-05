@@ -19,6 +19,10 @@ public interface IUnitOfWork : IDisposable
 
     // ── Học kỳ ───────────────────────────────────────────────────────────────
     IHocKyRepository HocKys { get; }
+    ITuanHocRepository TuanHocs { get; }
+
+    // ── Thời khoá biểu ────────────────────────────────────────────────────────
+    IThoiKhoaBieuRepository ThoiKhoaBieus { get; }
 
     // ── Tuần 2 — Danh mục ─────────────────────────────────────────────────────
     INganhHocRepository NganhHocs { get; }

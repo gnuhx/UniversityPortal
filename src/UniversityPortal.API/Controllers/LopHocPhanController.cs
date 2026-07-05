@@ -22,6 +22,19 @@ public class LopHocPhanController(ILopHocPhanService service) : ControllerBase
         return Ok(ApiResponseDto<IEnumerable<LopHocPhanDto>>.Ok(result));
     }
 
+    /// <summary>Admin/Giáo vụ duyệt danh sách lớp học phần có phân trang, lọc theo học kỳ và/hoặc mã lớp.</summary>
+    [HttpGet]
+    [Authorize(Roles = "Admin,Giáo vụ")]
+    public async Task<ActionResult<ApiResponseDto<PagedResultDto<LopHocPhanDto>>>> GetPaged(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] int? hocKyId = null,
+        [FromQuery] string? keyword = null)
+    {
+        var result = await service.GetPagedAsync(page, pageSize, hocKyId, keyword);
+        return Ok(ApiResponseDto<PagedResultDto<LopHocPhanDto>>.Ok(result));
+    }
+
     /// <summary>Giáo viên khoá bảng điểm.</summary>
     [HttpPut("{id:int}/khoa-bang-diem")]
     [Authorize(Roles = "Giáo viên")]

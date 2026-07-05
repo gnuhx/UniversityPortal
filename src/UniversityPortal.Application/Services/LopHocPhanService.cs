@@ -1,4 +1,5 @@
 using AutoMapper;
+using UniversityPortal.Application.DTOs.Common;
 using UniversityPortal.Application.DTOs.LopHocPhan;
 using UniversityPortal.Application.Interfaces;
 using UniversityPortal.Application.Interfaces.Services;
@@ -15,6 +16,18 @@ public class LopHocPhanService(IUnitOfWork uow, IMapper mapper) : ILopHocPhanSer
 
         var list = await uow.LopHocPhans.GetByGiaoVienWithDetailsAsync(gv.Id);
         return mapper.Map<IEnumerable<LopHocPhanDto>>(list);
+    }
+
+    public async Task<PagedResultDto<LopHocPhanDto>> GetPagedAsync(int page, int pageSize, int? hocKyId, string? keyword)
+    {
+        var paged = await uow.LopHocPhans.GetPagedFilterAsync(page, pageSize, hocKyId, keyword);
+        return new PagedResultDto<LopHocPhanDto>
+        {
+            Data     = mapper.Map<IEnumerable<LopHocPhanDto>>(paged.Data),
+            Total    = paged.Total,
+            Page     = paged.Page,
+            PageSize = paged.PageSize
+        };
     }
 
     public async Task KhoaBangDiemAsync(int lopHpId, int taiKhoanId)

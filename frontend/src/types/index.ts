@@ -320,6 +320,54 @@ export interface HocKy {
   tenNamHoc: string;
 }
 
+// ===== Tuan hoc =====
+export interface TuanHoc {
+  id: number;
+  maTuan: string;
+  soThuTuTuan: number;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  tenNamHoc: string;
+}
+
+// ===== Thoi khoa bieu =====
+export interface ThoiKhoaBieu {
+  id: number;
+  lopHpId: number;
+  maLopHp: string;
+  maMon: string;
+  tenMon: string;
+  tenGiaoVien: string;
+  hocKyId: number;
+  tenHocKy: string;
+  tuanHocId: number;
+  maTuan: string;
+  soThuTuTuan: number;
+  /** 2 = Thứ Hai ... 7 = Thứ Bảy, 8 = Chủ nhật */
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+  ngayHoc: string;
+}
+
+export interface CreateThoiKhoaBieu {
+  lopHpId: number;
+  tuanHocId: number;
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+}
+
+export interface UpdateThoiKhoaBieu {
+  tuanHocId: number;
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+}
+
 // ===== Hoc phi =====
 export interface GenerateHocPhi {
   hocKyId: number;
