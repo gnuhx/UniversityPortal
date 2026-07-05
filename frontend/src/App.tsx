@@ -9,6 +9,8 @@ import { SinhVienPage } from "./pages/SinhVienPage";
 import { GiaoVienPage } from "./pages/GiaoVienPage";
 import { LopSinhHoatPage } from "./pages/LopSinhHoatPage";
 import { NganhHocPage } from "./pages/NganhHocPage";
+import { NamHocPage } from "./pages/NamHocPage";
+import { HocKyPage } from "./pages/HocKyPage";
 import { ChuongTrinhDTPage } from "./pages/ChuongTrinhDTPage";
 import { ChiTietCTDTPage } from "./pages/ChiTietCTDTPage";
 import { MonHocPage } from "./pages/MonHocPage";
@@ -31,6 +33,8 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/nganh-hoc" element={<NganhHocPage />} />
+            <Route path="/nam-hoc" element={<NamHocPage />} />
+            <Route path="/nam-hoc/:id" element={<HocKyPage />} />
             <Route path="/chuong-trinh-dt" element={<ChuongTrinhDTPage />} />
             <Route path="/chuong-trinh-dt/:id" element={<ChiTietCTDTPage />} />
             <Route path="/mon-hoc" element={<MonHocPage />} />

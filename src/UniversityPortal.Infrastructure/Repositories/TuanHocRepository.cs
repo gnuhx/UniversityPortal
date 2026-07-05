@@ -16,4 +16,7 @@ public class TuanHocRepository(AppDbContext context) : BaseRepository<TuanHoc>(c
             .Include(x => x.NamHoc)
             .OrderBy(x => x.NamHocId).ThenBy(x => x.SoThuTuTuan)
             .ToListAsync();
+
+    public async Task<bool> ExistsByNamHocAsync(int namHocId)
+        => await DbSet.AnyAsync(x => x.NamHocId == namHocId);
 }

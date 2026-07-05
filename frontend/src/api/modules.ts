@@ -13,7 +13,8 @@ import type {
   DanhSachLopHP,
   LopHocPhan, NhapDiem,
   ThongBao, CreateThongBao,
-  HocKy, HocPhi, CreateHocPhi, GenerateHocPhi, GenerateHocPhiResult,
+  NamHoc, UpsertNamHoc,
+  HocKy, UpsertHocKy, HocPhi, CreateHocPhi, GenerateHocPhi, GenerateHocPhiResult,
   TuanHoc, ThoiKhoaBieu, CreateThoiKhoaBieu, UpdateThoiKhoaBieu,
   YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh,
   YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
@@ -30,6 +31,7 @@ export const chuongTrinhDTApi = createCrudApi<ChuongTrinhDT, UpsertChuongTrinhDT
 export const chiTietCTDTApi = createCrudApi<ChiTietCTDT, CreateChiTietCTDT, UpdateChiTietCTDT>("/chi-tiet-ctdt");
 export const monHocApi = createCrudApi<MonHoc, UpsertMonHoc>("/mon-hoc");
 export const taiKhoanApi = createCrudApi<TaiKhoan, CreateTaiKhoan, UpdateTaiKhoan>("/tai-khoan");
+export const namHocApi = createCrudApi<NamHoc, UpsertNamHoc>("/nam-hoc");
 
 export const sinhVienMeApi = {
   async getMe() {
@@ -99,12 +101,7 @@ export const thongBaoApi = {
   },
 };
 
-export const hocKyApi = {
-  async getAll() {
-    const res = await apiClient.get<ApiResponse<HocKy[]>>("/hoc-ky");
-    return res.data.data;
-  },
-};
+export const hocKyApi = createCrudApi<HocKy, UpsertHocKy>("/hoc-ky");
 
 export const tuanHocApi = {
   async getAll() {

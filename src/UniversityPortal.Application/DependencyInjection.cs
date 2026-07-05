@@ -42,6 +42,8 @@ public static class DependencyInjection
         services.AddScoped<IYeuCauSuaDiemService, YeuCauSuaDiemService>();
         services.AddScoped<ITuanHocService, TuanHocService>();
         services.AddScoped<IThoiKhoaBieuService, ThoiKhoaBieuService>();
+        services.AddScoped<INamHocService, NamHocService>();
+        services.AddScoped<IHocKyService, HocKyService>();
 
         return services;
     }

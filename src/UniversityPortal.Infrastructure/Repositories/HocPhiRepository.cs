@@ -32,4 +32,7 @@ public class HocPhiRepository(AppDbContext context) : BaseRepository<HocPhi>(con
             .OrderByDescending(x => x.HocKy.NgayBatDau)
             .ThenBy(x => x.SinhVien.Mssv)
             .ToListAsync();
+
+    public async Task<bool> ExistsByHocKyAsync(int hocKyId)
+        => await DbSet.AnyAsync(x => x.HocKyId == hocKyId);
 }

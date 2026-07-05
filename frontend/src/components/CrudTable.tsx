@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Button, Form, Input, Modal, Popconfirm, Select, Space, Switch, Table, App } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Popconfirm, Select, Space, Switch, Table, App } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Dayjs } from "dayjs";
 import type { PagedResult } from "../types";
 
 export interface CrudFormField {
   name: string;
   label: string;
-  type?: "text" | "number" | "password" | "select" | "switch" | "email";
+  type?: "text" | "number" | "password" | "select" | "switch" | "email" | "date";
   required?: boolean;
   options?: { label: string; value: number | string }[];
   hideOnEdit?: boolean;
@@ -108,6 +109,12 @@ export function CrudTable<T extends { id: number }, TCreate, TUpdate>({
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
+    // DatePicker trả về đối tượng Dayjs — API cần chuỗi ISO "YYYY-MM-DD".
+    for (const field of formFields) {
+      if (field.type === "date" && values[field.name]) {
+        values[field.name] = (values[field.name] as Dayjs).format("YYYY-MM-DD");
+      }
+    }
     if (editingRecord) {
       updateMutation.mutate({ id: editingRecord.id, dto: values as TUpdate });
     } else {
@@ -225,6 +232,8 @@ function renderField(field: CrudFormField) {
       return <SwitchField />;
     case "select":
       return <SelectField options={field.options || []} />;
+    case "date":
+      return <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />;
     default:
       return <Input />;
   }

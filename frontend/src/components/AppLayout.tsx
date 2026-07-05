@@ -55,6 +55,7 @@ const allMenuItems = [
     roles: [ROLES.SINH_VIEN, ROLES.GIAO_VIEN, ROLES.ADMIN, ROLES.GIAO_VU],
   },
   { key: "/nganh-hoc", icon: <ApartmentOutlined />, label: "Ngành học", roles: undefined },
+  { key: "/nam-hoc", icon: <CalendarOutlined />, label: "Năm học", roles: undefined },
   { key: "/chuong-trinh-dt", icon: <BookOutlined />, label: "Chương trình đào tạo", roles: undefined },
   { key: "/mon-hoc", icon: <BookOutlined />, label: "Môn học", roles: undefined },
 ];

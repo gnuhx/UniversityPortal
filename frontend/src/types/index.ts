@@ -312,12 +312,30 @@ export interface CreateThongBao {
   lopNhanId?: number | null;
 }
 
+// ===== Nam hoc =====
+export interface NamHoc {
+  id: number;
+  tenNamHoc: string;
+  createdAt: string;
+}
+
+export interface UpsertNamHoc {
+  tenNamHoc: string;
+}
+
 // ===== Hoc ky =====
 export interface HocKy {
   id: number;
   tenHocKy: string;
+  namHocId: number;
   ngayBatDau: string;
   tenNamHoc: string;
+}
+
+export interface UpsertHocKy {
+  tenHocKy: string;
+  namHocId: number;
+  ngayBatDau: string;
 }
 
 // ===== Tuan hoc =====

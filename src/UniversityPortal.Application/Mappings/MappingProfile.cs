@@ -5,9 +5,11 @@ using UniversityPortal.Application.DTOs.ChiTietCTDT;
 using UniversityPortal.Application.DTOs.ChuongTrinhDT;
 using UniversityPortal.Application.DTOs.DanhSachLopHP;
 using UniversityPortal.Application.DTOs.GiaoVien;
+using UniversityPortal.Application.DTOs.HocKy;
 using UniversityPortal.Application.DTOs.LopHocPhan;
 using UniversityPortal.Application.DTOs.LopSinhHoat;
 using UniversityPortal.Application.DTOs.MonHoc;
+using UniversityPortal.Application.DTOs.NamHoc;
 using UniversityPortal.Application.DTOs.NganhHoc;
 using UniversityPortal.Application.DTOs.PhongBan;
 using UniversityPortal.Application.DTOs.SinhVien;
@@ -97,6 +99,13 @@ public class MappingProfile : Profile
             .ForMember(d => d.TenHocKy,    o => o.MapFrom(s => s.HocKy != null ? s.HocKy.TenHocKy : string.Empty))
             .ForMember(d => d.TenGiaoVien, o => o.MapFrom(s => s.GiaoVien != null ? s.GiaoVien.TaiKhoan.HoTen : string.Empty))
             .ForMember(d => d.SoSinhVien,  o => o.MapFrom(s => s.DanhSachLopHPs != null ? s.DanhSachLopHPs.Count : 0));
+
+        // ── NamHoc ────────────────────────────────────────────────────────────
+        CreateMap<NamHoc, NamHocDto>();
+
+        // ── HocKy ─────────────────────────────────────────────────────────────
+        CreateMap<HocKy, HocKyDto>()
+            .ForMember(d => d.TenNamHoc, o => o.MapFrom(s => s.NamHoc != null ? s.NamHoc.TenNamHoc : string.Empty));
 
         // ── TuanHoc ───────────────────────────────────────────────────────────
         CreateMap<TuanHoc, TuanHocDto>()

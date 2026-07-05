@@ -17,7 +17,8 @@ public interface IUnitOfWork : IDisposable
     IDanhSachLopHPRepository DanhSachLopHPs { get; }
     IHocBaRepository HocBas { get; }
 
-    // ── Học kỳ ───────────────────────────────────────────────────────────────
+    // ── Năm học / Học kỳ ─────────────────────────────────────────────────────
+    INamHocRepository NamHocs { get; }
     IHocKyRepository HocKys { get; }
     ITuanHocRepository TuanHocs { get; }
 
