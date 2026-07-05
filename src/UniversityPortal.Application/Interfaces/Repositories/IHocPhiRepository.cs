@@ -9,6 +9,6 @@ public interface IHocPhiRepository : IRepository<HocPhi>
     Task<HocPhi?> GetBySinhVienAndHocKyAsync(int sinhVienId, int hocKyId);
     Task<IEnumerable<HocPhi>> GetAllWithDetailsAsync();
 
-    /// <summary>Kiểm tra còn khoản học phí nào gắn với học kỳ này không (dùng khi xoá học kỳ).</summary>
-    Task<bool> ExistsByHocKyAsync(int hocKyId);
+    /// <summary>Đếm số khoản học phí đang gắn với học kỳ này (dùng khi xoá học kỳ).</summary>
+    Task<int> CountByHocKyAsync(int hocKyId);
 }

@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
-import { Button, Space } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { Select, Space } from "antd";
 import dayjs from "dayjs";
-import { useNavigate, useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { CrudTable, type CrudFormField } from "../components/CrudTable";
 import { hocKyApi, namHocApi } from "../api/modules";
 import type { HocKy } from "../types";
@@ -11,19 +10,20 @@ import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
 
 export function HocKyPage() {
-  const { id } = useParams<{ id: string }>();
-  const namHocId = Number(id);
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const namHocIdParam = searchParams.get("namHocId");
+  const namHocId = namHocIdParam ? Number(namHocIdParam) : undefined;
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.vaiTro === ROLES.ADMIN;
 
-  const { data: namHoc } = useQuery({
-    queryKey: ["nam-hoc", namHocId],
-    queryFn: () => namHocApi.getById(namHocId),
+  const { data: namHocOptions } = useQuery({
+    queryKey: ["nam-hoc-all"],
+    queryFn: () => namHocApi.getAll(),
   });
 
   const columns: ColumnsType<HocKy> = [
     { title: "Tên học kỳ", dataIndex: "tenHocKy" },
+    { title: "Năm học", dataIndex: "tenNamHoc" },
     {
       title: "Ngày bắt đầu",
       dataIndex: "ngayBatDau",
@@ -33,16 +33,28 @@ export function HocKyPage() {
 
   const formFields: CrudFormField[] = [
     { name: "tenHocKy", label: "Tên học kỳ", required: true },
+    {
+      name: "namHocId",
+      label: "Năm học",
+      type: "select",
+      required: true,
+      options: (namHocOptions || []).map((n) => ({ label: n.tenNamHoc, value: n.id })),
+    },
     { name: "ngayBatDau", label: "Ngày bắt đầu (thứ Hai)", type: "date", required: true },
   ];
 
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/nam-hoc")}>
-          Quay lại
-        </Button>
-        <h2 style={{ margin: 0 }}>Học kỳ của năm học: {namHoc?.tenNamHoc}</h2>
+        <span>Năm học:</span>
+        <Select
+          allowClear
+          style={{ width: 160 }}
+          placeholder="Tất cả năm học"
+          value={namHocId}
+          onChange={(v) => setSearchParams(v ? { namHocId: String(v) } : {})}
+          options={(namHocOptions || []).map((n) => ({ label: n.tenNamHoc, value: n.id }))}
+        />
       </Space>
 
       <CrudTable<HocKy, any, any>
@@ -53,8 +65,8 @@ export function HocKyPage() {
         columns={columns}
         formFields={formFields}
         toFormValues={(r) => ({ ...r, ngayBatDau: dayjs(r.ngayBatDau) })}
-        onCreate={isAdmin ? (dto: any) => hocKyApi.create({ ...dto, namHocId }) : undefined}
-        onUpdate={isAdmin ? (id: number, dto: any) => hocKyApi.update(id, { ...dto, namHocId }) : undefined}
+        onCreate={isAdmin ? hocKyApi.create : undefined}
+        onUpdate={isAdmin ? hocKyApi.update : undefined}
         onDelete={isAdmin ? hocKyApi.remove : undefined}
         canCreate={isAdmin}
         canEdit={isAdmin}

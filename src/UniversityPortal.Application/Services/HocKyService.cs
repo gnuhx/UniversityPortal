@@ -71,21 +71,31 @@ public class HocKyService(IUnitOfWork uow, IMapper mapper) : IHocKyService
         return mapper.Map<HocKyDto>(await uow.HocKys.GetDetailAsync(id));
     }
 
-    /// <summary>Xoá học kỳ. Ném BadRequestException nếu còn lớp học phần, chi tiết CTĐT hoặc học phí liên kết.</summary>
+    /// <summary>
+    /// Xoá học kỳ. Kiểm tra đồng thời cả 3 loại dữ liệu liên kết (lớp học phần, chi tiết CTĐT,
+    /// học phí) trong 1 lần thay vì dừng ở điều kiện đầu tiên, để Admin biết ngay toàn bộ phạm vi
+    /// cần xử lý trước khi xoá được — tránh phải thử xoá nhiều lần mới biết hết lý do bị chặn.
+    /// </summary>
     public async Task DeleteAsync(int id)
     {
         var hocKy = await uow.HocKys.GetDetailAsync(id)
             ?? throw new NotFoundException($"Không tìm thấy học kỳ id = {id}.");
 
-        var coLopHocPhan = await uow.LopHocPhans.GetPagedByHocKyAsync(id, 1, 1);
-        if (coLopHocPhan.Total > 0)
-            throw new BadRequestException("Không thể xoá học kỳ đang có lớp học phần liên kết.");
+        var soLopHocPhan = (await uow.LopHocPhans.GetPagedByHocKyAsync(id, 1, 1)).Total;
+        var soChiTietCTDT = await uow.ChiTietCTDTs.CountByHocKyAsync(id);
+        var soHocPhi = await uow.HocPhis.CountByHocKyAsync(id);
 
-        if (await uow.ChiTietCTDTs.ExistsByHocKyAsync(id))
-            throw new BadRequestException("Không thể xoá học kỳ đang có chi tiết chương trình đào tạo liên kết.");
+        var lyDo = new List<string>();
+        if (soLopHocPhan > 0)
+            lyDo.Add($"{soLopHocPhan} lớp học phần đang dùng học kỳ này — xử lý tại trang \"Lớp học phần\".");
+        if (soChiTietCTDT > 0)
+            lyDo.Add($"{soChiTietCTDT} môn học trong chương trình đào tạo áp dụng học kỳ này — xử lý tại trang \"Ngành học & CTĐT\" → tab \"Quản lý CTĐT\" → Xem môn học.");
+        if (soHocPhi > 0)
+            lyDo.Add($"{soHocPhi} khoản học phí đã lập cho học kỳ này — xử lý tại trang \"Học phí\".");
 
-        if (await uow.HocPhis.ExistsByHocKyAsync(id))
-            throw new BadRequestException("Không thể xoá học kỳ đang có khoản học phí liên kết.");
+        if (lyDo.Count > 0)
+            throw new BadRequestException(
+                $"Không thể xoá học kỳ '{hocKy.TenHocKy}' vì còn dữ liệu liên kết.", lyDo);
 
         uow.HocKys.Delete(hocKy);
         await uow.CommitAsync();

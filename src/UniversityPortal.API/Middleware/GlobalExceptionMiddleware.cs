@@ -43,7 +43,7 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         context.Response.ContentType = "application/json";
         context.Response.StatusCode  = (int)status;
 
-        var response = ApiResponseDto<object>.Fail(message);
+        var response = ApiResponseDto<object>.Fail(message, (ex as BadRequestException)?.Errors);
         return context.Response.WriteAsync(JsonSerializer.Serialize(response, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase

@@ -33,6 +33,6 @@ public class HocPhiRepository(AppDbContext context) : BaseRepository<HocPhi>(con
             .ThenBy(x => x.SinhVien.Mssv)
             .ToListAsync();
 
-    public async Task<bool> ExistsByHocKyAsync(int hocKyId)
-        => await DbSet.AnyAsync(x => x.HocKyId == hocKyId);
+    public async Task<int> CountByHocKyAsync(int hocKyId)
+        => await DbSet.CountAsync(x => x.HocKyId == hocKyId);
 }

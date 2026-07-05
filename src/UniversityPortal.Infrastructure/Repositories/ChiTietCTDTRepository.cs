@@ -54,7 +54,7 @@ public class ChiTietCTDTRepository(AppDbContext context) : BaseRepository<ChiTie
             .OrderBy(x => x.HocKyId).ThenBy(x => x.MonHoc.MaMon)
             .ToListAsync();
 
-    /// <summary>Kiểm tra còn chi tiết CTDT nào gắn với học kỳ này để chặn xoá học kỳ.</summary>
-    public async Task<bool> ExistsByHocKyAsync(int hocKyId)
-        => await DbSet.AnyAsync(x => x.HocKyId == hocKyId);
+    /// <summary>Đếm số chi tiết CTDT đang gắn với học kỳ này để chặn xoá học kỳ.</summary>
+    public async Task<int> CountByHocKyAsync(int hocKyId)
+        => await DbSet.CountAsync(x => x.HocKyId == hocKyId);
 }

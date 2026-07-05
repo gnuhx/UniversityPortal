@@ -48,7 +48,7 @@ export function CrudTable<T extends { id: number }, TCreate, TUpdate>({
   searchPlaceholder,
   extraParams,
 }: CrudTableProps<T, TCreate, TUpdate>) {
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -92,7 +92,24 @@ export function CrudTable<T extends { id: number }, TCreate, TUpdate>({
       message.success("Xoá thành công");
       invalidate();
     },
-    onError: (err: any) => message.error(err?.response?.data?.message || "Có lỗi xảy ra"),
+    onError: (err: any) => {
+      const errors: string[] | undefined = err?.response?.data?.errors;
+      const errorMessage = err?.response?.data?.message || "Có lỗi xảy ra";
+      if (errors && errors.length > 0) {
+        modal.error({
+          title: errorMessage,
+          content: (
+            <ul style={{ paddingLeft: 20, margin: 0 }}>
+              {errors.map((e, i) => (
+                <li key={i}>{e}</li>
+              ))}
+            </ul>
+          ),
+        });
+      } else {
+        message.error(errorMessage);
+      }
+    },
   });
 
   const openCreate = () => {

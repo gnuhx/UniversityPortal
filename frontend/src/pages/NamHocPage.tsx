@@ -18,7 +18,7 @@ export function NamHocPage() {
       title: "Học kỳ",
       key: "detail",
       render: (_, record) => (
-        <Button size="small" onClick={() => navigate(`/nam-hoc/${record.id}`)}>
+        <Button size="small" onClick={() => navigate(`/hoc-ky?namHocId=${record.id}`)}>
           Xem học kỳ
         </Button>
       ),

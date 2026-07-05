@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { LoginPage } from "./pages/LoginPage";
@@ -22,6 +22,12 @@ import { YeuCauSuaDiemPage } from "./pages/YeuCauSuaDiemPage";
 import { ThoiKhoaBieuPage } from "./pages/ThoiKhoaBieuPage";
 import { ROLES } from "./constants/roles";
 
+/** Task #12: /nam-hoc/:id gộp vào trang Học kỳ độc lập — redirect giữ link cũ không vỡ. */
+function RedirectToHocKy() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/hoc-ky?namHocId=${id}`} replace />;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -33,7 +39,9 @@ function App() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/nganh-hoc" element={<NganhHocPage />} />
             <Route path="/nam-hoc" element={<NamHocPage />} />
-            <Route path="/nam-hoc/:id" element={<HocKyPage />} />
+            <Route path="/hoc-ky" element={<HocKyPage />} />
+            {/* Trang Học kỳ theo năm học đã gộp vào /hoc-ky (task #12) — redirect để không vỡ link cũ */}
+            <Route path="/nam-hoc/:id" element={<RedirectToHocKy />} />
             {/* Trang danh sách CTĐT đã gộp vào /nganh-hoc (task #11) — redirect để không vỡ link cũ */}
             <Route path="/chuong-trinh-dt" element={<Navigate to="/nganh-hoc" replace />} />
             <Route path="/chuong-trinh-dt/:id" element={<ChiTietCTDTPage />} />
