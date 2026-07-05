@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Table, Tag, Card, Row, Col, Statistic, Select, Space, Button,
   Modal, Form, InputNumber, message, Alert, Empty, Spin, Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { PlusOutlined, ThunderboltOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined, ThunderboltOutlined, CheckCircleOutlined,
+  ClockCircleOutlined, GiftOutlined, WalletOutlined,
+} from "@ant-design/icons";
 import { hocPhiApi, hocKyApi } from "../api/modules";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
@@ -14,13 +17,52 @@ import type { HocPhi, CreateHocPhi, GenerateHocPhi } from "../types";
 const { Text } = Typography;
 const TRANG_THAI_OPTIONS = ["Chưa đóng", "Đã đóng", "Miễn giảm"];
 
+// Màu trạng thái tra từ palette đã validate (references/palette.md của skill dataviz) —
+// luôn đi kèm icon + nhãn chữ, không dùng màu làm dấu hiệu duy nhất.
+const TRANG_THAI_META: Record<string, { color: string; icon: ReactNode; accent: string }> = {
+  "Đã đóng": { color: "success", icon: <CheckCircleOutlined />, accent: "#0ca30c" },
+  "Chưa đóng": { color: "warning", icon: <ClockCircleOutlined />, accent: "#fab219" },
+  "Miễn giảm": { color: "processing", icon: <GiftOutlined />, accent: "#2a78d6" },
+};
+
 function TrangThaiTag({ trangThai }: { trangThai: string }) {
-  const color = trangThai === "Đã đóng" ? "success" : trangThai === "Miễn giảm" ? "processing" : "warning";
-  return <Tag color={color}>{trangThai}</Tag>;
+  const meta = TRANG_THAI_META[trangThai];
+  return (
+    <Tag color={meta?.color} icon={meta?.icon}>
+      {trangThai}
+    </Tag>
+  );
 }
 
 function fmtVnd(v: number) {
   return v.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+}
+
+/** Khu vực riêng cho 1 học kỳ — thay bảng phẳng để sinh viên thấy rõ từng kỳ. */
+function SemesterFeeCard({ hocPhi }: { hocPhi: HocPhi }) {
+  const meta = TRANG_THAI_META[hocPhi.trangThaiDong];
+  return (
+    <Card
+      size="small"
+      style={{
+        borderLeft: `4px solid ${meta?.accent ?? "#c3c2b7"}`,
+        height: "100%",
+      }}
+    >
+      <Text type="secondary" style={{ fontSize: 12 }}>
+        {hocPhi.tenHocKy}
+      </Text>
+      <div style={{ fontSize: 22, fontWeight: 600, margin: "4px 0 8px" }}>
+        {fmtVnd(hocPhi.soTien)}
+      </div>
+      <Space style={{ width: "100%", justifyContent: "space-between" }}>
+        <TrangThaiTag trangThai={hocPhi.trangThaiDong} />
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          {new Date(hocPhi.createdAt).toLocaleDateString("vi-VN")}
+        </Text>
+      </Space>
+    </Card>
+  );
 }
 
 export function HocPhiPage() {
@@ -99,22 +141,7 @@ export function HocPhiPage() {
 
   const total = items.reduce((s, x) => s + x.soTien, 0);
   const unpaid = items.filter((x) => x.trangThaiDong === "Chưa đóng").reduce((s, x) => s + x.soTien, 0);
-
-  const studentColumns: ColumnsType<HocPhi> = [
-    { title: "Học kỳ", dataIndex: "tenHocKy", width: 180 },
-    {
-      title: "Số tiền", dataIndex: "soTien", width: 160, align: "right",
-      render: (v: number) => fmtVnd(v),
-    },
-    {
-      title: "Trạng thái", dataIndex: "trangThaiDong", width: 130,
-      render: (v: string) => <TrangThaiTag trangThai={v} />,
-    },
-    {
-      title: "Ngày tạo", dataIndex: "createdAt", width: 130,
-      render: (v: string) => new Date(v).toLocaleDateString("vi-VN"),
-    },
-  ];
+  const paid = items.filter((x) => x.trangThaiDong === "Đã đóng").reduce((s, x) => s + x.soTien, 0);
 
   const adminColumns: ColumnsType<HocPhi> = [
     { title: "Sinh viên", dataIndex: "tenSinhVien", width: 160 },
@@ -171,28 +198,44 @@ export function HocPhiPage() {
 
       {/* Summary cards */}
       <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col>
+        <Col xs={24} sm={8} md={6}>
           <Card size="small">
             <Statistic
               title="Tổng học phí"
               value={total}
+              prefix={<WalletOutlined />}
               suffix="₫"
               formatter={(v) => Number(v).toLocaleString("vi-VN")}
             />
           </Card>
         </Col>
         {!isAdmin && (
-          <Col>
-            <Card size="small">
-              <Statistic
-                title="Chưa đóng"
-                value={unpaid}
-                suffix="₫"
-                valueStyle={{ color: unpaid > 0 ? "#cf1322" : "#3f8600" }}
-                formatter={(v) => Number(v).toLocaleString("vi-VN")}
-              />
-            </Card>
-          </Col>
+          <>
+            <Col xs={24} sm={8} md={6}>
+              <Card size="small">
+                <Statistic
+                  title="Đã đóng"
+                  value={paid}
+                  prefix={<CheckCircleOutlined />}
+                  suffix="₫"
+                  valueStyle={{ color: TRANG_THAI_META["Đã đóng"].accent }}
+                  formatter={(v) => Number(v).toLocaleString("vi-VN")}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={8} md={6}>
+              <Card size="small">
+                <Statistic
+                  title="Chưa đóng"
+                  value={unpaid}
+                  prefix={<ClockCircleOutlined />}
+                  suffix="₫"
+                  valueStyle={{ color: unpaid > 0 ? "#d03b3b" : TRANG_THAI_META["Đã đóng"].accent }}
+                  formatter={(v) => Number(v).toLocaleString("vi-VN")}
+                />
+              </Card>
+            </Col>
+          </>
         )}
       </Row>
 
@@ -217,11 +260,25 @@ export function HocPhiPage() {
         />
       )}
 
-      {isAdmin || (!myError && (myLoading || items.length > 0)) ? (
+      {/* Sinh viên: chia riêng từng học kỳ thành 1 thẻ thay vì bảng phẳng */}
+      {!isAdmin && !myError && (myLoading || items.length > 0) && (
+        <Spin spinning={isLoading}>
+          <Row gutter={[16, 16]}>
+            {items.map((hp) => (
+              <Col key={hp.id} xs={24} sm={12} md={8} lg={6}>
+                <SemesterFeeCard hocPhi={hp} />
+              </Col>
+            ))}
+          </Row>
+        </Spin>
+      )}
+
+      {/* Admin: bảng tổng hợp toàn trường, vẫn cần dạng bảng để tra cứu nhiều sinh viên */}
+      {isAdmin && (
         <Spin spinning={isLoading}>
           <Table<HocPhi>
             rowKey="id"
-            columns={isAdmin ? adminColumns : studentColumns}
+            columns={adminColumns}
             dataSource={items}
             loading={false}
             pagination={{ pageSize: 20 }}
@@ -229,7 +286,7 @@ export function HocPhiPage() {
             size="middle"
           />
         </Spin>
-      ) : null}
+      )}
 
       {/* Generate modal (admin) */}
       <Modal

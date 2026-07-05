@@ -56,7 +56,7 @@ const allMenuItems = [
   },
   { key: "/nganh-hoc", icon: <ApartmentOutlined />, label: "Ngành học & CTĐT", roles: undefined },
   { key: "/nam-hoc", icon: <CalendarOutlined />, label: "Năm học", roles: undefined },
-  { key: "/hoc-ky", icon: <CalendarOutlined />, label: "Học kỳ", roles: undefined },
+  { key: "/hoc-ky", icon: <CalendarOutlined />, label: "Học kỳ", roles: [ROLES.ADMIN] },
   { key: "/mon-hoc", icon: <BookOutlined />, label: "Môn học", roles: undefined },
 ];
 
