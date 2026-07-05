@@ -9,8 +9,8 @@ namespace UniversityPortal.Application.Interfaces.Services;
 /// </summary>
 public interface IChuongTrinhDTService
 {
-    /// <summary>Lấy danh sách CTDT có phân trang và lọc theo keyword và ngành.</summary>
-    Task<PagedResultDto<ChuongTrinhDTDto>> GetPagedAsync(int page, int pageSize, string? keyword, int? nganhId);
+    /// <summary>Lấy danh sách CTDT có phân trang và lọc theo keyword, ngành và khoá học.</summary>
+    Task<PagedResultDto<ChuongTrinhDTDto>> GetPagedAsync(int page, int pageSize, string? keyword, int? nganhId, string? khoaHoc);
 
     /// <summary>Lấy tất cả CTDT (dùng cho dropdown).</summary>
     Task<IEnumerable<ChuongTrinhDTDto>> GetAllAsync();

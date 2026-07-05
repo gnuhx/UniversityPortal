@@ -16,9 +16,9 @@ public class ChuongTrinhDTService(IUnitOfWork uow, IMapper mapper) : IChuongTrin
 {
     /// <summary>Lấy danh sách CTDT có phân trang và lọc.</summary>
     public async Task<PagedResultDto<ChuongTrinhDTDto>> GetPagedAsync(
-        int page, int pageSize, string? keyword, int? nganhId)
+        int page, int pageSize, string? keyword, int? nganhId, string? khoaHoc)
     {
-        var paged = await uow.ChuongTrinhDTs.GetPagedFilterAsync(page, pageSize, keyword, nganhId);
+        var paged = await uow.ChuongTrinhDTs.GetPagedFilterAsync(page, pageSize, keyword, nganhId, khoaHoc);
         return new PagedResultDto<ChuongTrinhDTDto>
         {
             Data     = mapper.Map<IEnumerable<ChuongTrinhDTDto>>(paged.Data),

@@ -11,9 +11,9 @@ namespace UniversityPortal.Infrastructure.Repositories;
 /// </summary>
 public class ChuongTrinhDTRepository(AppDbContext context) : BaseRepository<ChuongTrinhDT>(context), IChuongTrinhDTRepository
 {
-    /// <summary>Lấy danh sách CTDT phân trang, lọc theo mã CTDT và ngành.</summary>
+    /// <summary>Lấy danh sách CTDT phân trang, lọc theo mã CTDT, ngành và khoá học (exact match).</summary>
     public async Task<PagedResultDto<ChuongTrinhDT>> GetPagedFilterAsync(
-        int page, int pageSize, string? keyword, int? nganhId)
+        int page, int pageSize, string? keyword, int? nganhId, string? khoaHoc)
     {
         var query = DbSet
             .Include(x => x.Nganh)
@@ -29,6 +29,9 @@ public class ChuongTrinhDTRepository(AppDbContext context) : BaseRepository<Chuo
 
         if (nganhId.HasValue)
             query = query.Where(x => x.NganhId == nganhId.Value);
+
+        if (!string.IsNullOrWhiteSpace(khoaHoc))
+            query = query.Where(x => x.KhoaHoc == khoaHoc);
 
         var total = await query.CountAsync();
         var data  = await query

@@ -26,16 +26,17 @@ namespace UniversityPortal.API.Controllers;
 public class ChuongTrinhDTController(IChuongTrinhDTService service) : ControllerBase
 {
     /// <summary>
-    /// Lấy danh sách CTDT có phân trang, lọc theo keyword và ngành.
+    /// Lấy danh sách CTDT có phân trang, lọc theo keyword, ngành và khoá học (exact match).
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<ChuongTrinhDTDto>>>> GetPaged(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] string? keyword = null,
-        [FromQuery] int? nganhId = null)
+        [FromQuery] int? nganhId = null,
+        [FromQuery] string? khoaHoc = null)
     {
-        var result = await service.GetPagedAsync(page, pageSize, keyword, nganhId);
+        var result = await service.GetPagedAsync(page, pageSize, keyword, nganhId, khoaHoc);
         return Ok(ApiResponseDto<PagedResultDto<ChuongTrinhDTDto>>.Ok(result));
     }
 

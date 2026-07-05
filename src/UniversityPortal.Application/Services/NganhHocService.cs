@@ -87,7 +87,7 @@ public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
             ?? throw new NotFoundException($"Không tìm thấy ngành học id = {id}.");
 
         // Kiểm tra ràng buộc trước khi xoá để tránh lỗi FK từ DB
-        var coCtdt = await uow.ChuongTrinhDTs.GetPagedFilterAsync(1, 1, null, id);
+        var coCtdt = await uow.ChuongTrinhDTs.GetPagedFilterAsync(1, 1, null, id, null);
         if (coCtdt.Total > 0)
             throw new BadRequestException("Không thể xoá ngành đang có chương trình đào tạo liên kết.");
 
