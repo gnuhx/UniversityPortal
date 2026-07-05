@@ -16,6 +16,7 @@ public class NganhHocRepository(AppDbContext context) : BaseRepository<NganhHoc>
     {
         var query = DbSet
             .Include(x => x.NganhCha)
+            .Include(x => x.PhongBan)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(keyword))
@@ -44,5 +45,6 @@ public class NganhHocRepository(AppDbContext context) : BaseRepository<NganhHoc>
     public async Task<NganhHoc?> GetDetailAsync(int id)
         => await DbSet
             .Include(x => x.NganhCha)
+            .Include(x => x.PhongBan)
             .FirstOrDefaultAsync(x => x.Id == id);
 }

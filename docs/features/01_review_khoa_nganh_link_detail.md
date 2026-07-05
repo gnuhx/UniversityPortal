@@ -1,7 +1,7 @@
 # Liên kết chính thức Khoa (phong_ban) ↔ Ngành (nganh_hoc)
 
 **Task:** #01
-**Trạng thái:** todo
+**Trạng thái:** review (code xong, migration chưa apply lên DB thật — xem mục 8)
 **Ngày tạo:** 2026-07-05
 **Người phụ trách:** (chưa gán)
 
@@ -122,3 +122,30 @@ API tự động chạy `Database.MigrateAsync()` khi khởi động
 sẽ tự áp dụng lên DB thật ngay lần deploy kế tiếp, không có bước duyệt
 riêng ở production. Vì vậy migration cần được kiểm thử kỹ (dry-run trên DB
 thật) trước khi merge/deploy, không chỉ dựa vào build thành công ở local.
+
+### Trạng thái triển khai (2026-07-05)
+
+Toàn bộ code đã được viết và kiểm thử:
+
+- Backend: entity, config, migration (`20260705055844_AddPhongBanToNganhHoc`),
+  DTO, mapping, repository, service, `PhongBanController` mới — build sạch,
+  test suite hiện có vẫn pass.
+- Frontend: type, `phongBanApi`, cột + dropdown "Khoa / Phòng ban" trong
+  `NganhHocPage.tsx` — `tsc --noEmit` sạch.
+- Migration đã dry-run trên DB thật trong transaction rollback — áp dụng
+  sạch, không lỗi, rollback không để lại dấu vết (đã xác minh lại
+  `INFORMATION_SCHEMA.COLUMNS`).
+- Script backfill (`docs/Data/backfill_phong_ban_nganh_hoc.sql`) đã dry-run
+  cùng migration trong một transaction — gán đúng Khoa CNTT/Khoa Kinh tế
+  cho 5 ngành hiện có; các ngành thuộc 4 Khoa mới (CKI/DDT/CDT/DKTDH/OTO)
+  sẽ tự động được gán khi chạy sau `them_khoa_nganh_hoc.sql` (hiện vẫn
+  chưa được áp dụng thật — vẫn ở trạng thái "đã kiểm thử, chờ người dùng
+  chạy" giống các script CTĐT trước đó).
+
+**Chưa làm — cần quyết định của người phụ trách:** migration **chưa được
+áp dụng thật** lên DB sản xuất. Có 2 cách để áp dụng:
+1. Để tự động chạy ở lần deploy API kế tiếp (`docker compose up` sẽ gọi
+   `MigrateAsync()`).
+2. Áp ngay bằng tay (`dotnet ef database update`) rồi chạy
+   `backfill_phong_ban_nganh_hoc.sql` — cho phép thấy hiệu quả ngay không
+   cần đợi deploy.

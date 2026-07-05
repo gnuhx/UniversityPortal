@@ -9,6 +9,7 @@ using UniversityPortal.Application.DTOs.LopHocPhan;
 using UniversityPortal.Application.DTOs.LopSinhHoat;
 using UniversityPortal.Application.DTOs.MonHoc;
 using UniversityPortal.Application.DTOs.NganhHoc;
+using UniversityPortal.Application.DTOs.PhongBan;
 using UniversityPortal.Application.DTOs.SinhVien;
 using UniversityPortal.Application.DTOs.TaiKhoan;
 using UniversityPortal.Domain.Entities;
@@ -55,7 +56,11 @@ public class MappingProfile : Profile
 
         // ── NganhHoc ──────────────────────────────────────────────────────────
         CreateMap<NganhHoc, NganhHocDto>()
-            .ForMember(d => d.TenNganhCha, o => o.MapFrom(s => s.NganhCha != null ? s.NganhCha.TenNganh : null));
+            .ForMember(d => d.TenNganhCha, o => o.MapFrom(s => s.NganhCha != null ? s.NganhCha.TenNganh : null))
+            .ForMember(d => d.TenPhongBan, o => o.MapFrom(s => s.PhongBan != null ? s.PhongBan.TenPhongBan : null));
+
+        // ── PhongBan ──────────────────────────────────────────────────────────
+        CreateMap<PhongBan, PhongBanDto>();
 
         // ── ChuongTrinhDT ─────────────────────────────────────────────────────
         CreateMap<ChuongTrinhDT, ChuongTrinhDTDto>()

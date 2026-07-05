@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IGiaoVienService, GiaoVienService>();
         services.AddScoped<ISinhVienService, SinhVienService>();
         services.AddScoped<INganhHocService, NganhHocService>();
+        services.AddScoped<IPhongBanService, PhongBanService>();
         services.AddScoped<IChuongTrinhDTService, ChuongTrinhDTService>();
         services.AddScoped<IMonHocService, MonHocService>();
         services.AddScoped<IChiTietCTDTService, ChiTietCTDTService>();

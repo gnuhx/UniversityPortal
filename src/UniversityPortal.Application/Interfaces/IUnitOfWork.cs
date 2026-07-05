@@ -22,6 +22,7 @@ public interface IUnitOfWork : IDisposable
 
     // ── Tuần 2 — Danh mục ─────────────────────────────────────────────────────
     INganhHocRepository NganhHocs { get; }
+    IPhongBanRepository PhongBans { get; }
     IChuongTrinhDTRepository ChuongTrinhDTs { get; }
     IMonHocRepository MonHocs { get; }
     IChiTietCTDTRepository ChiTietCTDTs { get; }

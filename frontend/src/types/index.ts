@@ -121,6 +121,8 @@ export interface NganhHoc {
   tenNganh: string;
   nganhChaId?: number | null;
   tenNganhCha?: string | null;
+  phongBanId?: number | null;
+  tenPhongBan?: string | null;
   createdAt: string;
 }
 
@@ -128,6 +130,13 @@ export interface UpsertNganhHoc {
   maNganh: string;
   tenNganh: string;
   nganhChaId?: number | null;
+  phongBanId?: number | null;
+}
+
+// ===== Phong ban =====
+export interface PhongBan {
+  id: number;
+  tenPhongBan: string;
 }
 
 // ===== Chuong trinh dao tao =====

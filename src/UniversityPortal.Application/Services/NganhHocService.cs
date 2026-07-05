@@ -49,7 +49,8 @@ public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
         {
             MaNganh    = dto.MaNganh,
             TenNganh   = dto.TenNganh,
-            NganhChaId = dto.NganhChaId
+            NganhChaId = dto.NganhChaId,
+            PhongBanId = dto.PhongBanId
         };
 
         await uow.NganhHocs.AddAsync(nganh);
@@ -71,6 +72,7 @@ public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
         nganh.MaNganh    = dto.MaNganh;
         nganh.TenNganh   = dto.TenNganh;
         nganh.NganhChaId = dto.NganhChaId;
+        nganh.PhongBanId = dto.PhongBanId;
 
         uow.NganhHocs.Update(nganh);
         await uow.CommitAsync();

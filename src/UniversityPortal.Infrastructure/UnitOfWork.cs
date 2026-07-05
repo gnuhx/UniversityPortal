@@ -24,6 +24,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
 
     // ── Danh mục chương trình đào tạo ────────────────────────────────────────
     private INganhHocRepository? _nganhHocs;
+    private IPhongBanRepository? _phongBans;
     private IChuongTrinhDTRepository? _chuongTrinhDTs;
     private IMonHocRepository? _monHocs;
     private IChiTietCTDTRepository? _chiTietCTDTs;
@@ -53,6 +54,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IHocKyRepository HocKys                 => _hocKys         ??= new HocKyRepository(context);
 
     public INganhHocRepository NganhHocs           => _nganhHocs      ??= new NganhHocRepository(context);
+    public IPhongBanRepository PhongBans           => _phongBans      ??= new PhongBanRepository(context);
     public IChuongTrinhDTRepository ChuongTrinhDTs => _chuongTrinhDTs ??= new ChuongTrinhDTRepository(context);
     public IMonHocRepository MonHocs               => _monHocs        ??= new MonHocRepository(context);
     public IChiTietCTDTRepository ChiTietCTDTs     => _chiTietCTDTs   ??= new ChiTietCTDTRepository(context);

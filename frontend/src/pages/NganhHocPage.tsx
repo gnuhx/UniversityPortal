@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
 import { CrudTable, type CrudFormField } from "../components/CrudTable";
-import { nganhHocApi } from "../api/modules";
+import { nganhHocApi, phongBanApi } from "../api/modules";
 import type { NganhHoc } from "../types";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
@@ -14,11 +14,16 @@ export function NganhHocPage() {
     queryKey: ["nganh-hoc-all"],
     queryFn: () => nganhHocApi.getAll(),
   });
+  const { data: phongBanOptions } = useQuery({
+    queryKey: ["phong-ban-all"],
+    queryFn: () => phongBanApi.getAll(),
+  });
 
   const columns: ColumnsType<NganhHoc> = [
     { title: "Mã ngành", dataIndex: "maNganh" },
     { title: "Tên ngành", dataIndex: "tenNganh" },
     { title: "Ngành cha", dataIndex: "tenNganhCha" },
+    { title: "Khoa / Phòng ban", dataIndex: "tenPhongBan" },
   ];
 
   const formFields: CrudFormField[] = [
@@ -29,6 +34,12 @@ export function NganhHocPage() {
       label: "Ngành cha",
       type: "select",
       options: (nganhOptions || []).map((n) => ({ label: n.tenNganh, value: n.id })),
+    },
+    {
+      name: "phongBanId",
+      label: "Khoa / Phòng ban",
+      type: "select",
+      options: (phongBanOptions || []).map((p) => ({ label: p.tenPhongBan, value: p.id })),
     },
   ];
 

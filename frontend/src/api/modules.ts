@@ -5,6 +5,7 @@ import type {
   GiaoVien, CreateGiaoVien, UpdateGiaoVien,
   LopSinhHoat, CreateLopSinhHoat, UpdateLopSinhHoat,
   NganhHoc, UpsertNganhHoc,
+  PhongBan,
   ChuongTrinhDT, UpsertChuongTrinhDT,
   ChiTietCTDT, CreateChiTietCTDT, UpdateChiTietCTDT,
   MonHoc, UpsertMonHoc,
@@ -23,6 +24,7 @@ export const sinhVienApi = createCrudApi<SinhVien, CreateSinhVien, UpdateSinhVie
 export const giaoVienApi = createCrudApi<GiaoVien, CreateGiaoVien, UpdateGiaoVien>("/giao-vien");
 export const lopSinhHoatApi = createCrudApi<LopSinhHoat, CreateLopSinhHoat, UpdateLopSinhHoat>("/lop-sinh-hoat");
 export const nganhHocApi = createCrudApi<NganhHoc, UpsertNganhHoc>("/nganh-hoc");
+export const phongBanApi = createCrudApi<PhongBan, unknown>("/phong-ban");
 export const chuongTrinhDTApi = createCrudApi<ChuongTrinhDT, UpsertChuongTrinhDT>("/chuong-trinh-dt");
 export const chiTietCTDTApi = createCrudApi<ChiTietCTDT, CreateChiTietCTDT, UpdateChiTietCTDT>("/chi-tiet-ctdt");
 export const monHocApi = createCrudApi<MonHoc, UpsertMonHoc>("/mon-hoc");
