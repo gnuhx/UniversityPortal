@@ -168,7 +168,7 @@ export function ChiTietCTDTPage() {
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/chuong-trinh-dt")}>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/nganh-hoc")}>
           Quay lại
         </Button>
         <h2 style={{ margin: 0 }}>

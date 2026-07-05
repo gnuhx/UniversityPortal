@@ -11,7 +11,6 @@ import { LopSinhHoatPage } from "./pages/LopSinhHoatPage";
 import { NganhHocPage } from "./pages/NganhHocPage";
 import { NamHocPage } from "./pages/NamHocPage";
 import { HocKyPage } from "./pages/HocKyPage";
-import { ChuongTrinhDTPage } from "./pages/ChuongTrinhDTPage";
 import { ChiTietCTDTPage } from "./pages/ChiTietCTDTPage";
 import { MonHocPage } from "./pages/MonHocPage";
 import { TaiKhoanPage } from "./pages/TaiKhoanPage";
@@ -35,7 +34,8 @@ function App() {
             <Route path="/nganh-hoc" element={<NganhHocPage />} />
             <Route path="/nam-hoc" element={<NamHocPage />} />
             <Route path="/nam-hoc/:id" element={<HocKyPage />} />
-            <Route path="/chuong-trinh-dt" element={<ChuongTrinhDTPage />} />
+            {/* Trang danh sách CTĐT đã gộp vào /nganh-hoc (task #11) — redirect để không vỡ link cũ */}
+            <Route path="/chuong-trinh-dt" element={<Navigate to="/nganh-hoc" replace />} />
             <Route path="/chuong-trinh-dt/:id" element={<ChiTietCTDTPage />} />
             <Route path="/mon-hoc" element={<MonHocPage />} />
             {/* ThoiKhoaBieuPage tự phân nhánh theo vai trò bên trong, không cần giới hạn allowedRoles ở route */}

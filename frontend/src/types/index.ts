@@ -38,6 +38,13 @@ export interface SinhVien {
   anhDaiDien?: string | null;
   trangThai: boolean;
   createdAt: string;
+  // Ngành / CTĐT của lớp sinh hoạt hiện tại — null nếu sinh viên chưa được phân lớp.
+  nganhId?: number | null;
+  maNganh?: string | null;
+  tenNganh?: string | null;
+  ctdtId?: number | null;
+  maCtdt?: string | null;
+  khoaHoc?: string | null;
 }
 
 export interface CreateSinhVien {

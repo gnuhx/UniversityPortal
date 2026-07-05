@@ -26,4 +26,7 @@ public interface ISinhVienRepository : IRepository<SinhVien>
 
     /// <summary>Lấy sinh viên theo id kèm Lop sinh hoạt và Chương trình đào tạo của lớp.</summary>
     Task<SinhVien?> GetByIdWithLopCtdtAsync(int id);
+
+    /// <summary>Lấy sinh viên theo id kèm TaiKhoan, Lop, Chương trình đào tạo và Ngành học (dùng cho /me).</summary>
+    Task<SinhVien?> GetByIdWithLopCtdtNganhAsync(int id);
 }

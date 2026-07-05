@@ -10,9 +10,11 @@ interface NganhMonHocModalProps {
   tenNganh: string;
   open: boolean;
   onClose: () => void;
+  /** Khoá học đang được chọn ở ngoài (nếu có) — ưu tiên chọn CTĐT khớp khoá học này khi mở modal. */
+  khoaHoc?: string;
 }
 
-export function NganhMonHocModal({ nganhId, tenNganh, open, onClose }: NganhMonHocModalProps) {
+export function NganhMonHocModal({ nganhId, tenNganh, open, onClose, khoaHoc }: NganhMonHocModalProps) {
   const [ctdtId, setCtdtId] = useState<number | undefined>();
 
   const { data: ctdtResult, isLoading: ctdtLoading } = useQuery({
@@ -29,9 +31,10 @@ export function NganhMonHocModal({ nganhId, tenNganh, open, onClose }: NganhMonH
       return;
     }
     if (ctdtOptions.length > 0 && !ctdtOptions.some((c) => c.id === ctdtId)) {
-      setCtdtId(ctdtOptions[0].id);
+      const preferred = ctdtOptions.find((c) => c.khoaHoc === khoaHoc);
+      setCtdtId((preferred || ctdtOptions[0]).id);
     }
-  }, [open, ctdtOptions, ctdtId]);
+  }, [open, ctdtOptions, ctdtId, khoaHoc]);
 
   const { data: monHocResult, isLoading: monHocLoading } = useQuery({
     queryKey: ["chi-tiet-ctdt-by-ctdt", ctdtId],

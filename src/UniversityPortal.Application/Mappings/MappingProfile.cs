@@ -56,7 +56,15 @@ public class MappingProfile : Profile
             .ForMember(d => d.TrangThai,  o => o.MapFrom(s => s.TaiKhoan.TrangThai))
             .ForMember(d => d.TenLop,     o => o.MapFrom(s => s.Lop != null ? s.Lop.MaLop : null))
             .ForMember(d => d.TaiKhoanId, o => o.MapFrom(s => s.TaiKhoanId))
-            .ForMember(d => d.CreatedAt,  o => o.MapFrom(s => s.CreatedAt));
+            .ForMember(d => d.CreatedAt,  o => o.MapFrom(s => s.CreatedAt))
+            // Chỉ có giá trị khi đã Include(Lop.ChuongTrinhDT.Nganh) — các nơi gọi GetDetailAsync
+            // (không include tới Nganh) sẽ nhận null ở các field này, không lỗi vì không dùng lazy loading.
+            .ForMember(d => d.NganhId,  o => o.MapFrom(s => s.Lop != null && s.Lop.ChuongTrinhDT != null ? (int?)s.Lop.ChuongTrinhDT.NganhId : null))
+            .ForMember(d => d.MaNganh,  o => o.MapFrom(s => s.Lop != null && s.Lop.ChuongTrinhDT != null && s.Lop.ChuongTrinhDT.Nganh != null ? s.Lop.ChuongTrinhDT.Nganh.MaNganh : null))
+            .ForMember(d => d.TenNganh, o => o.MapFrom(s => s.Lop != null && s.Lop.ChuongTrinhDT != null && s.Lop.ChuongTrinhDT.Nganh != null ? s.Lop.ChuongTrinhDT.Nganh.TenNganh : null))
+            .ForMember(d => d.CtdtId,   o => o.MapFrom(s => s.Lop != null ? (int?)s.Lop.ChuongTrinhDtId : null))
+            .ForMember(d => d.MaCtdt,   o => o.MapFrom(s => s.Lop != null && s.Lop.ChuongTrinhDT != null ? s.Lop.ChuongTrinhDT.MaCtdt : null))
+            .ForMember(d => d.KhoaHoc,  o => o.MapFrom(s => s.Lop != null && s.Lop.ChuongTrinhDT != null ? s.Lop.ChuongTrinhDT.KhoaHoc : null));
 
         // ── NganhHoc ──────────────────────────────────────────────────────────
         CreateMap<NganhHoc, NganhHocDto>()

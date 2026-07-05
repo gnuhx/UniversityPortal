@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
 import { Button, Select, Space } from "antd";
@@ -8,6 +7,7 @@ import { chuongTrinhDTApi, nganhHocApi } from "../api/modules";
 import type { ChuongTrinhDT } from "../types";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
+import { useKhoaHocOptions } from "../hooks/useKhoaHocOptions";
 
 export function ChuongTrinhDTPage() {
   const navigate = useNavigate();
@@ -19,21 +19,7 @@ export function ChuongTrinhDTPage() {
     queryFn: () => nganhHocApi.getAll(),
   });
 
-  const { data: ctdtAll } = useQuery({
-    queryKey: ["chuong-trinh-dt-all"],
-    queryFn: () => chuongTrinhDTApi.getAll(),
-  });
-
-  // Khoá học là text tự do, không đồng nhất định dạng -> chỉ distinct + sort giảm dần theo string.
-  const khoaHocOptions = useMemo(() => {
-    const uniq = Array.from(new Set((ctdtAll || []).map((c) => c.khoaHoc)));
-    return uniq.sort((a, b) => b.localeCompare(a));
-  }, [ctdtAll]);
-
-  const [khoaHoc, setKhoaHoc] = useState<string>();
-  useEffect(() => {
-    if (!khoaHoc && khoaHocOptions.length > 0) setKhoaHoc(khoaHocOptions[0]);
-  }, [khoaHocOptions, khoaHoc]);
+  const { khoaHoc, setKhoaHoc, khoaHocOptions } = useKhoaHocOptions();
 
   const columns: ColumnsType<ChuongTrinhDT> = [
     { title: "Mã CTĐT", dataIndex: "maCtdt" },

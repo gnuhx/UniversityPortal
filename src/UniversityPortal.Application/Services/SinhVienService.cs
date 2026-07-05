@@ -91,13 +91,13 @@ public class SinhVienService(IUnitOfWork uow, IMapper mapper) : ISinhVienService
         return mapper.Map<SinhVienDto>(sv);
     }
 
-    /// <summary>Lấy thông tin sinh viên theo taiKhoanId (cho endpoint /me).</summary>
+    /// <summary>Lấy thông tin sinh viên theo taiKhoanId (cho endpoint /me), kèm ngành/CTĐT của lớp hiện tại.</summary>
     public async Task<SinhVienDto> GetMeAsync(int taiKhoanId)
     {
         var sv = await uow.SinhViens.GetByTaiKhoanIdAsync(taiKhoanId);
         if (sv is null) throw new NotFoundException("Không tìm thấy hồ sơ sinh viên.");
-        // Load lop to get MaLop for TenLop mapping
-        var detail = await uow.SinhViens.GetDetailAsync(sv.Id)
+        // Load lop -> CTDT -> Nganh để trả kèm thông tin ngành đang học cho trang "Ngành học của tôi"
+        var detail = await uow.SinhViens.GetByIdWithLopCtdtNganhAsync(sv.Id)
             ?? throw new NotFoundException("Không tìm thấy hồ sơ sinh viên.");
         return mapper.Map<SinhVienDto>(detail);
     }

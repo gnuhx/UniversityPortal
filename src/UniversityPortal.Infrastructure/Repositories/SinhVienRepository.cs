@@ -82,4 +82,13 @@ public class SinhVienRepository(AppDbContext context) : BaseRepository<SinhVien>
             .Include(x => x.Lop)
                 .ThenInclude(l => l!.ChuongTrinhDT)
             .FirstOrDefaultAsync(x => x.Id == id);
+
+    /// <summary>Lấy sinh viên theo id kèm TaiKhoan, Lop, Chương trình đào tạo và Ngành học (dùng cho /me).</summary>
+    public async Task<SinhVien?> GetByIdWithLopCtdtNganhAsync(int id)
+        => await DbSet
+            .Include(x => x.TaiKhoan)
+            .Include(x => x.Lop)
+                .ThenInclude(l => l!.ChuongTrinhDT)
+                    .ThenInclude(c => c.Nganh)
+            .FirstOrDefaultAsync(x => x.Id == id);
 }
