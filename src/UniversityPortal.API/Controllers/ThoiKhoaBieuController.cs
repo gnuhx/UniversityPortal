@@ -9,6 +9,7 @@
  *   GET    /api/thoi-khoa-bieu               — Danh sách buổi học (phân trang, lọc lớp HP)         [Admin, Giáo vụ]
  *   GET    /api/thoi-khoa-bieu/{id}          — Chi tiết một buổi học                                [Admin, Giáo vụ]
  *   POST   /api/thoi-khoa-bieu               — Thêm buổi học vào lớp HP                             [Admin, Giáo vụ]
+ *   POST   /api/thoi-khoa-bieu/generate      — Tạo hàng loạt buổi học lặp lại theo tuần             [Admin, Giáo vụ]
  *   PUT    /api/thoi-khoa-bieu/{id}          — Cập nhật buổi học                                    [Admin, Giáo vụ]
  *   DELETE /api/thoi-khoa-bieu/{id}          — Xoá buổi học                                         [Admin, Giáo vụ]
  */
@@ -76,6 +77,21 @@ public class ThoiKhoaBieuController(IThoiKhoaBieuService service) : ControllerBa
         var result = await service.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = result.Id },
             ApiResponseDto<ThoiKhoaBieuDto>.Ok(result, "Thêm buổi học thành công."));
+    }
+
+    /// <summary>
+    /// Tạo hàng loạt buổi học lặp lại hàng tuần (cùng thứ/tiết/phòng) cho một lớp HP,
+    /// từ tuần bắt đầu đến tuần kết thúc. Tuần nào trùng phòng/giờ với buổi học khác sẽ bị bỏ qua.
+    /// </summary>
+    [HttpPost("generate")]
+    [Authorize(Roles = "Admin,Giáo vụ")]
+    public async Task<ActionResult<ApiResponseDto<GenerateThoiKhoaBieuResultDto>>> Generate([FromBody] GenerateThoiKhoaBieuDto dto)
+    {
+        var result = await service.GenerateAsync(dto);
+        var message = result.TuanBiBoQua.Count == 0
+            ? $"Đã tạo {result.SoBuoiDaTao} buổi học."
+            : $"Đã tạo {result.SoBuoiDaTao} buổi học. Bỏ qua {result.TuanBiBoQua.Count} tuần do trùng phòng/giờ: {string.Join(", ", result.TuanBiBoQua)}.";
+        return Ok(ApiResponseDto<GenerateThoiKhoaBieuResultDto>.Ok(result, message));
     }
 
     /// <summary>

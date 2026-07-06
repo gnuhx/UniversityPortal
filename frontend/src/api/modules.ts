@@ -15,7 +15,7 @@ import type {
   ThongBao, CreateThongBao,
   NamHoc, UpsertNamHoc,
   HocKy, UpsertHocKy, HocPhi, CreateHocPhi, GenerateHocPhi, GenerateHocPhiResult,
-  TuanHoc, ThoiKhoaBieu, CreateThoiKhoaBieu, UpdateThoiKhoaBieu,
+  TuanHoc, ThoiKhoaBieu, CreateThoiKhoaBieu, UpdateThoiKhoaBieu, GenerateThoiKhoaBieu, GenerateThoiKhoaBieuResult,
   YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh,
   YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
   TotNghiep,
@@ -128,6 +128,10 @@ export const thoiKhoaBieuApi = {
     const res = await apiClient.get<ApiResponse<ThoiKhoaBieu[]>>("/thoi-khoa-bieu/me", {
       params: hocKyId ? { hocKyId } : undefined,
     });
+    return res.data.data;
+  },
+  async generate(dto: GenerateThoiKhoaBieu) {
+    const res = await apiClient.post<ApiResponse<GenerateThoiKhoaBieuResult>>("/thoi-khoa-bieu/generate", dto);
     return res.data.data;
   },
 };

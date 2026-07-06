@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Select, Calendar, Badge, Table, Space, Spin } from "antd";
+import { Select, Calendar, Badge, Table, Space, Spin, Button, Modal, Form, Input, InputNumber, App } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs, { type Dayjs } from "dayjs";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CrudTable, type CrudFormField } from "../components/CrudTable";
 import { thoiKhoaBieuApi, tuanHocApi, hocKyApi, lopHocPhanApi } from "../api/modules";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
-import type { ThoiKhoaBieu, LopHocPhan } from "../types";
+import type { ThoiKhoaBieu, LopHocPhan, TuanHoc } from "../types";
 
 // Quy ước: Thu = 2..8 (2 = Thứ Hai ... 7 = Thứ Bảy, 8 = Chủ nhật)
 const THU_OPTIONS = [
@@ -170,23 +170,130 @@ function AdminThoiKhoaBieu() {
         pagination={{ pageSize: 20 }}
         expandable={{
           expandedRowRender: (record) => (
-            <CrudTable<ThoiKhoaBieu, any, any>
-              title={`Buổi học — ${record.maLopHp}`}
-              queryKey={`thoi-khoa-bieu-${record.id}`}
-              fetchPaged={thoiKhoaBieuApi.getPaged}
-              extraParams={{ lopHpId: record.id }}
-              columns={tkbColumns}
-              formFields={tkbFormFields}
-              onCreate={(dto: any) => thoiKhoaBieuApi.create({ ...dto, lopHpId: record.id })}
-              onUpdate={thoiKhoaBieuApi.update}
-              onDelete={thoiKhoaBieuApi.remove}
-              canCreate
-              canEdit
-              canDelete
+            <BuoiHocPanel
+              record={record}
+              tuanHocs={tuanHocs}
+              namHocId={hocKys.find((hk) => hk.id === record.hocKyId)?.namHocId}
+              tkbColumns={tkbColumns}
+              tkbFormFields={tkbFormFields}
             />
           ),
         }}
       />
+    </div>
+  );
+}
+
+/**
+ * Buổi học của một lớp HP: CRUD từng buổi (đã có) + nút "Tạo lịch hàng tuần" để sinh hàng loạt
+ * buổi học lặp lại (cùng thứ/tiết/phòng) trong một khoảng tuần, thay vì phải thêm thủ công từng tuần.
+ */
+function BuoiHocPanel({
+  record,
+  tuanHocs,
+  namHocId,
+  tkbColumns,
+  tkbFormFields,
+}: {
+  record: LopHocPhan;
+  tuanHocs: TuanHoc[];
+  namHocId?: number;
+  tkbColumns: ColumnsType<ThoiKhoaBieu>;
+  tkbFormFields: CrudFormField[];
+}) {
+  const { message } = App.useApp();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [form] = Form.useForm();
+
+  const relevantTuans = useMemo(
+    () => (namHocId === undefined ? tuanHocs : tuanHocs.filter((t) => t.namHocId === namHocId)),
+    [tuanHocs, namHocId]
+  );
+  const tuanOptions = relevantTuans.map((t) => ({
+    value: t.id,
+    label: `${t.maTuan} (${t.ngayBatDau} → ${t.ngayKetThuc})`,
+  }));
+
+  const generateMutation = useMutation({
+    mutationFn: (values: any) => thoiKhoaBieuApi.generate({ ...values, lopHpId: record.id }),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: [`thoi-khoa-bieu-${record.id}`] });
+      setOpen(false);
+      form.resetFields();
+      if (result && result.tuanBiBoQua.length > 0) {
+        message.warning(
+          `Đã tạo ${result.soBuoiDaTao} buổi học. Bỏ qua ${result.tuanBiBoQua.length} tuần do trùng phòng/giờ: ${result.tuanBiBoQua.join(", ")}.`
+        );
+      } else {
+        message.success(`Đã tạo ${result?.soBuoiDaTao ?? 0} buổi học.`);
+      }
+    },
+    onError: (err: any) => message.error(err?.response?.data?.message || "Có lỗi xảy ra"),
+  });
+
+  return (
+    <div>
+      <Space style={{ marginBottom: 12 }}>
+        <Button onClick={() => setOpen(true)}>Tạo lịch hàng tuần</Button>
+      </Space>
+
+      <CrudTable<ThoiKhoaBieu, any, any>
+        title={`Buổi học — ${record.maLopHp}`}
+        queryKey={`thoi-khoa-bieu-${record.id}`}
+        fetchPaged={thoiKhoaBieuApi.getPaged}
+        extraParams={{ lopHpId: record.id }}
+        columns={tkbColumns}
+        formFields={tkbFormFields}
+        onCreate={(dto: any) => thoiKhoaBieuApi.create({ ...dto, lopHpId: record.id })}
+        onUpdate={thoiKhoaBieuApi.update}
+        onDelete={thoiKhoaBieuApi.remove}
+        canCreate
+        canEdit
+        canDelete
+      />
+
+      <Modal
+        title={`Tạo lịch hàng tuần — ${record.maLopHp}`}
+        open={open}
+        onCancel={() => setOpen(false)}
+        onOk={() => form.validateFields().then((values) => generateMutation.mutate(values))}
+        confirmLoading={generateMutation.isPending}
+        destroyOnHidden
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="thu" label="Thứ" rules={[{ required: true, message: "Vui lòng chọn thứ" }]}>
+            <Select options={THU_OPTIONS} />
+          </Form.Item>
+          <Space.Compact style={{ width: "100%", display: "flex" }}>
+            <Form.Item
+              name="tietBatDau"
+              label="Tiết bắt đầu"
+              style={{ flex: 1 }}
+              rules={[{ required: true, message: "Bắt buộc" }]}
+            >
+              <InputNumber style={{ width: "100%" }} min={1} />
+            </Form.Item>
+            <Form.Item
+              name="tietKetThuc"
+              label="Tiết kết thúc"
+              style={{ flex: 1 }}
+              rules={[{ required: true, message: "Bắt buộc" }]}
+            >
+              <InputNumber style={{ width: "100%" }} min={1} />
+            </Form.Item>
+          </Space.Compact>
+          <Form.Item name="phongHoc" label="Phòng học" rules={[{ required: true, message: "Vui lòng nhập phòng học" }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="tuanBatDauId" label="Từ tuần" rules={[{ required: true, message: "Vui lòng chọn tuần bắt đầu" }]}>
+            <Select showSearch optionFilterProp="label" options={tuanOptions} placeholder="Tuần bắt đầu" />
+          </Form.Item>
+          <Form.Item name="tuanKetThucId" label="Đến tuần" rules={[{ required: true, message: "Vui lòng chọn tuần kết thúc" }]}>
+            <Select showSearch optionFilterProp="label" options={tuanOptions} placeholder="Tuần kết thúc" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

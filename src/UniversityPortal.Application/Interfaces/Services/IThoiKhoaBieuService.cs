@@ -11,6 +11,9 @@ public interface IThoiKhoaBieuService
     Task<ThoiKhoaBieuDto> UpdateAsync(int id, UpdateThoiKhoaBieuDto dto);
     Task DeleteAsync(int id);
 
+    /// <summary>Tạo hàng loạt buổi học lặp lại hàng tuần cho một lớp HP, từ tuần bắt đầu đến tuần kết thúc.</summary>
+    Task<GenerateThoiKhoaBieuResultDto> GenerateAsync(GenerateThoiKhoaBieuDto dto);
+
     /// <summary>Lịch học của sinh viên đang đăng nhập (theo tài khoản), lọc theo học kỳ nếu có.</summary>
     Task<IEnumerable<ThoiKhoaBieuDto>> GetForSinhVienMeAsync(int taiKhoanId, int? hocKyId);
 

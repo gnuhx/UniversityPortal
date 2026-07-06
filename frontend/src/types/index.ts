@@ -361,6 +361,7 @@ export interface UpsertHocKy {
 // ===== Tuan hoc =====
 export interface TuanHoc {
   id: number;
+  namHocId: number;
   maTuan: string;
   soThuTuTuan: number;
   ngayBatDau: string;
@@ -404,6 +405,21 @@ export interface UpdateThoiKhoaBieu {
   tietBatDau: number;
   tietKetThuc: number;
   phongHoc: string;
+}
+
+export interface GenerateThoiKhoaBieu {
+  lopHpId: number;
+  tuanBatDauId: number;
+  tuanKetThucId: number;
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+}
+
+export interface GenerateThoiKhoaBieuResult {
+  soBuoiDaTao: number;
+  tuanBiBoQua: string[];
 }
 
 // ===== Hoc phi =====

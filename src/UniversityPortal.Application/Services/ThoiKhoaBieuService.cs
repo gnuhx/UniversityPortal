@@ -96,6 +96,67 @@ public class ThoiKhoaBieuService(IUnitOfWork uow, IMapper mapper) : IThoiKhoaBie
         return mapper.Map<IEnumerable<ThoiKhoaBieuDto>>(list);
     }
 
+    /// <summary>
+    /// Tạo hàng loạt buổi học lặp lại hàng tuần cho một lớp HP, từ tuần bắt đầu đến tuần kết thúc
+    /// (cùng thứ/tiết/phòng mỗi tuần). Tuần nào bị trùng phòng/giờ với buổi học khác sẽ được bỏ qua
+    /// thay vì làm hỏng toàn bộ thao tác — giúp giáo vụ không phải thêm từng tuần thủ công.
+    /// </summary>
+    public async Task<GenerateThoiKhoaBieuResultDto> GenerateAsync(GenerateThoiKhoaBieuDto dto)
+    {
+        if (await uow.LopHocPhans.GetByIdAsync(dto.LopHpId) is null)
+            throw new NotFoundException($"Không tìm thấy lớp học phần id = {dto.LopHpId}.");
+
+        var tuanBatDau = await uow.TuanHocs.GetByIdAsync(dto.TuanBatDauId)
+            ?? throw new NotFoundException($"Không tìm thấy tuần học id = {dto.TuanBatDauId}.");
+        var tuanKetThuc = await uow.TuanHocs.GetByIdAsync(dto.TuanKetThucId)
+            ?? throw new NotFoundException($"Không tìm thấy tuần học id = {dto.TuanKetThucId}.");
+
+        if (tuanBatDau.NamHocId != tuanKetThuc.NamHocId)
+            throw new BadRequestException("Tuần bắt đầu và tuần kết thúc phải cùng một năm học.");
+
+        if (tuanBatDau.SoThuTuTuan > tuanKetThuc.SoThuTuTuan)
+            throw new BadRequestException("Tuần bắt đầu phải trước hoặc bằng tuần kết thúc.");
+
+        if (dto.Thu is < 2 or > 8)
+            throw new BadRequestException("Thứ trong tuần không hợp lệ (2 = Thứ Hai ... 8 = Chủ nhật).");
+
+        if (dto.TietBatDau > dto.TietKetThuc)
+            throw new BadRequestException("Tiết bắt đầu phải nhỏ hơn hoặc bằng tiết kết thúc.");
+
+        var tuans = (await uow.TuanHocs.GetAllAsync())
+            .Where(t => t.NamHocId == tuanBatDau.NamHocId
+                     && t.SoThuTuTuan >= tuanBatDau.SoThuTuTuan
+                     && t.SoThuTuTuan <= tuanKetThuc.SoThuTuTuan)
+            .OrderBy(t => t.SoThuTuTuan);
+
+        var result = new GenerateThoiKhoaBieuResultDto();
+
+        foreach (var tuan in tuans)
+        {
+            if (await uow.ThoiKhoaBieus.ExistsConflictAsync(tuan.Id, dto.Thu, dto.PhongHoc, dto.TietBatDau, dto.TietKetThuc, excludeId: null))
+            {
+                result.TuanBiBoQua.Add(tuan.MaTuan);
+                continue;
+            }
+
+            await uow.ThoiKhoaBieus.AddAsync(new ThoiKhoaBieu
+            {
+                LopHpId     = dto.LopHpId,
+                TuanHocId   = tuan.Id,
+                Thu         = dto.Thu,
+                TietBatDau  = dto.TietBatDau,
+                TietKetThuc = dto.TietKetThuc,
+                PhongHoc    = dto.PhongHoc
+            });
+            result.SoBuoiDaTao++;
+        }
+
+        if (result.SoBuoiDaTao > 0)
+            await uow.CommitAsync();
+
+        return result;
+    }
+
     /// <summary>Kiểm tra lớp HP / tuần học tồn tại và buổi học không trùng phòng/giờ với buổi khác.</summary>
     private async Task ValidateAsync(int lopHpId, int tuanHocId, int thu, int tietBatDau, int tietKetThuc, string phongHoc, int? excludeId)
     {

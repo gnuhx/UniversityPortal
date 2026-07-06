@@ -4,6 +4,7 @@ namespace UniversityPortal.Application.DTOs.TuanHoc;
 public class TuanHocDto
 {
     public int Id { get; set; }
+    public int NamHocId { get; set; }
     public string MaTuan { get; set; } = string.Empty;
     public int SoThuTuTuan { get; set; }
     public DateOnly NgayBatDau { get; set; }
