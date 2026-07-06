@@ -8,6 +8,8 @@ public class HocPhiDto
     public string Mssv { get; set; } = string.Empty;
     public int HocKyId { get; set; }
     public string TenHocKy { get; set; } = string.Empty;
+    public int NamHocId { get; set; }
+    public string TenNamHoc { get; set; } = string.Empty;
     public decimal SoTien { get; set; }
     public string TrangThaiDong { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }

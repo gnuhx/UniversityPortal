@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
-  Table, Tag, Card, Row, Col, Statistic, Select, Space, Button,
+  Table, Tag, Card, Collapse, Row, Col, Statistic, Select, Space, Button,
   Modal, Form, InputNumber, message, Alert, Empty, Spin, Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -9,7 +9,7 @@ import {
   PlusOutlined, ThunderboltOutlined, CheckCircleOutlined,
   ClockCircleOutlined, GiftOutlined, WalletOutlined,
 } from "@ant-design/icons";
-import { hocPhiApi, hocKyApi } from "../api/modules";
+import { hocPhiApi, hocKyApi, sinhVienApi } from "../api/modules";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
 import type { HocPhi, CreateHocPhi, GenerateHocPhi } from "../types";
@@ -36,6 +36,52 @@ function TrangThaiTag({ trangThai }: { trangThai: string }) {
 
 function fmtVnd(v: number) {
   return v.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+}
+
+/** Nhóm học phí theo Năm học, giữ nguyên thứ tự xuất hiện (API đã sắp mới nhất trước). */
+function groupByNamHoc(items: HocPhi[]) {
+  const groups = new Map<number, { namHocId: number; tenNamHoc: string; items: HocPhi[] }>();
+  for (const hp of items) {
+    const g = groups.get(hp.namHocId);
+    if (g) g.items.push(hp);
+    else groups.set(hp.namHocId, { namHocId: hp.namHocId, tenNamHoc: hp.tenNamHoc, items: [hp] });
+  }
+  return Array.from(groups.values());
+}
+
+/** Chia học phí của sinh viên theo Năm học (Collapse) — mỗi panel là lưới thẻ học kỳ của năm đó. */
+function StudentFeeByYear({ items }: { items: HocPhi[] }) {
+  const groups = groupByNamHoc(items);
+  // Chỉ mở sẵn năm học mới nhất — groups[0] vì `items` đã sắp mới nhất trước.
+  // Controlled activeKey vì defaultActiveKey của Collapse chỉ đọc 1 lần lúc mount,
+  // trong khi `groups` chỉ có dữ liệu thật sau khi query tải xong.
+  const [activeKeys, setActiveKeys] = useState<string[]>();
+  useEffect(() => {
+    if (activeKeys === undefined && groups.length > 0) {
+      setActiveKeys([String(groups[0].namHocId)]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups.length]);
+
+  return (
+    <Collapse
+      activeKey={activeKeys}
+      onChange={(keys) => setActiveKeys(Array.isArray(keys) ? keys : [keys])}
+      items={groups.map((g) => ({
+        key: String(g.namHocId),
+        label: <Text strong>Năm học {g.tenNamHoc}</Text>,
+        children: (
+          <Row gutter={[16, 16]}>
+            {g.items.map((hp) => (
+              <Col key={hp.id} xs={24} sm={12} md={8} lg={6}>
+                <SemesterFeeCard hocPhi={hp} />
+              </Col>
+            ))}
+          </Row>
+        ),
+      }))}
+    />
+  );
 }
 
 /** Khu vực riêng cho 1 học kỳ — thay bảng phẳng để sinh viên thấy rõ từng kỳ. */
@@ -76,12 +122,45 @@ export function HocPhiPage() {
   const [createForm] = Form.useForm<CreateHocPhi>();
   const [generateForm] = Form.useForm<GenerateHocPhi>();
 
+  // Lọc Học kỳ theo Năm học trong 2 modal tạo học phí (chỉ để lọc UI, không gửi lên API)
+  const [createNamHocId, setCreateNamHocId] = useState<number>();
+  const [generateNamHocId, setGenerateNamHocId] = useState<number>();
+
+  // Tìm sinh viên theo tên/MSSV/email (Select showSearch, debounce thủ công)
+  const [svKeyword, setSvKeyword] = useState("");
+  const svSearchTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const handleSvSearch = (value: string) => {
+    if (svSearchTimeout.current) clearTimeout(svSearchTimeout.current);
+    svSearchTimeout.current = setTimeout(() => setSvKeyword(value), 300);
+  };
+  const { data: svSearchResult, isFetching: svSearching } = useQuery({
+    queryKey: ["sinh-vien-search", svKeyword],
+    queryFn: () => sinhVienApi.getPaged({ keyword: svKeyword, page: 1, pageSize: 20 }),
+    enabled: createOpen && svKeyword.trim().length > 0,
+  });
+  const svOptions = (svSearchResult?.data ?? []).map((sv) => ({
+    value: sv.id,
+    label: `${sv.hoTen} — ${sv.mssv}`,
+  }));
+
   // Semester list for dropdowns
   const { data: hocKys = [] } = useQuery({
     queryKey: ["hoc-ky"],
     queryFn: () => hocKyApi.getAll(),
     enabled: isAdmin,
   });
+
+  // Danh sách Năm học suy ra từ chính danh sách Học kỳ đã tải (không cần gọi thêm API)
+  const namHocOptions = Array.from(
+    new Map(hocKys.map((hk) => [hk.namHocId, hk.tenNamHoc])).entries(),
+  ).map(([id, ten]) => ({ value: id, label: ten }));
+
+  const createHocKyOptions = hocKys
+    .filter((hk) => !createNamHocId || hk.namHocId === createNamHocId)
+    .map((hk) => ({ value: hk.id, label: `${hk.tenHocKy} — ${hk.tenNamHoc}` }));
+  const generateHocKyOptions = hocKys
+    .filter((hk) => !generateNamHocId || hk.namHocId === generateNamHocId)
+    .map((hk) => ({ value: hk.id, label: `${hk.tenHocKy} — ${hk.tenNamHoc}` }));
 
   // Student: own bills
   const {
@@ -260,16 +339,10 @@ export function HocPhiPage() {
         />
       )}
 
-      {/* Sinh viên: chia riêng từng học kỳ thành 1 thẻ thay vì bảng phẳng */}
+      {/* Sinh viên: chia theo Năm học, trong mỗi năm chia tiếp theo từng học kỳ (thẻ) */}
       {!isAdmin && !myError && (myLoading || items.length > 0) && (
         <Spin spinning={isLoading}>
-          <Row gutter={[16, 16]}>
-            {items.map((hp) => (
-              <Col key={hp.id} xs={24} sm={12} md={8} lg={6}>
-                <SemesterFeeCard hocPhi={hp} />
-              </Col>
-            ))}
-          </Row>
+          <StudentFeeByYear items={items} />
         </Spin>
       )}
 
@@ -305,14 +378,21 @@ export function HocPhiPage() {
           message="Hệ thống sẽ tính học phí dựa trên số tín chỉ mỗi sinh viên đã đăng ký trong học kỳ. Sinh viên đã có học phí sẽ bị bỏ qua."
         />
         <Form form={generateForm} layout="vertical" onFinish={(v) => generateMutation.mutate(v)}>
-          <Form.Item name="hocKyId" label="Học kỳ" rules={[{ required: true, message: "Chọn học kỳ" }]}>
+          <Form.Item label="Năm học (lọc danh sách học kỳ bên dưới)">
             <Select
-              placeholder="Chọn học kỳ"
-              options={hocKys.map((hk) => ({
-                value: hk.id,
-                label: `${hk.tenHocKy} — ${hk.tenNamHoc}`,
-              }))}
+              allowClear
+              placeholder="Tất cả năm học"
+              options={namHocOptions}
+              value={generateNamHocId}
+              onChange={(v) => {
+                setGenerateNamHocId(v);
+                const stillValid = !v || hocKys.some((hk) => hk.id === generateForm.getFieldValue("hocKyId") && hk.namHocId === v);
+                if (!stillValid) generateForm.setFieldValue("hocKyId", undefined);
+              }}
             />
+          </Form.Item>
+          <Form.Item name="hocKyId" label="Học kỳ" rules={[{ required: true, message: "Chọn học kỳ" }]}>
+            <Select placeholder="Chọn học kỳ" options={generateHocKyOptions} />
           </Form.Item>
           <Form.Item
             name="tienMotTinChi"
@@ -341,17 +421,29 @@ export function HocPhiPage() {
         confirmLoading={createMutation.isPending}
       >
         <Form form={createForm} layout="vertical" onFinish={(v) => createMutation.mutate(v)}>
-          <Form.Item name="sinhVienId" label="ID Sinh viên" rules={[{ required: true }]}>
-            <InputNumber style={{ width: "100%" }} placeholder="Nhập ID sinh viên" />
+          <Form.Item name="sinhVienId" label="Sinh viên" rules={[{ required: true, message: "Chọn sinh viên" }]}>
+            <Select
+              showSearch={{ filterOption: false, onSearch: handleSvSearch }}
+              placeholder="Gõ tên, MSSV hoặc email để tìm..."
+              notFoundContent={svSearching ? <Spin size="small" /> : "Không tìm thấy sinh viên"}
+              options={svOptions}
+            />
+          </Form.Item>
+          <Form.Item label="Năm học (lọc danh sách học kỳ bên dưới)">
+            <Select
+              allowClear
+              placeholder="Tất cả năm học"
+              options={namHocOptions}
+              value={createNamHocId}
+              onChange={(v) => {
+                setCreateNamHocId(v);
+                const stillValid = !v || hocKys.some((hk) => hk.id === createForm.getFieldValue("hocKyId") && hk.namHocId === v);
+                if (!stillValid) createForm.setFieldValue("hocKyId", undefined);
+              }}
+            />
           </Form.Item>
           <Form.Item name="hocKyId" label="Học kỳ" rules={[{ required: true }]}>
-            <Select
-              placeholder="Chọn học kỳ"
-              options={hocKys.map((hk) => ({
-                value: hk.id,
-                label: `${hk.tenHocKy} — ${hk.tenNamHoc}`,
-              }))}
-            />
+            <Select placeholder="Chọn học kỳ" options={createHocKyOptions} />
           </Form.Item>
           <Form.Item name="soTien" label="Số tiền (VNĐ)" rules={[{ required: true }]}>
             <InputNumber

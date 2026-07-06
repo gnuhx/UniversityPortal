@@ -116,6 +116,8 @@ public class HocPhiService(IUnitOfWork uow) : IHocPhiService
         Mssv          = hp.SinhVien?.Mssv ?? string.Empty,
         HocKyId       = hp.HocKyId,
         TenHocKy      = hp.HocKy?.TenHocKy ?? string.Empty,
+        NamHocId      = hp.HocKy?.NamHocId ?? 0,
+        TenNamHoc     = hp.HocKy?.NamHoc?.TenNamHoc ?? string.Empty,
         SoTien        = hp.SoTien,
         TrangThaiDong = hp.TrangThaiDong,
         CreatedAt     = hp.CreatedAt,

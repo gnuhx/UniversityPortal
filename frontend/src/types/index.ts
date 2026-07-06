@@ -412,6 +412,8 @@ export interface HocPhi {
   mssv: string;
   hocKyId: number;
   tenHocKy: string;
+  namHocId: number;
+  tenNamHoc: string;
   soTien: number;
   trangThaiDong: string;
   createdAt: string;

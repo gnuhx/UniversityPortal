@@ -47,13 +47,14 @@ public class SinhVienRepository(AppDbContext context) : BaseRepository<SinhVien>
             .Include(x => x.Lop)
             .AsQueryable();
 
-        // Lọc không phân biệt hoa thường theo họ tên hoặc MSSV
+        // Lọc không phân biệt hoa thường theo họ tên, MSSV hoặc email
         if (!string.IsNullOrWhiteSpace(keyword))
         {
             var tuKhoa = keyword.ToLower();
             query = query.Where(x =>
                 x.TaiKhoan.HoTen.ToLower().Contains(tuKhoa) ||
-                x.Mssv.ToLower().Contains(tuKhoa));
+                x.Mssv.ToLower().Contains(tuKhoa) ||
+                x.TaiKhoan.Email.ToLower().Contains(tuKhoa));
         }
 
         if (lopId.HasValue)
