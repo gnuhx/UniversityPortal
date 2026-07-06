@@ -5,6 +5,7 @@ import { Button, Card, Descriptions, Empty, Select, Space, Spin, Tabs, Tag } fro
 import { useNavigate } from "react-router-dom";
 import { CrudTable, type CrudFormField } from "../components/CrudTable";
 import { NganhMonHocModal } from "../components/NganhMonHocModal";
+import { NhanBanCtdtModal } from "../components/NhanBanCtdtModal";
 import { nganhHocApi, phongBanApi, sinhVienMeApi } from "../api/modules";
 import type { NganhHoc } from "../types";
 import { useAuthStore } from "../store/authStore";
@@ -48,6 +49,7 @@ function DanhSachNganhHoc() {
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.vaiTro === ROLES.ADMIN;
   const [monHocModal, setMonHocModal] = useState<NganhHoc | null>(null);
+  const [nhanBanModal, setNhanBanModal] = useState<NganhHoc | null>(null);
   const { khoaHoc, setKhoaHoc, khoaHocOptions } = useKhoaHocOptions();
 
   const { data: nganhOptions } = useQuery({
@@ -73,6 +75,19 @@ function DanhSachNganhHoc() {
         </Button>
       ),
     },
+    ...(isAdmin
+      ? [
+          {
+            title: "Nhân bản",
+            key: "nhanBan",
+            render: (_: unknown, record: NganhHoc) => (
+              <Button size="small" onClick={() => setNhanBanModal(record)}>
+                Nhân bản
+              </Button>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const formFields: CrudFormField[] = [
@@ -126,6 +141,14 @@ function DanhSachNganhHoc() {
           khoaHoc={khoaHoc}
           open={!!monHocModal}
           onClose={() => setMonHocModal(null)}
+        />
+      )}
+      {nhanBanModal && (
+        <NhanBanCtdtModal
+          nganhId={nhanBanModal.id}
+          tenNganh={nhanBanModal.tenNganh}
+          open={!!nhanBanModal}
+          onClose={() => setNhanBanModal(null)}
         />
       )}
     </>

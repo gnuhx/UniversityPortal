@@ -6,7 +6,7 @@ import type {
   LopSinhHoat, CreateLopSinhHoat, UpdateLopSinhHoat,
   NganhHoc, UpsertNganhHoc,
   PhongBan,
-  ChuongTrinhDT, UpsertChuongTrinhDT,
+  ChuongTrinhDT, UpsertChuongTrinhDT, CloneChuongTrinhDT, CloneChuongTrinhDTResult,
   ChiTietCTDT, CreateChiTietCTDT, UpdateChiTietCTDT,
   MonHoc, UpsertMonHoc,
   TaiKhoan, CreateTaiKhoan, UpdateTaiKhoan,
@@ -27,7 +27,13 @@ export const giaoVienApi = createCrudApi<GiaoVien, CreateGiaoVien, UpdateGiaoVie
 export const lopSinhHoatApi = createCrudApi<LopSinhHoat, CreateLopSinhHoat, UpdateLopSinhHoat>("/lop-sinh-hoat");
 export const nganhHocApi = createCrudApi<NganhHoc, UpsertNganhHoc>("/nganh-hoc");
 export const phongBanApi = createCrudApi<PhongBan, unknown>("/phong-ban");
-export const chuongTrinhDTApi = createCrudApi<ChuongTrinhDT, UpsertChuongTrinhDT>("/chuong-trinh-dt");
+export const chuongTrinhDTApi = {
+  ...createCrudApi<ChuongTrinhDT, UpsertChuongTrinhDT>("/chuong-trinh-dt"),
+  async clone(dto: CloneChuongTrinhDT) {
+    const res = await apiClient.post<ApiResponse<CloneChuongTrinhDTResult>>("/chuong-trinh-dt/clone", dto);
+    return res.data.data;
+  },
+};
 export const chiTietCTDTApi = createCrudApi<ChiTietCTDT, CreateChiTietCTDT, UpdateChiTietCTDT>("/chi-tiet-ctdt");
 export const monHocApi = createCrudApi<MonHoc, UpsertMonHoc>("/mon-hoc");
 export const taiKhoanApi = createCrudApi<TaiKhoan, CreateTaiKhoan, UpdateTaiKhoan>("/tai-khoan");

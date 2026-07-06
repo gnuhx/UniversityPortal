@@ -93,4 +93,16 @@ public class ChuongTrinhDTController(IChuongTrinhDTService service) : Controller
         await service.DeleteAsync(id);
         return Ok(ApiResponseDto<object>.Ok(null, "Xoá chương trình đào tạo thành công."));
     }
+
+    /// <summary>
+    /// Nhân bản CTDT mới nhất của 1 ngành sang khoá học mới, sao chép toàn bộ môn học
+    /// kèm ánh xạ đúng học kỳ tương ứng.
+    /// </summary>
+    [HttpPost("clone")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ApiResponseDto<CloneChuongTrinhDTResultDto>>> Clone([FromBody] CloneChuongTrinhDTDto dto)
+    {
+        var result = await service.CloneAsync(dto);
+        return Ok(ApiResponseDto<CloneChuongTrinhDTResultDto>.Ok(result, "Nhân bản chương trình đào tạo thành công."));
+    }
 }

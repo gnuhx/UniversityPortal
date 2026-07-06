@@ -26,4 +26,10 @@ public interface IChuongTrinhDTService
 
     /// <summary>Xoá CTDT; ném BadRequestException nếu còn lớp sinh hoạt liên kết.</summary>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Nhân bản CTDT mới nhất của 1 ngành sang khoá học mới — tạo CTDT mới và sao chép
+    /// toàn bộ môn học, ánh xạ đúng học kỳ tương ứng theo năm/thứ tự trong khoá học mới.
+    /// </summary>
+    Task<CloneChuongTrinhDTResultDto> CloneAsync(CloneChuongTrinhDTDto dto);
 }

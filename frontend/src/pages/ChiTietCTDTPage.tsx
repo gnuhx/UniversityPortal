@@ -112,6 +112,31 @@ export function ChiTietCTDTPage() {
     onError: (err: any) => message.error(err?.response?.data?.message || "Có lỗi xảy ra"),
   });
 
+  // Chọn nhiều môn học (theo từng học kỳ) để xoá cùng lúc — mỗi học kỳ có 1 bảng riêng
+  // nên lưu selection riêng theo hocKyId, tránh 1 dòng đang chọn ở bảng này ảnh hưởng bảng khác.
+  const [selectedByHocKy, setSelectedByHocKy] = useState<Record<number, number[]>>({});
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: number[]) => Promise.allSettled(ids.map((id) => chiTietCTDTApi.remove(id))),
+    onSuccess: (results, ids) => {
+      const failed = results.filter((r) => r.status === "rejected");
+      if (failed.length === 0) {
+        message.success(`Đã xoá ${ids.length} môn học.`);
+      } else if (failed.length === ids.length) {
+        message.error("Không xoá được môn học nào (có thể đã có lớp học phần liên kết).");
+      } else {
+        message.warning(`Đã xoá ${ids.length - failed.length}/${ids.length} môn học — ${failed.length} môn không xoá được (có thể đã có lớp học phần liên kết).`);
+      }
+      invalidate();
+    },
+  });
+
+  const handleBulkDelete = (hocKyId: number, ids: number[]) => {
+    bulkDeleteMutation.mutate(ids, {
+      onSettled: () => setSelectedByHocKy((prev) => ({ ...prev, [hocKyId]: [] })),
+    });
+  };
+
   const openCreate = (hocKyId?: number) => {
     setEditingRecord(null);
     form.resetFields();
@@ -202,15 +227,39 @@ export function ChiTietCTDTPage() {
             </Space>
           ),
           children: (
-            <Table
-              rowKey="id"
-              size="small"
-              loading={isLoading}
-              columns={columns}
-              dataSource={g.items}
-              pagination={false}
-              locale={{ emptyText: "Chưa có môn học trong học kỳ này" }}
-            />
+            <>
+              {isAdmin && (selectedByHocKy[g.hocKy.id]?.length ?? 0) > 0 && (
+                <Space style={{ marginBottom: 12 }}>
+                  <span>Đã chọn {selectedByHocKy[g.hocKy.id]!.length} môn học</span>
+                  <Popconfirm
+                    title={`Xác nhận xoá ${selectedByHocKy[g.hocKy.id]!.length} môn học đã chọn?`}
+                    onConfirm={() => handleBulkDelete(g.hocKy.id, selectedByHocKy[g.hocKy.id]!)}
+                  >
+                    <Button size="small" danger loading={bulkDeleteMutation.isPending}>
+                      Xoá đã chọn
+                    </Button>
+                  </Popconfirm>
+                </Space>
+              )}
+              <Table
+                rowKey="id"
+                size="small"
+                loading={isLoading}
+                columns={columns}
+                dataSource={g.items}
+                pagination={false}
+                locale={{ emptyText: "Chưa có môn học trong học kỳ này" }}
+                rowSelection={
+                  isAdmin
+                    ? {
+                        selectedRowKeys: selectedByHocKy[g.hocKy.id] ?? [],
+                        onChange: (keys) =>
+                          setSelectedByHocKy((prev) => ({ ...prev, [g.hocKy.id]: keys as number[] })),
+                      }
+                    : undefined
+                }
+              />
+            </>
           ),
         }))}
       />

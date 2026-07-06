@@ -162,6 +162,19 @@ export interface UpsertChuongTrinhDT {
   khoaHoc: string;
 }
 
+export interface CloneChuongTrinhDT {
+  nganhId: number;
+  khoaHocMoi: string;
+  maCtdtMoi: string;
+}
+
+export interface CloneChuongTrinhDTResult {
+  ctdtMoiId: number;
+  maCtdtMoi: string;
+  soMonDaSaoChep: number;
+  monBoQua: string[];
+}
+
 // ===== Chi tiet CTDT =====
 export interface ChiTietCTDT {
   id: number;
