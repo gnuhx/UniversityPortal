@@ -1,7 +1,7 @@
 # Ẩn menu "Năm học" và "Môn học" đối với vai trò Sinh viên
 
 **Task:** #20
-**Trạng thái:** todo
+**Trạng thái:** done
 **Ngày tạo:** 2026-07-08
 **Người phụ trách:** (chưa gán)
 
@@ -100,13 +100,19 @@ Không cần.
 
 ## 7. Tiêu chí hoàn thành (Acceptance Criteria)
 
-- [ ] Vai trò Sinh viên: menu không còn "Năm học", "Môn học".
-- [ ] Vai trò Sinh viên: gõ thẳng `/nam-hoc` hoặc `/mon-hoc` trên URL bị
-      chặn, không thấy nội dung trang.
-- [ ] Vai trò Admin, Giáo vụ, Giáo viên: menu và trang `/nam-hoc`,
-      `/mon-hoc` không đổi so với trước.
-- [ ] `tsc --noEmit` sạch.
-- [ ] Đã kiểm thử trên trình duyệt với cả 4 vai trò.
+- [x] Vai trò Sinh viên: menu không còn "Năm học", "Môn học". Đã kiểm thử
+      (Playwright, tài khoản `sv.k2021.001`) — cả 2 mục không còn trong DOM
+      menu.
+- [x] Vai trò Sinh viên: gõ thẳng `/nam-hoc` hoặc `/mon-hoc` trên URL bị
+      chặn, không thấy nội dung trang. Đã kiểm thử — cả 2 URL đều bị
+      `ProtectedRoute` đá về `/` (Tổng quan).
+- [x] Vai trò Admin, Giáo vụ, Giáo viên: menu và trang `/nam-hoc`,
+      `/mon-hoc` không đổi so với trước. Đã kiểm thử cả 3 vai trò
+      (`admin`, `giaovu01`, `gv.tuan`) — menu vẫn hiện đủ 2 mục.
+- [x] `tsc --noEmit` sạch.
+- [x] Đã kiểm thử trên trình duyệt (Playwright headless, backend/DB thật)
+      với cả 4 vai trò: Sinh viên, Admin, Giáo vụ, Giáo viên — không có lỗi
+      console.
 
 ## 8. Ghi chú
 

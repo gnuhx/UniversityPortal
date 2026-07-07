@@ -40,13 +40,11 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/nganh-hoc" element={<NganhHocPage />} />
-            <Route path="/nam-hoc" element={<NamHocPage />} />
             {/* Trang Học kỳ theo năm học đã gộp vào /hoc-ky (task #12) — redirect để không vỡ link cũ */}
             <Route path="/nam-hoc/:id" element={<RedirectToHocKy />} />
             {/* Trang danh sách CTĐT đã gộp vào /nganh-hoc (task #11) — redirect để không vỡ link cũ */}
             <Route path="/chuong-trinh-dt" element={<Navigate to="/nganh-hoc" replace />} />
             <Route path="/chuong-trinh-dt/:id" element={<ChiTietCTDTPage />} />
-            <Route path="/mon-hoc" element={<MonHocPage />} />
             {/* ThoiKhoaBieuPage tự phân nhánh theo vai trò bên trong, không cần giới hạn allowedRoles ở route */}
             <Route path="/thoi-khoa-bieu" element={<ThoiKhoaBieuPage />} />
             <Route path="/thu-vien" element={<KhuVucNoiDungPage khuVuc="thu-vien" tieuDeTrang="Thư viện" />} />
@@ -61,6 +59,12 @@ function App() {
             {/* Giáo viên */}
             <Route element={<ProtectedRoute allowedRoles={[ROLES.GIAO_VIEN]} />}>
               <Route path="/lop-hoc-phan" element={<LopHocPhanPage />} />
+            </Route>
+
+            {/* Admin / Giáo vụ / Giáo viên — không cho Sinh viên (task #20) */}
+            <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.GIAO_VU, ROLES.GIAO_VIEN]} />}>
+              <Route path="/nam-hoc" element={<NamHocPage />} />
+              <Route path="/mon-hoc" element={<MonHocPage />} />
             </Route>
 
             {/* Admin / Giáo vụ */}

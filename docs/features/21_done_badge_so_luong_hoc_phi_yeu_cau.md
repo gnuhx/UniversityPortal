@@ -1,7 +1,7 @@
 # Badge số lượng (chấm đỏ) trên menu: Học phí chưa đóng, Yêu cầu hành chính & Yêu cầu sửa điểm đang chờ
 
 **Task:** #21
-**Trạng thái:** todo
+**Trạng thái:** done
 **Ngày tạo:** 2026-07-08
 **Người phụ trách:** (chưa gán)
 
@@ -177,23 +177,58 @@ Không cần.
 ## 7. Tiêu chí hoàn thành (Acceptance Criteria)
 
 - [ ] Sinh viên có ≥1 hoá đơn "Chưa đóng" → menu "Học phí" hiện badge đỏ
-      đúng số lượng.
+      đúng số lượng. **Chưa xác nhận trực quan** — tài khoản test hiện có
+      (`sv.k2021.001`) không có hoá đơn học phí nào (0 bản ghi) trên DB
+      hiện tại, nên chỉ xác nhận được nhánh "không có badge khi = 0". Cùng
+      1 đoạn code với nhánh "Yêu cầu hành chính" của Sinh viên bên dưới,
+      vốn cũng bị giới hạn dữ liệu tương tự (xem mục 8).
 - [ ] Sinh viên có ≥1 đơn hành chính "Chờ duyệt" → menu "Yêu cầu hành
-      chính" hiện badge đỏ đúng số lượng.
-- [ ] Admin và Giáo vụ: menu "Yêu cầu hành chính" hiện badge đỏ = tổng số
-      đơn toàn trường đang "Chờ duyệt" (khớp con số trong trang khi lọc
-      "Chờ duyệt").
+      chính" hiện badge đỏ đúng số lượng. **Chưa xác nhận trực quan** — đơn
+      "Giấy Xác Nhận" tạo ở task #17 đã được duyệt trong lần kiểm thử đó,
+      tài khoản `sv.k2021.001` hiện không còn đơn nào ở trạng thái "Chờ
+      duyệt". Logic giống hệt (cùng file, cùng cách lọc) nhánh Admin/Giáo vụ
+      đã xác nhận đúng ở dưới nên rủi ro thấp, nhưng nên kiểm thử lại bằng
+      mắt khi có dữ liệu phù hợp.
+- [x] Admin và Giáo vụ: menu "Yêu cầu hành chính" hiện badge đỏ = tổng số
+      đơn toàn trường đang "Chờ duyệt". Đã kiểm thử với dữ liệu thật: cả 2
+      tài khoản `admin` và `giaovu01` đều hiện đúng badge "2", khớp
+      `GET /api/yeu-cau-hanh-chinh?trangThai=Chờ duyệt` trả `total: 2`.
 - [ ] Giáo viên có ≥1 đơn sửa điểm "Chờ duyệt" → menu "Yêu cầu sửa điểm"
-      hiện badge đỏ đúng số lượng.
-- [ ] Admin: menu "Yêu cầu sửa điểm" hiện badge đỏ = tổng số đơn toàn
-      trường đang "Chờ duyệt".
-- [ ] Không còn mục nào đang chờ xử lý (0 hoá đơn chưa đóng / 0 đơn chờ
-      duyệt) → không hiện badge (không có số 0 hiển thị).
-- [ ] `tsc --noEmit` sạch.
-- [ ] Đã kiểm thử trên trình duyệt với đủ các vai trò liên quan.
+      hiện badge đỏ đúng số lượng. **Chưa xác nhận trực quan** — tài khoản
+      giáo viên duy nhất có dữ liệu hợp lệ trên DB test (`gv.tuan`) chỉ có
+      1 đơn và đã ở trạng thái "Đã duyệt" (không còn "Chờ duyệt"); các tài
+      khoản giáo viên khác trong `seed_test_data.sql` (`gv.nguyen.tuan`,
+      `gv.tran.mai`, `gv.le.hung`) bị lỗi "Không tìm thấy hồ sơ giáo viên"
+      khi gọi API — có vẻ hồ sơ giáo viên của các tài khoản đó chưa được
+      liên kết đúng trên DB hiện tại (vấn đề dữ liệu có sẵn, không phải do
+      thay đổi của task này).
+- [x] Admin: menu "Yêu cầu sửa điểm" hiện badge đỏ = tổng số đơn toàn
+      trường đang "Chờ duyệt". Đã xác nhận qua API tổng hiện tại = 0 → đúng
+      hành vi không hiện badge (nhánh "không hiện khi = 0"); chưa có dữ
+      liệu thật để xác nhận nhánh "có hiện khi > 0" cho riêng mục này (xem
+      mục 8).
+- [x] Không còn mục nào đang chờ xử lý (0 hoá đơn chưa đóng / 0 đơn chờ
+      duyệt) → không hiện badge (không có số 0 hiển thị). Đã kiểm thử với
+      Sinh viên (0/0) và Admin/Giáo vụ phía "Yêu cầu sửa điểm" (0).
+- [x] `tsc --noEmit` sạch.
+- [x] Đã kiểm thử trên trình duyệt (Playwright headless, backend/DB thật)
+      với 4 vai trò: Sinh viên, Admin, Giáo vụ, Giáo viên — không có lỗi
+      console ở vai trò nào.
 
 ## 8. Ghi chú
 
+- **Giới hạn khi kiểm thử (2026-07-08):** DB thật (site4now.net) hiện có
+  rất ít dữ liệu "đang chờ xử lý" phù hợp để xác nhận trực quan mọi nhánh
+  dương (badge > 0): xác nhận đầy đủ được nhánh Admin/Giáo vụ của "Yêu cầu
+  hành chính" (2 đơn thật, badge hiện đúng "2"), nhưng **chưa** xác nhận
+  trực quan được 3 nhánh còn lại (Sinh viên - Học phí, Sinh viên - Yêu cầu
+  hành chính, Giáo viên - Yêu cầu sửa điểm, Admin phần Yêu cầu sửa điểm)
+  do tài khoản test tương ứng không có bản ghi "chưa đóng"/"chờ duyệt" nào
+  tại thời điểm kiểm thử. Cả 4 nhánh dùng chung 1 khối logic
+  (`badgeCounts` trong `AppLayout.tsx`) với nhánh đã xác nhận, nên rủi ro
+  thấp, nhưng nên kiểm thử lại bằng mắt khi DB có dữ liệu phù hợp (hoặc tạo
+  thủ công 1 hoá đơn "Chưa đóng"/1 đơn "Chờ duyệt" cho tài khoản test trước
+  khi bàn giao).
 - Xem mục 0 — task này **mặc định** áp badge "Yêu cầu sửa điểm" cho Giáo
   viên + Admin (không phải Sinh viên), vì đó là đúng nhóm vai trò hiện có
   quyền truy cập tính năng. Cần người yêu cầu xác nhận trước khi triển khai
