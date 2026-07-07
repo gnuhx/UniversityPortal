@@ -38,6 +38,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<DatPhongThucHanh> DatPhongThucHanhs => Set<DatPhongThucHanh>();
     public DbSet<KhaoSatYKien> KhaoSatYKiens => Set<KhaoSatYKien>();
     public DbSet<DienDanGiaoVien> DienDanGiaoViens => Set<DienDanGiaoVien>();
+    public DbSet<NoiDungTinh> NoiDungTinhs => Set<NoiDungTinh>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

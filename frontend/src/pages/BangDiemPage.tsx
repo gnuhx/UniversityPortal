@@ -1,8 +1,11 @@
-import { Badge, Card, Col, Row, Spin, Table, Tabs, Tag } from "antd";
+import { useEffect, useState } from "react";
+import { Badge, Card, Col, Collapse, Row, Spin, Table, Tabs, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useQuery } from "@tanstack/react-query";
 import { danhSachLopHPApi } from "../api/modules";
 import type { DanhSachLopHP } from "../types";
+
+const { Text } = Typography;
 
 function diemColor(diem: number | null | undefined): string {
   if (diem == null) return "default";
@@ -71,54 +74,54 @@ const columns: ColumnsType<DanhSachLopHP> = [
   },
 ];
 
+/** Nhóm danh sách theo Năm học → Học kỳ. Khoá nhóm dùng id (không dùng tên) để tránh gộp nhầm khi trùng tên hiển thị. */
+function groupByNamHocRoiHocKy(data: DanhSachLopHP[]) {
+  const namHocMap = new Map<number, { namHocId: number; tenNamHoc: string; hocKyMap: Map<number, { hocKyId: number; tenHocKy: string; items: DanhSachLopHP[] }> }>();
+
+  for (const item of data) {
+    let nh = namHocMap.get(item.namHocId);
+    if (!nh) {
+      nh = { namHocId: item.namHocId, tenNamHoc: item.tenNamHoc, hocKyMap: new Map() };
+      namHocMap.set(item.namHocId, nh);
+    }
+    let hk = nh.hocKyMap.get(item.hocKyId);
+    if (!hk) {
+      hk = { hocKyId: item.hocKyId, tenHocKy: item.tenHocKy, items: [] };
+      nh.hocKyMap.set(item.hocKyId, hk);
+    }
+    hk.items.push(item);
+  }
+
+  return Array.from(namHocMap.values())
+    .sort((a, b) => b.namHocId - a.namHocId)
+    .map((nh) => ({
+      namHocId: nh.namHocId,
+      tenNamHoc: nh.tenNamHoc,
+      hocKyList: Array.from(nh.hocKyMap.values()).sort((a, b) => a.hocKyId - b.hocKyId),
+    }));
+}
+
 export function BangDiemPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["danh-sach-lop-hp-me"],
     queryFn: () => danhSachLopHPApi.getMe(),
   });
 
+  const namHocGroups = data ? groupByNamHocRoiHocKy(data) : [];
+
+  // Chỉ mở sẵn năm học mới nhất — controlled activeKey vì defaultActiveKey chỉ đọc 1 lần lúc mount,
+  // trong khi `namHocGroups` chỉ có dữ liệu thật sau khi query tải xong.
+  const [activeKeys, setActiveKeys] = useState<string[]>();
+  useEffect(() => {
+    if (activeKeys === undefined && namHocGroups.length > 0) {
+      setActiveKeys([String(namHocGroups[0].namHocId)]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [namHocGroups.length]);
+
   if (isLoading) return <Spin />;
   if (!data || data.length === 0)
     return <p style={{ color: "#888" }}>Chưa có dữ liệu bảng điểm.</p>;
-
-  // Group by học kỳ
-  const byHocKy = data.reduce<Record<string, DanhSachLopHP[]>>((acc, item) => {
-    const key = item.tenHocKy;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(item);
-    return acc;
-  }, {});
-
-  const tabItems = Object.entries(byHocKy).map(([tenHocKy, items]) => ({
-    key: tenHocKy,
-    label: tenHocKy,
-    children: (
-      <>
-        <Table<DanhSachLopHP>
-          rowKey="id"
-          columns={columns}
-          dataSource={items}
-          pagination={false}
-          size="middle"
-          scroll={{ x: 800 }}
-        />
-        <Row gutter={16} style={{ marginTop: 16 }}>
-          <Col>
-            <Card size="small">
-              <span style={{ fontWeight: 500 }}>GPA học kỳ: </span>
-              <strong>{tinhGpa(items)}</strong>
-            </Card>
-          </Col>
-          <Col>
-            <Card size="small">
-              <span style={{ fontWeight: 500 }}>Số môn: </span>
-              <strong>{items.length}</strong>
-            </Card>
-          </Col>
-        </Row>
-      </>
-    ),
-  }));
 
   const gpaAll = tinhGpa(data);
 
@@ -134,7 +137,49 @@ export function BangDiemPage() {
           </Card>
         </Col>
       </Row>
-      <Tabs items={tabItems} type="card" />
+      <Collapse
+        activeKey={activeKeys}
+        onChange={(keys) => setActiveKeys(Array.isArray(keys) ? keys : [keys])}
+        items={namHocGroups.map((nh) => ({
+          key: String(nh.namHocId),
+          label: <Text strong>Năm học {nh.tenNamHoc}</Text>,
+          children: (
+            <Tabs
+              type="card"
+              items={nh.hocKyList.map(({ hocKyId, tenHocKy, items }) => ({
+                key: String(hocKyId),
+                label: tenHocKy,
+                children: (
+                  <>
+                    <Table<DanhSachLopHP>
+                      rowKey="id"
+                      columns={columns}
+                      dataSource={items}
+                      pagination={false}
+                      size="middle"
+                      scroll={{ x: 800 }}
+                    />
+                    <Row gutter={16} style={{ marginTop: 16 }}>
+                      <Col>
+                        <Card size="small">
+                          <span style={{ fontWeight: 500 }}>GPA học kỳ: </span>
+                          <strong>{tinhGpa(items)}</strong>
+                        </Card>
+                      </Col>
+                      <Col>
+                        <Card size="small">
+                          <span style={{ fontWeight: 500 }}>Số môn: </span>
+                          <strong>{items.length}</strong>
+                        </Card>
+                      </Col>
+                    </Row>
+                  </>
+                ),
+              }))}
+            />
+          ),
+        }))}
+      />
     </div>
   );
 }

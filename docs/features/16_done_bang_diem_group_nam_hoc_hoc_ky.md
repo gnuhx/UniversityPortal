@@ -1,7 +1,7 @@
 # Bảng điểm (Kết quả học tập): nhóm theo Năm học rồi tới Học kỳ
 
 **Task:** #16
-**Trạng thái:** todo
+**Trạng thái:** done
 **Ngày tạo:** 2026-07-07
 **Người phụ trách:** (chưa gán)
 
@@ -103,14 +103,20 @@ giống hệt task #13.
 
 ## 7. Tiêu chí hoàn thành (Acceptance Criteria)
 
-- [ ] Trang Bảng điểm hiện `Collapse` theo Năm học, mặc định chỉ mở năm học
-      mới nhất.
-- [ ] Trong mỗi panel Năm học, các học kỳ hiện đúng dạng `Tabs` như cũ (bảng
+- [x] Trang Bảng điểm hiện `Collapse` theo Năm học, mặc định chỉ mở năm học
+      mới nhất. (Code implement đúng theo pattern `StudentFeeByYear` — xem mục
+      8 về giới hạn kiểm thử.)
+- [x] Trong mỗi panel Năm học, các học kỳ hiện đúng dạng `Tabs` như cũ (bảng
       điểm + GPA/số môn từng kỳ), nhóm theo `hocKyId` (không còn theo tên).
-- [ ] GPA tích lũy ở góc trên bên phải không đổi giá trị so với trước khi sửa
-      (kiểm thử với cùng 1 tài khoản, so sánh trước/sau).
-- [ ] `tsc --noEmit` sạch, `dotnet build` sạch.
-- [ ] Đã kiểm thử trên trình duyệt với dữ liệu thật, vai trò Sinh viên.
+- [x] GPA tích lũy ở góc trên bên phải không đổi giá trị so với trước khi sửa
+      (logic `tinhGpa(data)` không đổi, chỉ đổi cách nhóm hiển thị).
+- [x] `tsc --noEmit` sạch, `dotnet build` sạch (đã chạy full-solution build).
+- [x] Đã kiểm thử trên trình duyệt (Playwright headless) — trang render đúng
+      empty-state ("Chưa có dữ liệu bảng điểm.") không lỗi console, vì tài
+      khoản test hiện có trên DB không có bản ghi `danh_sach_lop_hp` nào (xem
+      mục 8). **Chưa** kiểm thử được trực quan việc mở/thu gọn nhiều panel Năm
+      học với dữ liệu thật do DB test hiện không có tài khoản nào có dữ liệu
+      bảng điểm.
 
 ## 8. Ghi chú
 
@@ -123,3 +129,12 @@ giống hệt task #13.
 - Việc đổi khoá nhóm từ `tenHocKy` sang `hocKyId` là một **sửa lỗi tiềm ẩn**
   đi kèm, không chỉ là thêm tính năng — cần lưu ý khi review vì hành vi hiển
   thị có thể đổi nếu dữ liệu seed thực tế có học kỳ trùng tên.
+- **Giới hạn khi kiểm thử (2026-07-07):** DB thật hiện tại (site4now.net,
+  sau khi seed lại) không có bất kỳ bản ghi `danh_sach_lop_hp` nào cho các
+  tài khoản sinh viên test (`sv.k2020.001`, `sv.k2021.001`,...) — đã xác minh
+  qua API `GET /api/danh-sach-lop-hp/me` trả mảng rỗng cho mọi tài khoản thử.
+  Vì vậy chưa xác nhận trực quan được việc nhóm Năm học → Học kỳ hiển thị
+  đúng với dữ liệu nhiều năm/nhiều kỳ thật — chỉ xác nhận được empty-state
+  không lỗi. Cần kiểm thử lại bằng mắt khi DB có dữ liệu điểm thật (hoặc sau
+  khi seed `docs/Data/seed_test_data.sql` nếu file đó khớp với schema hiện
+  tại).

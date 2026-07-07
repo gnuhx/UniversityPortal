@@ -14,6 +14,9 @@ import {
   BellOutlined,
   DollarOutlined,
   CalendarOutlined,
+  FolderOutlined,
+  SolutionOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { GlobalLoader } from "./GlobalLoader";
@@ -58,6 +61,9 @@ const allMenuItems = [
   { key: "/nam-hoc", icon: <CalendarOutlined />, label: "Năm học", roles: undefined },
   { key: "/hoc-ky", icon: <CalendarOutlined />, label: "Học kỳ", roles: [ROLES.ADMIN] },
   { key: "/mon-hoc", icon: <BookOutlined />, label: "Môn học", roles: undefined },
+  { key: "/thu-vien", icon: <FolderOutlined />, label: "Thư viện", roles: undefined },
+  { key: "/hoc-vu", icon: <SolutionOutlined />, label: "Học Vụ", roles: undefined },
+  { key: "/noi-dung-tinh", icon: <SettingOutlined />, label: "Quản lý Thư viện/Học Vụ", roles: [ROLES.ADMIN] },
 ];
 
 export function AppLayout() {

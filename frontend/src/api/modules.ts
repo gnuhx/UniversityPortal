@@ -19,6 +19,7 @@ import type {
   YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh,
   YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
   TotNghiep,
+  NoiDungTinh, UpsertNoiDungTinh,
   ApiResponse, PagedResult,
 } from "../types";
 
@@ -38,6 +39,14 @@ export const chiTietCTDTApi = createCrudApi<ChiTietCTDT, CreateChiTietCTDT, Upda
 export const monHocApi = createCrudApi<MonHoc, UpsertMonHoc>("/mon-hoc");
 export const taiKhoanApi = createCrudApi<TaiKhoan, CreateTaiKhoan, UpdateTaiKhoan>("/tai-khoan");
 export const namHocApi = createCrudApi<NamHoc, UpsertNamHoc>("/nam-hoc");
+
+export const noiDungTinhApi = {
+  ...createCrudApi<NoiDungTinh, UpsertNoiDungTinh>("/noi-dung-tinh"),
+  async getByKhuVuc(khuVuc: string) {
+    const res = await apiClient.get<ApiResponse<NoiDungTinh[]>>("/noi-dung-tinh", { params: { khuVuc } });
+    return res.data.data;
+  },
+};
 
 export const sinhVienMeApi = {
   async getMe() {

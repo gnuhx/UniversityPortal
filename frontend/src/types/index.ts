@@ -258,6 +258,8 @@ export interface DanhSachLopHP {
   tenMon: string;
   hocKyId: number;
   tenHocKy: string;
+  namHocId: number;
+  tenNamHoc: string;
   tenGiaoVien: string;
   loaiDangKy: string;
   trangThaiDuyet: string;
@@ -461,17 +463,20 @@ export interface YeuCauHanhChinh {
   tenSinhVien: string;
   mssv: string;
   loaiYeuCau: string;
+  loaiGiayXacNhan?: string | null;
   noiDung: string;
   fileDinhKem?: string | null;
   trangThai: string;
   nguoiDuyetId?: number | null;
   tenNguoiDuyet?: string | null;
+  ghiChuAdmin?: string | null;
   ngayTao: string;
   createdAt: string;
 }
 
 export interface CreateYeuCauHanhChinh {
   loaiYeuCau: string;
+  loaiGiayXacNhan?: string | null;
   noiDung: string;
   fileDinhKem?: string | null;
 }
@@ -504,6 +509,25 @@ export interface CreateYeuCauSuaDiem {
 
 export interface DuyetYeuCauSuaDiem {
   trangThai: string;
+}
+
+// ===== Noi dung tinh (Thu vien, Hoc Vu,...) =====
+export interface NoiDungTinh {
+  id: number;
+  khuVuc: string;
+  maMuc: string;
+  tieuDe: string;
+  noiDung?: string | null;
+  thuTu: number;
+  createdAt: string;
+}
+
+export interface UpsertNoiDungTinh {
+  khuVuc: string;
+  maMuc: string;
+  tieuDe: string;
+  noiDung?: string | null;
+  thuTu: number;
 }
 
 export const VAI_TRO_OPTIONS = [

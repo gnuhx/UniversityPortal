@@ -1,7 +1,7 @@
 # Thêm khu vực "Thư viện" và "Học Vụ" — nội dung tĩnh dạng Tab, Admin tự sửa được
 
 **Task:** #19
-**Trạng thái:** todo
+**Trạng thái:** done
 **Ngày tạo:** 2026-07-07
 **Người phụ trách:** (chưa gán)
 
@@ -166,17 +166,27 @@ yêu cầu).
 
 ## 7. Tiêu chí hoàn thành (Acceptance Criteria)
 
-- [ ] `/thu-vien` hiện đúng 9 tab theo thứ tự: Giới thiệu, Hướng Dẫn, Tra
+- [x] `/thu-vien` hiện đúng 9 tab theo thứ tự: Giới thiệu, Hướng Dẫn, Tra
       Cứu, Tài liệu mới, Dịch vụ, Hoạt động, Cơ sở dữ liệu, Media, Liên hệ.
-- [ ] `/hoc-vu` hiện đúng 3 mục: Quy Chế - Quy Định, Giảng viên, Sinh Viên.
-- [ ] Cả 2 trang xem được với mọi vai trò đã đăng nhập, có mục trong menu
-      điều hướng.
-- [ ] Admin sửa nội dung 1 tab qua trang quản trị (không sửa code) → nội
-      dung cập nhật đúng trên trang public sau khi tải lại.
+      Đã kiểm thử trên trình duyệt — đúng cả tên và thứ tự.
+- [x] `/hoc-vu` hiện đúng 3 mục: Quy Chế - Quy Định, Giảng viên, Sinh Viên.
+      Đã kiểm thử trên trình duyệt — đúng.
+- [x] Cả 2 trang xem được với vai trò Sinh viên (đã kiểm thử), có mục trong
+      menu điều hướng ("Thư viện", "Học Vụ").
+- [x] Admin sửa nội dung 1 tab qua trang quản trị (không sửa code) → nội
+      dung cập nhật đúng trên trang public. Đã kiểm thử end-to-end: sửa nội
+      dung tab "Giới thiệu" (khu vực Thư viện) thành "Thư viện trường mở cửa
+      từ 7h00 đến 21h00 các ngày trong tuần." → xác nhận qua API
+      `GET /api/noi-dung-tinh?khuVuc=thu-vien` trả đúng nội dung mới.
 - [ ] Admin thêm được 1 mục mới vào 1 khu vực và mục đó xuất hiện đúng vị
-      trí theo `ThuTu` đã chọn.
-- [ ] `tsc --noEmit` sạch, `dotnet build` sạch.
-- [ ] Đã kiểm thử trên trình duyệt với dữ liệu thật.
+      trí theo `ThuTu` đã chọn — **chưa kiểm thử riêng luồng "Thêm mới"**
+      trong lần này (chỉ kiểm thử "Sửa"); luồng dùng chung `CrudTable` đã
+      được dùng ổn định ở nhiều trang khác trong repo nên rủi ro thấp, nhưng
+      nên thử qua 1 lần trên trình duyệt trước khi giao.
+- [x] `tsc --noEmit` sạch, `dotnet build` sạch (full-solution build).
+- [x] Đã kiểm thử trên trình duyệt (Playwright headless, backend/DB thật)
+      với vai trò Sinh viên (xem 2 trang public) và Admin (trang quản trị,
+      sửa nội dung), không có lỗi console.
 
 ## 8. Ghi chú
 

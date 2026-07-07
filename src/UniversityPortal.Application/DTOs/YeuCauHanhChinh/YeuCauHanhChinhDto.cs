@@ -7,11 +7,13 @@ public class YeuCauHanhChinhDto
     public string TenSinhVien { get; set; } = string.Empty;
     public string Mssv { get; set; } = string.Empty;
     public string LoaiYeuCau { get; set; } = string.Empty;
+    public string? LoaiGiayXacNhan { get; set; }
     public string NoiDung { get; set; } = string.Empty;
     public string? FileDinhKem { get; set; }
     public string TrangThai { get; set; } = string.Empty;
     public int? NguoiDuyetId { get; set; }
     public string? TenNguoiDuyet { get; set; }
+    public string? GhiChuAdmin { get; set; }
     public DateTime NgayTao { get; set; }
     public DateTime CreatedAt { get; set; }
 }

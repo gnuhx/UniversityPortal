@@ -8,7 +8,7 @@ import type { PagedResult } from "../types";
 export interface CrudFormField {
   name: string;
   label: string;
-  type?: "text" | "number" | "password" | "select" | "switch" | "email" | "date";
+  type?: "text" | "number" | "password" | "select" | "switch" | "email" | "date" | "textarea";
   required?: boolean;
   options?: { label: string; value: number | string }[];
   hideOnEdit?: boolean;
@@ -251,6 +251,8 @@ function renderField(field: CrudFormField) {
       return <SelectField options={field.options || []} />;
     case "date":
       return <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />;
+    case "textarea":
+      return <Input.TextArea rows={4} />;
     default:
       return <Input />;
   }

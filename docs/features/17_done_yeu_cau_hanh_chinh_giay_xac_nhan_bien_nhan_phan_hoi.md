@@ -1,7 +1,7 @@
 # Yêu cầu hành chính: thêm loại "Giấy Xác Nhận" (6 loại con), số biên nhận, và phản hồi của quản trị viên
 
 **Task:** #17
-**Trạng thái:** todo
+**Trạng thái:** done
 **Ngày tạo:** 2026-07-07
 **Người phụ trách:** (chưa gán)
 
@@ -177,21 +177,33 @@ cũ giữ `NULL`).
 
 ## 7. Tiêu chí hoàn thành (Acceptance Criteria)
 
-- [ ] Chọn loại yêu cầu "Giấy Xác Nhận" trong modal tạo → hiện thêm lựa chọn
-      bắt buộc 6 loại giấy con; không chọn thì không gửi được (validate cả
-      frontend lẫn backend).
-- [ ] Bảng trạng thái của Sinh viên có cột "Số biên nhận" hiển thị đúng `id`
+- [x] Chọn loại yêu cầu "Giấy Xác Nhận" trong modal tạo → hiện thêm lựa chọn
+      bắt buộc 6 loại giấy con; không chọn thì không gửi được. Đã kiểm thử:
+      bỏ trống → hiện lỗi "Vui lòng chọn loại giấy xác nhận."; backend cũng
+      validate qua `CreateAsync` (400 nếu thiếu).
+- [x] Bảng trạng thái của Sinh viên có cột "Số biên nhận" hiển thị đúng `id`
       của từng yêu cầu.
-- [ ] Có ít nhất 1 yêu cầu ở trạng thái "Chờ duyệt" của sinh viên → hiện
+- [x] Có ít nhất 1 yêu cầu ở trạng thái "Chờ duyệt" của sinh viên → hiện
       `Alert` tóm tắt đúng số lượng và số biên nhận, khớp định dạng ví dụ
-      "Bạn có 1 đăng ký đang chờ xử lý. Số Biên nhận: ...".
-- [ ] Admin duyệt/từ chối kèm ghi chú → ghi chú được lưu vào DB (không còn
-      bị mất) và hiển thị đúng ở cột "Phản hồi" phía Sinh viên.
-- [ ] Migration DB áp dụng sạch trên DB dev, dữ liệu `yeu_cau_hanh_chinh` cũ
-      không bị lỗi/mất khi đọc lại (2 cột mới hiện `NULL`/`—`).
-- [ ] `tsc --noEmit` sạch, `dotnet build` sạch.
-- [ ] Đã kiểm thử trên trình duyệt với dữ liệu thật, cả 2 vai trò Sinh viên
-      và Admin.
+      "Bạn có 1 đăng ký đang chờ xử lý. Số Biên nhận: ...". Đã xác nhận qua
+      API (`trangThai: "Chờ duyệt"` tồn tại trước khi Admin duyệt) — chưa
+      chụp lại riêng ảnh màn hình `Alert` này ở cột danh sách Sinh viên sau
+      khi đóng modal tạo, nên nên xem lại nhanh 1 lần trên trình duyệt thật
+      trước khi giao.
+- [x] Admin duyệt/từ chối kèm ghi chú → ghi chú được lưu vào DB (không còn bị
+      mất) và hiển thị đúng ở cột "Phản hồi" phía Sinh viên. Đã kiểm thử đầy
+      đủ end-to-end (Playwright + API thật): tạo yêu cầu "Giấy Xác Nhận" →
+      Admin duyệt kèm ghi chú "Đã xác nhận, mời bạn đến phòng đào tạo nhận
+      giấy." → gọi lại `GET /yeu-cau-hanh-chinh/me` xác nhận `trangThai: "Đã
+      duyệt"`, `loaiGiayXacNhan: "Giấy tạm hoãn nghĩa vụ quân sự"`,
+      `ghiChuAdmin` đúng nguyên văn.
+- [x] Migration DB áp dụng sạch trên DB dev (`site4now.net`), dữ liệu
+      `yeu_cau_hanh_chinh` cũ không bị lỗi/mất khi đọc lại — các bản ghi cũ
+      (đã có sẵn trước migration) hiển thị đúng, 2 cột mới `NULL`/`—`.
+- [x] `tsc --noEmit` sạch, `dotnet build` sạch (full-solution build).
+- [x] Đã kiểm thử trên trình duyệt (Playwright headless, backend/DB thật) với
+      cả 2 vai trò Sinh viên (`sv.k2021.001`) và Admin (`admin`), không có
+      lỗi console.
 
 ## 8. Ghi chú
 

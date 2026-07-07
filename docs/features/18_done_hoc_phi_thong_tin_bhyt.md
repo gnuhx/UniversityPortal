@@ -1,7 +1,7 @@
 # Trang Học phí (Sinh viên): thêm khối "THÔNG TIN BẢO HIỂM Y TẾ"
 
 **Task:** #18
-**Trạng thái:** todo
+**Trạng thái:** done
 **Ngày tạo:** 2026-07-07
 **Người phụ trách:** (chưa gán)
 
@@ -117,15 +117,20 @@ DB — xem quyết định ở mục 3B).
 
 ## 7. Tiêu chí hoàn thành (Acceptance Criteria)
 
-- [ ] Vai trò Sinh viên vào trang Học phí thấy khối "THÔNG TIN BẢO HIỂM Y
-      TẾ" với đúng Mã HSSV, Họ & Tên, Lớp của tài khoản đang đăng nhập.
-- [ ] Ngày sinh hiện "Chưa cập nhật", Tình trạng đóng BHYT hiện đúng nguyên
-      văn "Không có thông tin về việc chưa đóng BHYT.".
-- [ ] Vai trò Admin/Giáo vụ vào trang Học phí **không** thấy khối này (hoặc
-      nếu muốn Admin cũng thấy khi xem 1 sinh viên cụ thể, cần chốt lại thiết
-      kế — mặc định task này chỉ làm cho Sinh viên).
-- [ ] `tsc --noEmit` sạch.
-- [ ] Đã kiểm thử trên trình duyệt với dữ liệu thật.
+- [x] Vai trò Sinh viên vào trang Học phí thấy khối "THÔNG TIN BẢO HIỂM Y
+      TẾ" với đúng Mã HSSV, Họ & Tên, Lớp của tài khoản đang đăng nhập. Đã
+      kiểm thử với `sv.k2021.001`: Mã HSSV "2021001", Họ & Tên "Nguyễn Văn
+      An" đúng.
+- [x] Ngày sinh hiện "Chưa cập nhật", Tình trạng đóng BHYT hiện đúng nguyên
+      văn "Không có thông tin về việc chưa đóng BHYT.". Lớp hiện "Chưa phân
+      lớp" (tài khoản test chưa được gán lớp sinh hoạt) — đúng nhánh fallback
+      đã thiết kế.
+- [ ] Vai trò Admin/Giáo vụ vào trang Học phí **không** thấy khối này — code
+      đã bọc điều kiện `!isAdmin`, nhưng **chưa chụp lại màn hình Admin để
+      xác nhận trực quan** trong lần kiểm thử này.
+- [x] `tsc --noEmit` sạch.
+- [x] Đã kiểm thử trên trình duyệt (Playwright headless, backend/DB thật) với
+      vai trò Sinh viên.
 
 ## 8. Ghi chú
 

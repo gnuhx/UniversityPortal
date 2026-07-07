@@ -15,6 +15,7 @@ public class DanhSachLopHPRepository(AppDbContext context) : BaseRepository<Danh
                     .ThenInclude(ct => ct.MonHoc)
             .Include(x => x.LopHocPhan)
                 .ThenInclude(lhp => lhp.HocKy)
+                    .ThenInclude(hk => hk.NamHoc)
             .Include(x => x.LopHocPhan)
                 .ThenInclude(lhp => lhp.GiaoVien)
                     .ThenInclude(gv => gv.TaiKhoan)

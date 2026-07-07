@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Table, Tag, Card, Collapse, Row, Col, Statistic, Select, Space, Button,
-  Modal, Form, InputNumber, message, Alert, Empty, Spin, Typography,
+  Modal, Form, InputNumber, message, Alert, Empty, Spin, Typography, Descriptions,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   PlusOutlined, ThunderboltOutlined, CheckCircleOutlined,
-  ClockCircleOutlined, GiftOutlined, WalletOutlined,
+  ClockCircleOutlined, GiftOutlined, WalletOutlined, MedicineBoxOutlined,
 } from "@ant-design/icons";
-import { hocPhiApi, hocKyApi, sinhVienApi } from "../api/modules";
+import { hocPhiApi, hocKyApi, sinhVienApi, sinhVienMeApi } from "../api/modules";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
 import type { HocPhi, CreateHocPhi, GenerateHocPhi } from "../types";
@@ -173,6 +173,13 @@ export function HocPhiPage() {
     enabled: !isAdmin,
   });
 
+  // Student: hồ sơ cá nhân — dùng cho khối "Thông tin bảo hiểm y tế"
+  const { data: hoSo } = useQuery({
+    queryKey: ["sinh-vien-me"],
+    queryFn: () => sinhVienMeApi.getMe(),
+    enabled: !isAdmin,
+  });
+
   // Admin: all bills (optionally filtered by semester)
   const {
     data: allData,
@@ -274,6 +281,30 @@ export function HocPhiPage() {
           </>
         )}
       </Space>
+
+      {/* Thông tin bảo hiểm y tế (Sinh viên) */}
+      {!isAdmin && hoSo && (
+        <Card
+          size="small"
+          title={
+            <Space>
+              <MedicineBoxOutlined />
+              Thông tin bảo hiểm y tế
+            </Space>
+          }
+          style={{ marginBottom: 16 }}
+        >
+          <Descriptions column={{ xs: 1, sm: 2 }} size="small">
+            <Descriptions.Item label="Mã HSSV">{hoSo.mssv}</Descriptions.Item>
+            <Descriptions.Item label="Họ & Tên">{hoSo.hoTen}</Descriptions.Item>
+            <Descriptions.Item label="Ngày sinh">Chưa cập nhật</Descriptions.Item>
+            <Descriptions.Item label="Lớp">{hoSo.tenLop ?? "Chưa phân lớp"}</Descriptions.Item>
+            <Descriptions.Item label="Tình trạng đóng BHYT" span={2}>
+              Không có thông tin về việc chưa đóng BHYT.
+            </Descriptions.Item>
+          </Descriptions>
+        </Card>
+      )}
 
       {/* Summary cards */}
       <Row gutter={16} style={{ marginBottom: 16 }}>

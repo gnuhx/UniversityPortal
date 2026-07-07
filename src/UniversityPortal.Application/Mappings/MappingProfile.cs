@@ -95,6 +95,8 @@ public class MappingProfile : Profile
             .ForMember(d => d.TenMon,            o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.ChiTietCTDT.MonHoc.TenMon : string.Empty))
             .ForMember(d => d.HocKyId,           o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.HocKyId : 0))
             .ForMember(d => d.TenHocKy,          o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.HocKy.TenHocKy : string.Empty))
+            .ForMember(d => d.NamHocId,          o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.HocKy.NamHocId : 0))
+            .ForMember(d => d.TenNamHoc,         o => o.MapFrom(s => s.LopHocPhan != null && s.LopHocPhan.HocKy.NamHoc != null ? s.LopHocPhan.HocKy.NamHoc.TenNamHoc : string.Empty))
             .ForMember(d => d.TenGiaoVien,       o => o.MapFrom(s => s.LopHocPhan != null ? s.LopHocPhan.GiaoVien.TaiKhoan.HoTen : string.Empty))
             .ForMember(d => d.KhoaBangDiem,      o => o.MapFrom(s => s.LopHocPhan != null && s.LopHocPhan.KhoaBangDiem))
             .ForMember(d => d.TenSinhVien,       o => o.MapFrom(s => s.SinhVien != null ? s.SinhVien.TaiKhoan.HoTen : null))

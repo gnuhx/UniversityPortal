@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UniversityPortal.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using UniversityPortal.Infrastructure.Persistence;
 namespace UniversityPortal.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260707134441_AddGiayXacNhanVaPhanHoiToYeuCauHanhChinh")]
+    partial class AddGiayXacNhanVaPhanHoiToYeuCauHanhChinh
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1047,55 +1050,6 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("PhongBanId");
 
                     b.ToTable("nganh_hoc", (string)null);
-                });
-
-            modelBuilder.Entity("UniversityPortal.Domain.Entities.NoiDungTinh", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("KhuVuc")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("khu_vuc");
-
-                    b.Property<string>("MaMuc")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("ma_muc");
-
-                    b.Property<string>("NoiDung")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("noi_dung");
-
-                    b.Property<int>("ThuTu")
-                        .HasColumnType("int")
-                        .HasColumnName("thu_tu");
-
-                    b.Property<string>("TieuDe")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
-                        .HasColumnName("tieu_de");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("KhuVuc", "ThuTu");
-
-                    b.ToTable("noi_dung_tinh", (string)null);
                 });
 
             modelBuilder.Entity("UniversityPortal.Domain.Entities.PhongBan", b =>

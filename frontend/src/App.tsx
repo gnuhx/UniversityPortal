@@ -20,6 +20,8 @@ import { HocPhiPage } from "./pages/HocPhiPage";
 import { YeuCauHanhChinhPage } from "./pages/YeuCauHanhChinhPage";
 import { YeuCauSuaDiemPage } from "./pages/YeuCauSuaDiemPage";
 import { ThoiKhoaBieuPage } from "./pages/ThoiKhoaBieuPage";
+import { KhuVucNoiDungPage } from "./pages/KhuVucNoiDungPage";
+import { NoiDungTinhAdminPage } from "./pages/NoiDungTinhAdminPage";
 import { ROLES } from "./constants/roles";
 
 /** Task #12: /nam-hoc/:id gộp vào trang Học kỳ độc lập — redirect giữ link cũ không vỡ. */
@@ -47,6 +49,8 @@ function App() {
             <Route path="/mon-hoc" element={<MonHocPage />} />
             {/* ThoiKhoaBieuPage tự phân nhánh theo vai trò bên trong, không cần giới hạn allowedRoles ở route */}
             <Route path="/thoi-khoa-bieu" element={<ThoiKhoaBieuPage />} />
+            <Route path="/thu-vien" element={<KhuVucNoiDungPage khuVuc="thu-vien" tieuDeTrang="Thư viện" />} />
+            <Route path="/hoc-vu" element={<KhuVucNoiDungPage khuVuc="hoc-vu" tieuDeTrang="Học Vụ" />} />
 
             {/* Sinh viên */}
             <Route element={<ProtectedRoute allowedRoles={[ROLES.SINH_VIEN]} />}>
@@ -70,6 +74,7 @@ function App() {
             {/* Admin only */}
             <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
               <Route path="/hoc-ky" element={<HocKyPage />} />
+              <Route path="/noi-dung-tinh" element={<NoiDungTinhAdminPage />} />
             </Route>
 
             {/*

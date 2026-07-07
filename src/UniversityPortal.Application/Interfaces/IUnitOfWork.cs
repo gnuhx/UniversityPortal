@@ -44,6 +44,9 @@ public interface IUnitOfWork : IDisposable
     IYeuCauHanhChinhRepository YeuCauHanhChinhs { get; }
     IYeuCauSuaDiemRepository YeuCauSuaDiems { get; }
 
+    // ── Nội dung tĩnh (Thư viện, Học Vụ,...) ─────────────────────────────────
+    INoiDungTinhRepository NoiDungTinhs { get; }
+
     /// <summary>Lưu tất cả thay đổi trong transaction hiện tại xuống database.</summary>
     Task<int> CommitAsync();
 }
