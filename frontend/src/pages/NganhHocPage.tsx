@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
-import { Button, Card, Descriptions, Empty, Select, Space, Spin, Tabs, Tag } from "antd";
+import { Button, Card, Descriptions, Empty, Select, Space, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { CrudTable, type CrudFormField } from "../components/CrudTable";
 import { NganhMonHocModal } from "../components/NganhMonHocModal";
@@ -11,7 +11,6 @@ import type { NganhHoc } from "../types";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
 import { useKhoaHocOptions } from "../hooks/useKhoaHocOptions";
-import { ChuongTrinhDTPage } from "./ChuongTrinhDTPage";
 
 /** Khu vực A — nổi bật ngành + CTĐT hiện tại của sinh viên đang đăng nhập. */
 function NganhCuaToi() {
@@ -44,13 +43,19 @@ function NganhCuaToi() {
   );
 }
 
-/** Khu vực B — danh sách toàn bộ Ngành học, lọc theo Khoá học khi xem môn học của 1 ngành. */
-function DanhSachNganhHoc() {
+interface NganhHocTableProps {
+  /** Lọc theo ngành (id) — bỏ trống = mọi ngành. */
+  nganhId?: number;
+  /** Lọc theo khoá học (chỉ hiện ngành có ít nhất 1 CTĐT thuộc khoá này) — bỏ trống = mọi khoá học. */
+  khoaHoc?: string;
+}
+
+/** Bảng "Ngành học" thuần — không tự vẽ filter, nhận nganhId/khoaHoc từ nơi gọi. */
+function NganhHocTable({ nganhId, khoaHoc }: NganhHocTableProps) {
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.vaiTro === ROLES.ADMIN;
   const [monHocModal, setMonHocModal] = useState<NganhHoc | null>(null);
   const [nhanBanModal, setNhanBanModal] = useState<NganhHoc | null>(null);
-  const { khoaHoc, setKhoaHoc, khoaHocOptions } = useKhoaHocOptions();
 
   const { data: nganhOptions } = useQuery({
     queryKey: ["nganh-hoc-all"],
@@ -109,21 +114,11 @@ function DanhSachNganhHoc() {
 
   return (
     <>
-      <Space style={{ marginBottom: 16 }}>
-        <span>Khoá học:</span>
-        <Select
-          style={{ width: 160 }}
-          value={khoaHoc}
-          onChange={setKhoaHoc}
-          options={khoaHocOptions.map((k) => ({ label: k, value: k }))}
-        />
-        <Tag color="blue">Áp dụng khi xem môn học của 1 ngành</Tag>
-      </Space>
-
       <CrudTable<NganhHoc, any, any>
         title="Ngành học"
         queryKey="nganh-hoc"
         fetchPaged={nganhHocApi.getPaged}
+        extraParams={{ nganhId, khoaHoc }}
         columns={columns}
         formFields={formFields}
         searchPlaceholder="Tìm theo mã hoặc tên ngành"
@@ -155,26 +150,68 @@ function DanhSachNganhHoc() {
   );
 }
 
+/** Khu vực B — dùng cho vai trò không phải Admin: tự quản lý filter Khoá học riêng, lọc thật bảng Ngành học. */
+function DanhSachNganhHoc() {
+  const { khoaHoc, setKhoaHoc, khoaHocOptions, khoaHocFilter } = useKhoaHocOptions();
+
+  return (
+    <>
+      <Space style={{ marginBottom: 16 }}>
+        <span>Khoá học:</span>
+        <Select style={{ width: 160 }} value={khoaHoc} onChange={setKhoaHoc} options={khoaHocOptions} />
+      </Space>
+
+      <NganhHocTable khoaHoc={khoaHocFilter} />
+    </>
+  );
+}
+
+/**
+ * Admin: bảng "Ngành học" với filter Ngành + Khoá học (đều có "Tất cả").
+ * "Chương trình đào tạo" đang ẩn theo yêu cầu — component `ChuongTrinhDTTable`
+ * (`./ChuongTrinhDTPage.tsx`) vẫn còn, chỉ không render ở đây nữa.
+ */
+function QuanLyNganhHoc() {
+  const { data: nganhOptions } = useQuery({
+    queryKey: ["nganh-hoc-all"],
+    queryFn: () => nganhHocApi.getAll(),
+  });
+  const { khoaHoc, setKhoaHoc, khoaHocOptions, khoaHocFilter } = useKhoaHocOptions();
+  const [nganhIdStr, setNganhIdStr] = useState<string>("");
+  const nganhIdFilter = nganhIdStr ? Number(nganhIdStr) : undefined;
+
+  const nganhFilterOptions = [
+    { label: "Tất cả", value: "" },
+    ...(nganhOptions || []).map((n) => ({ label: n.tenNganh, value: String(n.id) })),
+  ];
+
+  return (
+    <div>
+      <Space style={{ marginBottom: 24 }} wrap>
+        <span>Ngành:</span>
+        <Select style={{ width: 220 }} value={nganhIdStr} onChange={setNganhIdStr} options={nganhFilterOptions} />
+        <span>Khoá học:</span>
+        <Select style={{ width: 160 }} value={khoaHoc} onChange={setKhoaHoc} options={khoaHocOptions} />
+      </Space>
+
+      <Card title="Ngành học">
+        <NganhHocTable nganhId={nganhIdFilter} khoaHoc={khoaHocFilter} />
+      </Card>
+    </div>
+  );
+}
+
 export function NganhHocPage() {
   const user = useAuthStore((s) => s.user);
   const isSinhVien = user?.vaiTro === ROLES.SINH_VIEN;
   const isAdmin = user?.vaiTro === ROLES.ADMIN;
 
-  const tongQuan = (
+  if (isAdmin) return <QuanLyNganhHoc />;
+
+  return (
     <>
       {isSinhVien && <NganhCuaToi />}
       <DanhSachNganhHoc />
     </>
-  );
-
-  if (!isAdmin) return tongQuan;
-
-  return (
-    <Tabs
-      items={[
-        { key: "tong-quan", label: "Tổng quan", children: tongQuan },
-        { key: "quan-ly-ctdt", label: "Quản lý CTĐT", children: <ChuongTrinhDTPage /> },
-      ]}
-    />
   );
 }

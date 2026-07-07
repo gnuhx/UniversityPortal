@@ -14,10 +14,10 @@ namespace UniversityPortal.Application.Services;
 /// </summary>
 public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
 {
-    /// <summary>Lấy danh sách ngành học có phân trang và lọc keyword.</summary>
-    public async Task<PagedResultDto<NganhHocDto>> GetPagedAsync(int page, int pageSize, string? keyword)
+    /// <summary>Lấy danh sách ngành học có phân trang, lọc keyword, ngành (id) và khoá học.</summary>
+    public async Task<PagedResultDto<NganhHocDto>> GetPagedAsync(int page, int pageSize, string? keyword, int? nganhId = null, string? khoaHoc = null)
     {
-        var paged = await uow.NganhHocs.GetPagedFilterAsync(page, pageSize, keyword);
+        var paged = await uow.NganhHocs.GetPagedFilterAsync(page, pageSize, keyword, nganhId, khoaHoc);
         return new PagedResultDto<NganhHocDto>
         {
             Data     = mapper.Map<IEnumerable<NganhHocDto>>(paged.Data),

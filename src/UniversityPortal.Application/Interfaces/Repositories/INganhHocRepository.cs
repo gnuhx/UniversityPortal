@@ -8,8 +8,8 @@ namespace UniversityPortal.Application.Interfaces.Repositories;
 /// </summary>
 public interface INganhHocRepository : IRepository<NganhHoc>
 {
-    /// <summary>Lấy danh sách ngành có phân trang và lọc theo keyword (mã, tên ngành).</summary>
-    Task<PagedResultDto<NganhHoc>> GetPagedFilterAsync(int page, int pageSize, string? keyword);
+    /// <summary>Lấy danh sách ngành có phân trang, lọc theo keyword (mã, tên ngành), ngành (id) và khoá học (qua CTĐT).</summary>
+    Task<PagedResultDto<NganhHoc>> GetPagedFilterAsync(int page, int pageSize, string? keyword, int? nganhId = null, string? khoaHoc = null);
 
     /// <summary>Tìm ngành theo mã ngành.</summary>
     Task<NganhHoc?> GetByMaNganhAsync(string maNganh);
