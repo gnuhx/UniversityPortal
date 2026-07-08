@@ -14,6 +14,11 @@ public class LopSinhHoatDto
     public string? TenThuKy { get; set; }
     public int ChuongTrinhDtId { get; set; }
     public string MaCtdt { get; set; } = string.Empty;
+    public string KhoaHoc { get; set; } = string.Empty;
+    public int? NganhId { get; set; }
+    public string TenNganh { get; set; } = string.Empty;
+    public int? PhongBanId { get; set; }
+    public string? TenPhongBan { get; set; }
     public int SoSinhVien { get; set; }
     public DateTime CreatedAt { get; set; }
 }

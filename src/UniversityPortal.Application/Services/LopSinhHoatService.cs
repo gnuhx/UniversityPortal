@@ -30,9 +30,12 @@ public class LopSinhHoatService(IUnitOfWork uow, IMapper mapper) : ILopSinhHoatS
         };
     }
 
-    /// <summary>Lấy tất cả lớp sinh hoạt (không phân trang, dùng cho dropdown).</summary>
+    /// <summary>
+    /// Lấy tất cả lớp sinh hoạt (không phân trang, dùng cho dropdown).
+    /// Kèm Ngành/Khoa/Khoá học (qua ChuongTrinhDT) để client lọc dropdown khi thêm sinh viên.
+    /// </summary>
     public async Task<IEnumerable<LopSinhHoatDto>> GetAllAsync()
-        => mapper.Map<IEnumerable<LopSinhHoatDto>>(await uow.LopSinhHoats.GetAllAsync());
+        => mapper.Map<IEnumerable<LopSinhHoatDto>>(await uow.LopSinhHoats.GetAllDetailAsync());
 
     /// <summary>Lấy chi tiết lớp sinh hoạt theo id. Ném NotFoundException nếu không tồn tại.</summary>
     public async Task<LopSinhHoatDto> GetByIdAsync(int id)

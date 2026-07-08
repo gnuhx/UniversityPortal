@@ -49,6 +49,9 @@ public class SinhVienService(IUnitOfWork uow, IMapper mapper) : ISinhVienService
         if (await uow.SinhViens.GetByMssvAsync(dto.Mssv) is not null)
             throw new BadRequestException($"MSSV '{dto.Mssv}' đã tồn tại.");
 
+        if (dto.LopId.HasValue && await uow.LopSinhHoats.GetByIdAsync(dto.LopId.Value) is null)
+            throw new BadRequestException($"Không tìm thấy lớp sinh hoạt id = {dto.LopId}.");
+
         // Tạo tài khoản trước để lấy Id, sau đó tạo SinhVien liên kết
         var taiKhoan = new TaiKhoan
         {
@@ -79,6 +82,9 @@ public class SinhVienService(IUnitOfWork uow, IMapper mapper) : ISinhVienService
     {
         var sv = await uow.SinhViens.GetDetailAsync(id)
             ?? throw new NotFoundException($"Không tìm thấy sinh viên id = {id}.");
+
+        if (dto.LopId.HasValue && await uow.LopSinhHoats.GetByIdAsync(dto.LopId.Value) is null)
+            throw new BadRequestException($"Không tìm thấy lớp sinh hoạt id = {dto.LopId}.");
 
         sv.LopId           = dto.LopId;
         sv.TaiKhoan.HoTen  = dto.HoTen;

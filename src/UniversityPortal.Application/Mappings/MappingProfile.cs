@@ -139,6 +139,11 @@ public class MappingProfile : Profile
             .ForMember(d => d.TenGvcn,  o => o.MapFrom(s => s.Gvcn != null && s.Gvcn.TaiKhoan != null ? s.Gvcn.TaiKhoan.HoTen : string.Empty))
             .ForMember(d => d.TenThuKy, o => o.MapFrom(s => s.ThuKy != null && s.ThuKy.TaiKhoan != null ? s.ThuKy.TaiKhoan.HoTen : null))
             .ForMember(d => d.MaCtdt,   o => o.MapFrom(s => s.ChuongTrinhDT != null ? s.ChuongTrinhDT.MaCtdt : string.Empty))
+            .ForMember(d => d.KhoaHoc,  o => o.MapFrom(s => s.ChuongTrinhDT != null ? s.ChuongTrinhDT.KhoaHoc : string.Empty))
+            .ForMember(d => d.NganhId,  o => o.MapFrom(s => s.ChuongTrinhDT != null ? s.ChuongTrinhDT.NganhId : (int?)null))
+            .ForMember(d => d.TenNganh, o => o.MapFrom(s => s.ChuongTrinhDT != null && s.ChuongTrinhDT.Nganh != null ? s.ChuongTrinhDT.Nganh.TenNganh : string.Empty))
+            .ForMember(d => d.PhongBanId, o => o.MapFrom(s => s.ChuongTrinhDT != null && s.ChuongTrinhDT.Nganh != null ? s.ChuongTrinhDT.Nganh.PhongBanId : null))
+            .ForMember(d => d.TenPhongBan, o => o.MapFrom(s => s.ChuongTrinhDT != null && s.ChuongTrinhDT.Nganh != null && s.ChuongTrinhDT.Nganh.PhongBan != null ? s.ChuongTrinhDT.Nganh.PhongBan.TenPhongBan : null))
             .ForMember(d => d.SoSinhVien, o => o.MapFrom(s => s.SinhViens != null ? s.SinhViens.Count : 0));
     }
 }

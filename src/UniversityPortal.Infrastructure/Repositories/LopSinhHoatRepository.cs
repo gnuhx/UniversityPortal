@@ -53,4 +53,10 @@ public class LopSinhHoatRepository(AppDbContext context) : BaseRepository<LopSin
             .Include(x => x.ChuongTrinhDT)
             .Include(x => x.SinhViens)
             .FirstOrDefaultAsync(x => x.Id == id);
+
+    /// <summary>Lấy tất cả lớp kèm ChuongTrinhDT.Nganh.PhongBan, dùng để dropdown chọn lớp lọc theo Khoa/Ngành/Khoá học.</summary>
+    public async Task<IEnumerable<LopSinhHoat>> GetAllDetailAsync()
+        => await DbSet
+            .Include(x => x.ChuongTrinhDT).ThenInclude(c => c.Nganh).ThenInclude(n => n.PhongBan)
+            .ToListAsync();
 }

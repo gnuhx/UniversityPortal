@@ -104,6 +104,11 @@ export interface LopSinhHoat {
   tenThuKy?: string | null;
   chuongTrinhDtId: number;
   maCtdt: string;
+  khoaHoc: string;
+  nganhId?: number | null;
+  tenNganh: string;
+  phongBanId?: number | null;
+  tenPhongBan?: string | null;
   soSinhVien: number;
   createdAt: string;
 }

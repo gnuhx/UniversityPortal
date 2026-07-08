@@ -16,4 +16,7 @@ public interface ILopSinhHoatRepository : IRepository<LopSinhHoat>
 
     /// <summary>Lấy lớp theo id, include Gvcn, ThuKy, ChuongTrinhDT và đếm SinhViens.</summary>
     Task<LopSinhHoat?> GetDetailAsync(int id);
+
+    /// <summary>Lấy tất cả lớp kèm ChuongTrinhDT.Nganh.PhongBan (dùng cho dropdown lọc theo Khoa/Ngành/Khoá học).</summary>
+    Task<IEnumerable<LopSinhHoat>> GetAllDetailAsync();
 }
