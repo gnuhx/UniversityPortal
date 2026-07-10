@@ -20,8 +20,8 @@ services:
       ConnectionStrings__Default: "${CONNECTION_STRING}"
       JWT__Issuer: UniversityPortal
       JWT__Audience: UniversityPortal
-      JWT__ExpiryMinutes: "60"
-      JWT__RefreshTokenExpiryDays: "7"
+      JWT__ExpiryMinutes: "14400"
+      JWT__RefreshTokenExpiryDays: "10"
       JWT__Secret: "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARS"
     ports:
       - "8080:8080"
