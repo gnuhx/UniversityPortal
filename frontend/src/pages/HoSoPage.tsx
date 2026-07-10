@@ -1,6 +1,7 @@
 import { Alert, Avatar, Card, Col, Descriptions, Row, Spin, Table, Tag } from "antd";
 import { CheckCircleOutlined, UserOutlined, WarningOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { sinhVienMeApi } from "../api/modules";
 
 export function HoSoPage() {
@@ -49,7 +50,7 @@ export function HoSoPage() {
               <Descriptions.Item label="Họ và tên">{sv.hoTen}</Descriptions.Item>
               <Descriptions.Item label="Email">{sv.email}</Descriptions.Item>
               <Descriptions.Item label="Lớp sinh hoạt">
-                {sv.tenLop ?? <span style={{ color: "#aaa" }}>Chưa phân lớp</span>}
+                {sv.tenLop ? <Link to="/lop-sinh-hoat">{sv.tenLop}</Link> : <span style={{ color: "#aaa" }}>Chưa phân lớp</span>}
               </Descriptions.Item>
               <Descriptions.Item label="Ngày vào trường">
                 {new Date(sv.createdAt).toLocaleDateString("vi-VN")}

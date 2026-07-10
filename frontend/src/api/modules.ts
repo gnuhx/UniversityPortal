@@ -20,12 +20,25 @@ import type {
   YeuCauSuaDiem, CreateYeuCauSuaDiem, DuyetYeuCauSuaDiem,
   TotNghiep,
   NoiDungTinh, UpsertNoiDungTinh,
+  BienBanSHCN, BienBanSHCNSinhVien, CreateBienBanSHCN,
   ApiResponse, PagedResult,
 } from "../types";
 
 export const sinhVienApi = createCrudApi<SinhVien, CreateSinhVien, UpdateSinhVien>("/sinh-vien");
 export const giaoVienApi = createCrudApi<GiaoVien, CreateGiaoVien, UpdateGiaoVien>("/giao-vien");
-export const lopSinhHoatApi = createCrudApi<LopSinhHoat, CreateLopSinhHoat, UpdateLopSinhHoat>("/lop-sinh-hoat");
+export const lopSinhHoatApi = {
+  ...createCrudApi<LopSinhHoat, CreateLopSinhHoat, UpdateLopSinhHoat>("/lop-sinh-hoat"),
+  /** Sinh viên: chi tiết lớp sinh hoạt của mình, kèm roster bạn cùng lớp. */
+  async getMe() {
+    const res = await apiClient.get<ApiResponse<LopSinhHoat>>("/lop-sinh-hoat/me");
+    return res.data.data;
+  },
+  /** Giáo viên: (các) lớp mình là GVCN. */
+  async getMeGvcn() {
+    const res = await apiClient.get<ApiResponse<LopSinhHoat[]>>("/lop-sinh-hoat/me-gvcn");
+    return res.data.data;
+  },
+};
 export const nganhHocApi = createCrudApi<NganhHoc, UpsertNganhHoc>("/nganh-hoc");
 export const phongBanApi = createCrudApi<PhongBan, unknown>("/phong-ban");
 export const chuongTrinhDTApi = {
@@ -208,6 +221,41 @@ export const yeuCauSuaDiemApi = {
   },
   async duyet(id: number, dto: DuyetYeuCauSuaDiem) {
     const res = await apiClient.put<ApiResponse<YeuCauSuaDiem>>(`/yeu-cau-sua-diem/${id}/duyet`, dto);
+    return res.data.data;
+  },
+};
+
+export const bienBanShcnApi = {
+  /** Admin/Giáo vụ: danh sách phân trang, lọc theo lớp (bỏ trống = tất cả lớp). */
+  async getPaged(params: Record<string, unknown> = {}) {
+    const res = await apiClient.get<ApiResponse<PagedResult<BienBanSHCN>>>("/bien-ban-shcn", { params });
+    return res.data.data;
+  },
+  /** Admin/Giáo vụ: chi tiết 1 biên bản. */
+  async getById(id: number) {
+    const res = await apiClient.get<ApiResponse<BienBanSHCN>>(`/bien-ban-shcn/${id}`);
+    return res.data.data;
+  },
+  /** Giáo viên: danh sách phân trang của 1 lớp mình chủ nhiệm. */
+  async getPagedForGvcn(lopId: number, page = 1, pageSize = 20) {
+    const res = await apiClient.get<ApiResponse<PagedResult<BienBanSHCN>>>("/bien-ban-shcn/me-gvcn", {
+      params: { lopId, page, pageSize },
+    });
+    return res.data.data;
+  },
+  /** Giáo viên: chi tiết 1 biên bản của lớp mình chủ nhiệm. */
+  async getDetailForGvcn(id: number) {
+    const res = await apiClient.get<ApiResponse<BienBanSHCN>>(`/bien-ban-shcn/me-gvcn/${id}`);
+    return res.data.data;
+  },
+  /** Giáo viên: tạo biên bản mới cho lớp mình chủ nhiệm. */
+  async create(dto: CreateBienBanSHCN) {
+    const res = await apiClient.post<ApiResponse<BienBanSHCN>>("/bien-ban-shcn", dto);
+    return res.data.data;
+  },
+  /** Sinh viên: danh sách biên bản của lớp mình (ẩn lý do vắng của bạn khác). */
+  async getMe() {
+    const res = await apiClient.get<ApiResponse<BienBanSHCNSinhVien[]>>("/bien-ban-shcn/me");
     return res.data.data;
   },
 };

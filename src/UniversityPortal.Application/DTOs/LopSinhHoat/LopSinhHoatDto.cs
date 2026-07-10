@@ -21,4 +21,13 @@ public class LopSinhHoatDto
     public string? TenPhongBan { get; set; }
     public int SoSinhVien { get; set; }
     public DateTime CreatedAt { get; set; }
+    public List<LopSinhHoatThanhVienDto> DanhSachSinhVien { get; set; } = [];
+}
+
+/// <summary>Thông tin rút gọn 1 sinh viên trong danh sách lớp (roster) — dùng cho trang chi tiết lớp.</summary>
+public class LopSinhHoatThanhVienDto
+{
+    public int Id { get; set; }
+    public string Mssv { get; set; } = string.Empty;
+    public string HoTen { get; set; } = string.Empty;
 }

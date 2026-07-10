@@ -67,11 +67,19 @@ function App() {
               <Route path="/mon-hoc" element={<MonHocPage />} />
             </Route>
 
+            {/*
+              LopSinhHoatPage tự phân nhánh theo vai trò (giống ThongBaoPage): Admin/Giáo vụ quản lý
+              CRUD toàn bộ lớp, Giáo viên (GVCN) xem/tạo biên bản cho lớp mình chủ nhiệm, Sinh viên
+              xem chi tiết lớp + lịch sử sinh hoạt của lớp mình (task #24).
+            */}
+            <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.GIAO_VU, ROLES.GIAO_VIEN, ROLES.SINH_VIEN]} />}>
+              <Route path="/lop-sinh-hoat" element={<LopSinhHoatPage />} />
+            </Route>
+
             {/* Admin / Giáo vụ */}
             <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.GIAO_VU]} />}>
               <Route path="/sinh-vien" element={<SinhVienPage />} />
               <Route path="/giao-vien" element={<GiaoVienPage />} />
-              <Route path="/lop-sinh-hoat" element={<LopSinhHoatPage />} />
               <Route path="/tai-khoan" element={<TaiKhoanPage />} />
             </Route>
 

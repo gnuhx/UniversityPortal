@@ -1,6 +1,7 @@
 // AutoMapper profile — ánh xạ từ Entity sang DTO cho toàn bộ module Tuần 1 và Tuần 2
 using AutoMapper;
 using UniversityPortal.Application.DTOs.Auth;
+using UniversityPortal.Application.DTOs.BienBanSHCN;
 using UniversityPortal.Application.DTOs.ChiTietCTDT;
 using UniversityPortal.Application.DTOs.ChuongTrinhDT;
 using UniversityPortal.Application.DTOs.DanhSachLopHP;
@@ -144,6 +145,22 @@ public class MappingProfile : Profile
             .ForMember(d => d.TenNganh, o => o.MapFrom(s => s.ChuongTrinhDT != null && s.ChuongTrinhDT.Nganh != null ? s.ChuongTrinhDT.Nganh.TenNganh : string.Empty))
             .ForMember(d => d.PhongBanId, o => o.MapFrom(s => s.ChuongTrinhDT != null && s.ChuongTrinhDT.Nganh != null ? s.ChuongTrinhDT.Nganh.PhongBanId : null))
             .ForMember(d => d.TenPhongBan, o => o.MapFrom(s => s.ChuongTrinhDT != null && s.ChuongTrinhDT.Nganh != null && s.ChuongTrinhDT.Nganh.PhongBan != null ? s.ChuongTrinhDT.Nganh.PhongBan.TenPhongBan : null))
-            .ForMember(d => d.SoSinhVien, o => o.MapFrom(s => s.SinhViens != null ? s.SinhViens.Count : 0));
+            .ForMember(d => d.SoSinhVien, o => o.MapFrom(s => s.SinhViens != null ? s.SinhViens.Count : 0))
+            .ForMember(d => d.DanhSachSinhVien, o => o.MapFrom(s => s.SinhViens));
+        CreateMap<SinhVien, LopSinhHoatThanhVienDto>()
+            .ForMember(d => d.HoTen, o => o.MapFrom(s => s.TaiKhoan != null ? s.TaiKhoan.HoTen : string.Empty));
+
+        // ── BienBanSHCN (dùng cho Admin/Giáo vụ/GVCN — có đầy đủ danh sách vắng cả lớp) ──
+        CreateMap<BienBanSHCN, BienBanSHCNDto>()
+            .ForMember(d => d.MaLop,       o => o.MapFrom(s => s.Lop != null ? s.Lop.MaLop : string.Empty))
+            .ForMember(d => d.MaTuan,      o => o.MapFrom(s => s.TuanHoc != null ? s.TuanHoc.MaTuan : string.Empty))
+            .ForMember(d => d.TenGvcn,     o => o.MapFrom(s => s.Gvcn != null && s.Gvcn.TaiKhoan != null ? s.Gvcn.TaiKhoan.HoTen : string.Empty))
+            .ForMember(d => d.TenThuKy,    o => o.MapFrom(s => s.ThuKy != null && s.ThuKy.TaiKhoan != null ? s.ThuKy.TaiKhoan.HoTen : string.Empty))
+            .ForMember(d => d.CongViecs,   o => o.MapFrom(s => s.ChiTietCongViecs))
+            .ForMember(d => d.DanhSachVang, o => o.MapFrom(s => s.ChiTietVangSHCNs));
+        CreateMap<ChiTietCongViec, CongViecItemDto>();
+        CreateMap<ChiTietVangSHCN, VangItemDto>()
+            .ForMember(d => d.Mssv,  o => o.MapFrom(s => s.SinhVien != null ? s.SinhVien.Mssv : string.Empty))
+            .ForMember(d => d.HoTen, o => o.MapFrom(s => s.SinhVien != null && s.SinhVien.TaiKhoan != null ? s.SinhVien.TaiKhoan.HoTen : string.Empty));
     }
 }

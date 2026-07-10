@@ -111,6 +111,13 @@ export interface LopSinhHoat {
   tenPhongBan?: string | null;
   soSinhVien: number;
   createdAt: string;
+  danhSachSinhVien: LopSinhHoatThanhVien[];
+}
+
+export interface LopSinhHoatThanhVien {
+  id: number;
+  mssv: string;
+  hoTen: string;
 }
 
 export interface CreateLopSinhHoat {
@@ -533,6 +540,81 @@ export interface UpsertNoiDungTinh {
   tieuDe: string;
   noiDung?: string | null;
   thuTu: number;
+}
+
+// ===== Bien ban sinh hoat chu nhiem (SHCN) =====
+export interface CongViecItem {
+  id: number;
+  tenCongViec: string;
+  trangThaiViec: string;
+}
+
+export interface VangItem {
+  sinhVienId: number;
+  mssv: string;
+  hoTen: string;
+  coPhep: boolean;
+  lyDo?: string | null;
+}
+
+/** Dùng cho Admin/Giáo vụ/GVCN — có đầy đủ danh sách vắng cả lớp. */
+export interface BienBanSHCN {
+  id: number;
+  lopId: number;
+  maLop: string;
+  tuanHocId: number;
+  maTuan: string;
+  thoiGian: string;
+  diaDiem: string;
+  gvcnId: number;
+  tenGvcn: string;
+  thuKyId: number;
+  tenThuKy: string;
+  noiDung: string;
+  phanHoiGvcn?: string | null;
+  createdAt: string;
+  congViecs: CongViecItem[];
+  danhSachVang: VangItem[];
+}
+
+/** Dùng cho Sinh viên — không có lý do vắng của bạn khác, chỉ có tình trạng của chính mình. */
+export interface BienBanSHCNSinhVien {
+  id: number;
+  tuanHocId: number;
+  maTuan: string;
+  thoiGian: string;
+  diaDiem: string;
+  tenGvcn: string;
+  tenThuKy: string;
+  noiDung: string;
+  phanHoiGvcn?: string | null;
+  congViecs: CongViecItem[];
+  /** "CoMat" | "VangCoPhep" | "VangKhongPhep" */
+  tinhTrangCuaToi: string;
+  lyDoVangCuaToi?: string | null;
+}
+
+export interface CongViecInput {
+  tenCongViec: string;
+  trangThaiViec: string;
+}
+
+export interface VangInput {
+  sinhVienId: number;
+  coPhep: boolean;
+  lyDo?: string | null;
+}
+
+export interface CreateBienBanSHCN {
+  lopId: number;
+  tuanHocId: number;
+  thoiGian: string;
+  diaDiem: string;
+  thuKyId: number;
+  noiDung: string;
+  phanHoiGvcn?: string | null;
+  congViecs: CongViecInput[];
+  danhSachVang: VangInput[];
 }
 
 export const VAI_TRO_OPTIONS = [

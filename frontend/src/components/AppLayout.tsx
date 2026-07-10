@@ -45,7 +45,6 @@ const allMenuItems = [
   // Admin / Giáo vụ
   { key: "/sinh-vien", icon: <UserOutlined />, label: "Sinh viên", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/giao-vien", icon: <IdcardOutlined />, label: "Giáo viên", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
-  { key: "/lop-sinh-hoat", icon: <TeamOutlined />, label: "Lớp sinh hoạt", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/tai-khoan", icon: <BankOutlined />, label: "Tài khoản", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/thong-bao", icon: <BellOutlined />, label: "Thông báo", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
   { key: "/hoc-phi", icon: <DollarOutlined />, label: "Học phí", roles: [ROLES.ADMIN, ROLES.GIAO_VU] },
@@ -57,6 +56,12 @@ const allMenuItems = [
     key: "/thoi-khoa-bieu",
     icon: <CalendarOutlined />,
     label: "Thời khoá biểu",
+    roles: [ROLES.SINH_VIEN, ROLES.GIAO_VIEN, ROLES.ADMIN, ROLES.GIAO_VU],
+  },
+  {
+    key: "/lop-sinh-hoat",
+    icon: <TeamOutlined />,
+    label: "Lớp sinh hoạt",
     roles: [ROLES.SINH_VIEN, ROLES.GIAO_VIEN, ROLES.ADMIN, ROLES.GIAO_VU],
   },
   { key: "/nganh-hoc", icon: <ApartmentOutlined />, label: "Ngành học & CTĐT", roles: undefined },
