@@ -7,4 +7,5 @@ public class PhongBan : AuditableEntity
     public string TenPhongBan { get; set; } = string.Empty;
 
     public ICollection<TaiKhoan> TaiKhoans { get; set; } = [];
+    public ICollection<NganhHoc> NganhHocs { get; set; } = [];
 }

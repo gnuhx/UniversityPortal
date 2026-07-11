@@ -20,11 +20,9 @@ public static class DependencyInjection
         var connStr = config.GetConnectionString("Default")
             ?? throw new InvalidOperationException("ConnectionStrings:Default is not configured.");
 
-        // MySQL 8.0 — Aiven dùng MySQL 8.x, retry on failure cho Docker startup race condition
-        var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
         services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(connStr, serverVersion,
-                mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            options.UseSqlServer(connStr,
+                sqlOptions => sqlOptions.EnableRetryOnFailure(
                     maxRetryCount: 10,
                     maxRetryDelay: TimeSpan.FromSeconds(5),
                     errorNumbersToAdd: null)));

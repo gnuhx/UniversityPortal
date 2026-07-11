@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>ERD rút gọn — Admin / Giáo viên / Sinh viên</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1f2328;
+    width: 100vw;
+    overflow: hidden;
+  }
+  #title {
+    padding: 20px 24px 4px;
+  }
+  #title h1 { font-size: 18px; font-weight: 700; }
+  #title p { font-size: 12px; color: #656d76; margin-top: 4px; }
+
+  #note {
+    position: absolute;
+    left: 40px; top: 470px;
+    width: 380px;
+    font-size: 11px;
+    color: #656d76;
+    background: #f6f8fa;
+    border: 1px dashed #d0d7de;
+    border-radius: 8px;
+    padding: 10px 12px;
+    line-height: 1.5;
+  }
+  #note b { color: #1f2328; }
+
+  #canvas-wrap {
+    position: relative;
+    margin-top: 70px;
+  }
+  #canvas {
+    position: relative;
+  }
+  #svg-lines {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .rel-line { fill: none; stroke: #8c959f; stroke-width: 1.6; }
+  .rel-label {
+    font-size: 10px;
+    fill: #57606a;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .rel-label-bg { fill: #ffffff; opacity: 0.9; }
+
+  .table-card {
+    position: absolute;
+    width: 210px;
+    background: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    z-index: 10;
+  }
+  .card-header {
+    padding: 8px 12px;
+    border-radius: 9px 9px 0 0;
+    display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid #d0d7de;
+  }
+  .card-header .dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+  .card-header .table-name {
+    font-family: 'Consolas', 'JetBrains Mono', monospace;
+    font-size: 12.5px; font-weight: 700; flex: 1;
+  }
+  .card-header .role-tag {
+    font-size: 9px; font-weight: 700; color: #fff;
+    padding: 2px 6px; border-radius: 10px;
+  }
+  .card-body { padding: 5px 0; }
+  .field-row {
+    display: flex; align-items: center; gap: 7px;
+    padding: 3px 12px; font-size: 10.5px;
+  }
+  .field-badge {
+    font-family: 'Consolas', monospace;
+    font-size: 8px; font-weight: 700;
+    padding: 1px 5px; border-radius: 3px;
+    min-width: 22px; text-align: center;
+  }
+  .pk { background: #ffe8e0; color: #cf3b1d; }
+  .fk { background: #dbeeff; color: #1868b8; }
+  .fd { background: transparent; color: transparent; min-width: 22px; }
+  .field-name { font-family: 'Consolas', monospace; flex: 1; }
+  .field-type { color: #8c959f; font-size: 9.5px; }
+</style>
+</head>
+<body>
+
+<div id="title">
+  <h1>Sơ đồ rút gọn — 3 vai trò người dùng &amp; các bảng chính liên quan</h1>
+  <p>Admin · Giáo viên · Sinh viên — chỉ hiện bảng &amp; quan hệ quan trọng nhất</p>
+</div>
+
+<div id="note">
+  <b>Admin không có bảng hồ sơ riêng.</b> Admin chỉ là 1 bản ghi trong
+  <b>tai_khoan</b> với <b>vai_tro_id</b> trỏ tới vai trò "Admin" — khác với
+  Giáo viên/Sinh viên, mỗi người có thêm 1 bảng hồ sơ riêng
+  (<b>giao_vien</b> / <b>sinh_vien</b>) liên kết 1-1 về <b>tai_khoan</b>.
+</div>
+
+<div id="canvas-wrap">
+  <div id="canvas">
+    <svg id="svg-lines" width="1500" height="620"></svg>
+  </div>
+</div>
+
+<script>
+const TABLES = {
+  vai_tro: {
+    color: '#8250df', roleTag: null,
+    fields: [
+      { k: 'pk', n: 'id', t: 'int' },
+      { n: 'ten_vai_tro', t: 'varchar' },
+    ],
+  },
+  tai_khoan: {
+    color: '#0969da', roleTag: 'ĐỊNH DANH',
+    fields: [
+      { k: 'pk', n: 'id', t: 'int' },
+      { k: 'fk', n: 'vai_tro_id', t: 'int' },
+      { n: 'ten_dang_nhap', t: 'varchar' },
+      { n: 'ho_ten', t: 'varchar' },
+    ],
+  },
+  giao_vien: {
+    color: '#1a7f37', roleTag: 'GIÁO VIÊN',
+    fields: [
+      { k: 'pk', n: 'id', t: 'int' },
+      { k: 'fk', n: 'tai_khoan_id', t: 'int' },
+      { n: 'ma_gv', t: 'varchar' },
+    ],
+  },
+  sinh_vien: {
+    color: '#bf3989', roleTag: 'SINH VIÊN',
+    fields: [
+      { k: 'pk', n: 'id', t: 'int' },
+      { k: 'fk', n: 'tai_khoan_id', t: 'int' },
+      { n: 'mssv', t: 'varchar' },
+      { k: 'fk', n: 'lop_id', t: 'int' },
+    ],
+  },
+  lop_sinh_hoat: {
+    color: '#9a6700', roleTag: null,
+    fields: [
+      { k: 'pk', n: 'id', t: 'int' },
+      { k: 'fk', n: 'gvcn_id', t: 'int' },
+      { n: 'ma_lop', t: 'varchar' },
+    ],
+  },
+  lop_hoc_phan: {
+    color: '#9a6700', roleTag: null,
+    fields: [
+      { k: 'pk', n: 'id', t: 'int' },
+      { k: 'fk', n: 'giao_vien_id', t: 'int' },
+      { n: 'ma_lop_hp', t: 'varchar' },
+    ],
+  },
+  danh_sach_lop_hp: {
+    color: '#cf222e', roleTag: null,
+    fields: [
+      { k: 'pk', n: 'id', t: 'int' },
+      { k: 'fk', n: 'sinh_vien_id', t: 'int' },
+      { k: 'fk', n: 'lop_hp_id', t: 'int' },
+    ],
+  },
+};
+
+const POSITIONS = {
+  vai_tro:          { x: 30,   y: 130 },
+  tai_khoan:        { x: 300,  y: 130 },
+  giao_vien:        { x: 610,  y: 20 },
+  sinh_vien:        { x: 610,  y: 300 },
+  lop_sinh_hoat:    { x: 930,  y: 20 },
+  lop_hoc_phan:     { x: 930,  y: 300 },
+  danh_sach_lop_hp: { x: 1230, y: 300 },
+};
+
+// [from, label, to, t?] — t = vị trí nhãn dọc theo đường nối (0..1, mặc định 0.5).
+// 2 quan hệ "học lớp" và "giảng dạy" cắt nhau ở giữa (hình chữ X) nên đặt lệch t
+// về 2 phía khác nhau để nhãn không đè lên nhau.
+const RELATIONS = [
+  ['tai_khoan', 'vai_tro_id', 'vai_tro'],
+  ['giao_vien', 'tai_khoan_id', 'tai_khoan'],
+  ['sinh_vien', 'tai_khoan_id', 'tai_khoan'],
+  ['sinh_vien', 'học lớp', 'lop_sinh_hoat', 0.78],
+  ['lop_sinh_hoat', 'GVCN', 'giao_vien'],
+  ['lop_hoc_phan', 'giảng dạy', 'giao_vien', 0.22],
+  ['danh_sach_lop_hp', 'đăng ký', 'sinh_vien'],
+  ['danh_sach_lop_hp', 'thuộc lớp HP', 'lop_hoc_phan'],
+];
+
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('svg-lines');
+const cardEls = {};
+
+Object.entries(TABLES).forEach(([name, def]) => {
+  const pos = POSITIONS[name];
+  const card = document.createElement('div');
+  card.className = 'table-card';
+  card.id = 'tbl_' + name;
+  card.style.left = pos.x + 'px';
+  card.style.top = pos.y + 'px';
+
+  const fieldsHTML = def.fields.map(f => `
+    <div class="field-row">
+      <span class="field-badge ${f.k || 'fd'}">${f.k ? f.k.toUpperCase() : ''}</span>
+      <span class="field-name">${f.n}</span>
+      <span class="field-type">${f.t}</span>
+    </div>`).join('');
+
+  card.innerHTML = `
+    <div class="card-header" style="background:${def.color}14; border-bottom-color:${def.color}44;">
+      <div class="dot" style="background:${def.color};"></div>
+      <span class="table-name">${name}</span>
+      ${def.roleTag ? `<span class="role-tag" style="background:${def.color};">${def.roleTag}</span>` : ''}
+    </div>
+    <div class="card-body">${fieldsHTML}</div>
+  `;
+  canvas.appendChild(card);
+  cardEls[name] = card;
+});
+
+function getCardBox(name) {
+  const el = cardEls[name];
+  const x = parseInt(el.style.left);
+  const y = parseInt(el.style.top);
+  return { x, y, w: el.offsetWidth, h: el.offsetHeight };
+}
+
+function drawLines() {
+  svg.innerHTML = '';
+  RELATIONS.forEach(([from, label, to, t]) => {
+    const a = getCardBox(from);
+    const b = getCardBox(to);
+    const ax0 = a.x + a.w / 2, ay0 = a.y + a.h / 2;
+    const bx0 = b.x + b.w / 2, by0 = b.y + b.h / 2;
+    const dx = bx0 - ax0;
+    const ax = dx > 0 ? a.x + a.w : a.x;
+    const bx = dx > 0 ? b.x : b.x + b.w;
+    const ay = a.y + a.h / 2;
+    const by = b.y + b.h / 2;
+    const cx = (ax + bx) / 2;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M${ax},${ay} C${cx},${ay} ${cx},${by} ${bx},${by}`);
+    path.setAttribute('class', 'rel-line');
+    svg.appendChild(path);
+
+    const tt = t ?? 0.5;
+    const mx = ax + tt * (bx - ax), my = ay + tt * (by - ay);
+    const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', mx);
+    text.setAttribute('y', my - 4);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('class', 'rel-label');
+    text.textContent = label;
+    svg.appendChild(text);
+    const bbox = text.getBBox();
+    bgRect.setAttribute('x', bbox.x - 3);
+    bgRect.setAttribute('y', bbox.y - 1);
+    bgRect.setAttribute('width', bbox.width + 6);
+    bgRect.setAttribute('height', bbox.height + 2);
+    bgRect.setAttribute('class', 'rel-label-bg');
+    svg.insertBefore(bgRect, text);
+  });
+}
+
+drawLines();
+</script>
+</body>
+</html>

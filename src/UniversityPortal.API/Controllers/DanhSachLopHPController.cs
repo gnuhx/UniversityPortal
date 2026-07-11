@@ -1,12 +1,3 @@
-/*
- * DanhSachLopHPController — Danh sách lớp học phần & điểm
- * ─────────────────────────────────────────────────────────
- * Base route : /api/danh-sach-lop-hp
- *
- * Danh sách endpoint:
- *   GET /api/danh-sach-lop-hp/me          — Môn học + điểm của sinh viên đang đăng nhập [Sinh viên]
- *   GET /api/danh-sach-lop-hp?lopHpId=    — Danh sách sinh viên trong 1 lớp HP          [Admin, Giáo vụ, Giáo viên]
- */
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +12,7 @@ namespace UniversityPortal.API.Controllers;
 [Authorize]
 public class DanhSachLopHPController(IDanhSachLopHPService service) : ControllerBase
 {
-    /// <summary>
-    /// Lấy toàn bộ môn học đã đăng ký và điểm số của sinh viên đang đăng nhập.
-    /// </summary>
+    /// <summary>Lấy toàn bộ môn học đã đăng ký và điểm số của sinh viên đang đăng nhập.</summary>
     [HttpGet("me")]
     [Authorize(Roles = "Sinh viên")]
     public async Task<ActionResult<ApiResponseDto<IEnumerable<DanhSachLopHPDto>>>> GetMe()
@@ -33,9 +22,7 @@ public class DanhSachLopHPController(IDanhSachLopHPService service) : Controller
         return Ok(ApiResponseDto<IEnumerable<DanhSachLopHPDto>>.Ok(result));
     }
 
-    /// <summary>
-    /// Lấy danh sách sinh viên trong một lớp học phần.
-    /// </summary>
+    /// <summary>Lấy danh sách sinh viên trong một lớp học phần.</summary>
     [HttpGet]
     [Authorize(Roles = "Admin,Giáo vụ,Giáo viên")]
     public async Task<ActionResult<ApiResponseDto<IEnumerable<DanhSachLopHPDto>>>> GetByLopHocPhan(
@@ -43,5 +30,15 @@ public class DanhSachLopHPController(IDanhSachLopHPService service) : Controller
     {
         var result = await service.GetByLopHocPhanAsync(lopHpId);
         return Ok(ApiResponseDto<IEnumerable<DanhSachLopHPDto>>.Ok(result));
+    }
+
+    /// <summary>Giáo viên nhập / cập nhật điểm cho một sinh viên trong lớp HP.</summary>
+    [HttpPut("{id:int}/diem")]
+    [Authorize(Roles = "Giáo viên")]
+    public async Task<ActionResult<ApiResponseDto<DanhSachLopHPDto>>> NhapDiem(int id, [FromBody] NhapDiemDto dto)
+    {
+        var taiKhoanId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await service.NhapDiemAsync(id, taiKhoanId, dto);
+        return Ok(ApiResponseDto<DanhSachLopHPDto>.Ok(result));
     }
 }

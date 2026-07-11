@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Button, Form, Input, Modal, Popconfirm, Select, Space, Switch, Table, App } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Popconfirm, Select, Space, Switch, Table, App } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Dayjs } from "dayjs";
 import type { PagedResult } from "../types";
 
 export interface CrudFormField {
   name: string;
   label: string;
-  type?: "text" | "number" | "password" | "select" | "switch" | "email";
+  type?: "text" | "number" | "password" | "select" | "switch" | "email" | "date" | "textarea";
   required?: boolean;
   options?: { label: string; value: number | string }[];
   hideOnEdit?: boolean;
@@ -47,7 +48,7 @@ export function CrudTable<T extends { id: number }, TCreate, TUpdate>({
   searchPlaceholder,
   extraParams,
 }: CrudTableProps<T, TCreate, TUpdate>) {
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -91,7 +92,24 @@ export function CrudTable<T extends { id: number }, TCreate, TUpdate>({
       message.success("Xoá thành công");
       invalidate();
     },
-    onError: (err: any) => message.error(err?.response?.data?.message || "Có lỗi xảy ra"),
+    onError: (err: any) => {
+      const errors: string[] | undefined = err?.response?.data?.errors;
+      const errorMessage = err?.response?.data?.message || "Có lỗi xảy ra";
+      if (errors && errors.length > 0) {
+        modal.error({
+          title: errorMessage,
+          content: (
+            <ul style={{ paddingLeft: 20, margin: 0 }}>
+              {errors.map((e, i) => (
+                <li key={i}>{e}</li>
+              ))}
+            </ul>
+          ),
+        });
+      } else {
+        message.error(errorMessage);
+      }
+    },
   });
 
   const openCreate = () => {
@@ -108,6 +126,12 @@ export function CrudTable<T extends { id: number }, TCreate, TUpdate>({
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
+    // DatePicker trả về đối tượng Dayjs — API cần chuỗi ISO "YYYY-MM-DD".
+    for (const field of formFields) {
+      if (field.type === "date" && values[field.name]) {
+        values[field.name] = (values[field.name] as Dayjs).format("YYYY-MM-DD");
+      }
+    }
     if (editingRecord) {
       updateMutation.mutate({ id: editingRecord.id, dto: values as TUpdate });
     } else {
@@ -225,6 +249,10 @@ function renderField(field: CrudFormField) {
       return <SwitchField />;
     case "select":
       return <SelectField options={field.options || []} />;
+    case "date":
+      return <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />;
+    case "textarea":
+      return <Input.TextArea rows={4} />;
     default:
       return <Input />;
   }

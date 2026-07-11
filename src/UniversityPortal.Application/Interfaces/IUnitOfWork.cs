@@ -15,13 +15,40 @@ public interface IUnitOfWork : IDisposable
     IGiaoVienRepository GiaoViens { get; }
     ILopHocPhanRepository LopHocPhans { get; }
     IDanhSachLopHPRepository DanhSachLopHPs { get; }
+    IHocBaRepository HocBas { get; }
+
+    // ── Năm học / Học kỳ ─────────────────────────────────────────────────────
+    INamHocRepository NamHocs { get; }
+    IHocKyRepository HocKys { get; }
+    ITuanHocRepository TuanHocs { get; }
+
+    // ── Thời khoá biểu ────────────────────────────────────────────────────────
+    IThoiKhoaBieuRepository ThoiKhoaBieus { get; }
 
     // ── Tuần 2 — Danh mục ─────────────────────────────────────────────────────
     INganhHocRepository NganhHocs { get; }
+    IPhongBanRepository PhongBans { get; }
     IChuongTrinhDTRepository ChuongTrinhDTs { get; }
     IMonHocRepository MonHocs { get; }
     IChiTietCTDTRepository ChiTietCTDTs { get; }
     ILopSinhHoatRepository LopSinhHoats { get; }
+
+    // ── Thông báo ─────────────────────────────────────────────────────────────
+    IThongBaoRepository ThongBaos { get; }
+    IThongBaoDaDocRepository ThongBaoDaDocs { get; }
+
+    // ── Học phí ───────────────────────────────────────────────────────────────
+    IHocPhiRepository HocPhis { get; }
+
+    // ── Yêu cầu ──────────────────────────────────────────────────────────────
+    IYeuCauHanhChinhRepository YeuCauHanhChinhs { get; }
+    IYeuCauSuaDiemRepository YeuCauSuaDiems { get; }
+
+    // ── Nội dung tĩnh (Thư viện, Học Vụ,...) ─────────────────────────────────
+    INoiDungTinhRepository NoiDungTinhs { get; }
+
+    // ── Sinh hoạt chủ nhiệm ───────────────────────────────────────────────────
+    IBienBanSHCNRepository BienBanSHCNs { get; }
 
     /// <summary>Lưu tất cả thay đổi trong transaction hiện tại xuống database.</summary>
     Task<int> CommitAsync();

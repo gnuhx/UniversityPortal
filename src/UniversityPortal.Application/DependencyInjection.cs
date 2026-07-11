@@ -29,11 +29,23 @@ public static class DependencyInjection
         services.AddScoped<IGiaoVienService, GiaoVienService>();
         services.AddScoped<ISinhVienService, SinhVienService>();
         services.AddScoped<INganhHocService, NganhHocService>();
+        services.AddScoped<IPhongBanService, PhongBanService>();
         services.AddScoped<IChuongTrinhDTService, ChuongTrinhDTService>();
         services.AddScoped<IMonHocService, MonHocService>();
         services.AddScoped<IChiTietCTDTService, ChiTietCTDTService>();
         services.AddScoped<ILopSinhHoatService, LopSinhHoatService>();
         services.AddScoped<IDanhSachLopHPService, DanhSachLopHPService>();
+        services.AddScoped<ILopHocPhanService, LopHocPhanService>();
+        services.AddScoped<IThongBaoService, ThongBaoService>();
+        services.AddScoped<IHocPhiService, HocPhiService>();
+        services.AddScoped<IYeuCauHanhChinhService, YeuCauHanhChinhService>();
+        services.AddScoped<IYeuCauSuaDiemService, YeuCauSuaDiemService>();
+        services.AddScoped<ITuanHocService, TuanHocService>();
+        services.AddScoped<IThoiKhoaBieuService, ThoiKhoaBieuService>();
+        services.AddScoped<INamHocService, NamHocService>();
+        services.AddScoped<IHocKyService, HocKyService>();
+        services.AddScoped<INoiDungTinhService, NoiDungTinhService>();
+        services.AddScoped<IBienBanSHCNService, BienBanSHCNService>();
 
         return services;
     }

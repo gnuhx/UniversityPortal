@@ -11,5 +11,7 @@ public class NganhHocDto
     public string TenNganh { get; set; } = string.Empty;
     public int? NganhChaId { get; set; }
     public string? TenNganhCha { get; set; }
+    public int? PhongBanId { get; set; }
+    public string? TenPhongBan { get; set; }
     public DateTime CreatedAt { get; set; }
 }

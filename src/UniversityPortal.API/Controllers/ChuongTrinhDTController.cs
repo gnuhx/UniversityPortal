@@ -26,16 +26,17 @@ namespace UniversityPortal.API.Controllers;
 public class ChuongTrinhDTController(IChuongTrinhDTService service) : ControllerBase
 {
     /// <summary>
-    /// Lấy danh sách CTDT có phân trang, lọc theo keyword và ngành.
+    /// Lấy danh sách CTDT có phân trang, lọc theo keyword, ngành và khoá học (exact match).
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<ChuongTrinhDTDto>>>> GetPaged(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] string? keyword = null,
-        [FromQuery] int? nganhId = null)
+        [FromQuery] int? nganhId = null,
+        [FromQuery] string? khoaHoc = null)
     {
-        var result = await service.GetPagedAsync(page, pageSize, keyword, nganhId);
+        var result = await service.GetPagedAsync(page, pageSize, keyword, nganhId, khoaHoc);
         return Ok(ApiResponseDto<PagedResultDto<ChuongTrinhDTDto>>.Ok(result));
     }
 
@@ -91,5 +92,17 @@ public class ChuongTrinhDTController(IChuongTrinhDTService service) : Controller
     {
         await service.DeleteAsync(id);
         return Ok(ApiResponseDto<object>.Ok(null, "Xoá chương trình đào tạo thành công."));
+    }
+
+    /// <summary>
+    /// Nhân bản CTDT mới nhất của 1 ngành sang khoá học mới, sao chép toàn bộ môn học
+    /// kèm ánh xạ đúng học kỳ tương ứng.
+    /// </summary>
+    [HttpPost("clone")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ApiResponseDto<CloneChuongTrinhDTResultDto>>> Clone([FromBody] CloneChuongTrinhDTDto dto)
+    {
+        var result = await service.CloneAsync(dto);
+        return Ok(ApiResponseDto<CloneChuongTrinhDTResultDto>.Ok(result, "Nhân bản chương trình đào tạo thành công."));
     }
 }

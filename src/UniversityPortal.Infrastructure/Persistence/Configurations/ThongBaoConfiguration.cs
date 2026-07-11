@@ -13,7 +13,7 @@ public class ThongBaoConfiguration : IEntityTypeConfiguration<ThongBao>
         builder.Property(x => x.LoaiThongBao).IsRequired().HasMaxLength(30).HasColumnName("loai_thong_bao");
         builder.Property(x => x.MucDo).IsRequired().HasMaxLength(20).HasColumnName("muc_do");
         builder.Property(x => x.TieuDe).IsRequired().HasMaxLength(255).HasColumnName("tieu_de");
-        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("text").HasColumnName("noi_dung");
+        builder.Property(x => x.NoiDung).IsRequired().HasColumnType("nvarchar(max)").HasColumnName("noi_dung");
         builder.Property(x => x.NguoiTaoId).HasColumnName("nguoi_tao_id");
         builder.Property(x => x.LopNhanId).HasColumnName("lop_nhan_id");
         builder.Property(x => x.NgayTao).HasColumnName("ngay_tao");

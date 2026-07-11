@@ -16,4 +16,12 @@ public class SinhVienDto
     public string? AnhDaiDien { get; set; }
     public bool TrangThai { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    // Ngành / CTĐT của lớp sinh hoạt hiện tại — null nếu sinh viên chưa được phân lớp.
+    public int? NganhId { get; set; }
+    public string? MaNganh { get; set; }
+    public string? TenNganh { get; set; }
+    public int? CtdtId { get; set; }
+    public string? MaCtdt { get; set; }
+    public string? KhoaHoc { get; set; }
 }

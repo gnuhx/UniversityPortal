@@ -23,4 +23,49 @@ public class LopHocPhanRepository(AppDbContext context) : BaseRepository<LopHocP
         var data = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         return new PagedResultDto<LopHocPhan> { Data = data, Total = total, Page = page, PageSize = pageSize };
     }
+
+    public async Task<IEnumerable<LopHocPhan>> GetByGiaoVienWithDetailsAsync(int giaoVienId)
+        => await DbSet
+            .Where(x => x.GiaoVienId == giaoVienId)
+            .Include(x => x.ChiTietCTDT).ThenInclude(ct => ct.MonHoc)
+            .Include(x => x.HocKy)
+            .Include(x => x.GiaoVien).ThenInclude(gv => gv.TaiKhoan)
+            .Include(x => x.DanhSachLopHPs)
+            .ToListAsync();
+
+    public async Task<PagedResultDto<LopHocPhan>> GetPagedFilterAsync(int page, int pageSize, int? hocKyId, string? keyword)
+    {
+        var query = DbSet
+            .Include(x => x.ChiTietCTDT).ThenInclude(ct => ct.MonHoc)
+            .Include(x => x.HocKy)
+            .Include(x => x.GiaoVien).ThenInclude(gv => gv.TaiKhoan)
+            .Include(x => x.DanhSachLopHPs)
+            .AsQueryable();
+
+        if (hocKyId.HasValue)
+            query = query.Where(x => x.HocKyId == hocKyId.Value);
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+            query = query.Where(x => x.MaLopHp.Contains(keyword));
+
+        var total = await query.CountAsync();
+        var data = await query
+            .OrderBy(x => x.MaLopHp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResultDto<LopHocPhan> { Data = data, Total = total, Page = page, PageSize = pageSize };
+    }
+
+    public async Task<LopHocPhan?> GetDetailAsync(int id)
+        => await DbSet
+            .Where(x => x.Id == id)
+            .Include(x => x.ChiTietCTDT).ThenInclude(ct => ct.MonHoc)
+            .Include(x => x.HocKy)
+            .Include(x => x.GiaoVien).ThenInclude(gv => gv.TaiKhoan)
+            .Include(x => x.DanhSachLopHPs)
+                .ThenInclude(ds => ds.SinhVien)
+                    .ThenInclude(sv => sv.TaiKhoan)
+            .FirstOrDefaultAsync();
 }

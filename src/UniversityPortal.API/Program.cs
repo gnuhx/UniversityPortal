@@ -81,18 +81,16 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogWarning(
-            "Database trống. Chạy lệnh sau để tạo dữ liệu mẫu: " +
-            "docker compose exec -T mysql mysql -uroot -proot university_portal < docs/seed_data.sql");
+            "Database trống. Hãy seed dữ liệu mẫu vào SQL Server.");
     }
 }
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseCors();
 

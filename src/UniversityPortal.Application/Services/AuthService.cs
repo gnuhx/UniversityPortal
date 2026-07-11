@@ -6,13 +6,21 @@ using UniversityPortal.Domain.Exceptions;
 
 namespace UniversityPortal.Application.Services;
 
+/// <summary>
+/// Dịch vụ xác thực người dùng — đăng nhập, làm mới token và thu hồi token.
+/// </summary>
 public class AuthService(
     IUnitOfWork uow,
-    IJwtTokenService jwt,
+    IJwtTokenService jwtTokenService,
     IConfiguration configuration) : IAuthService
 {
+    /// <summary>
+    /// Đăng nhập và trả về cặp access token / refresh token.
+    /// Thứ tự kiểm tra: tài khoản tồn tại → tài khoản đang hoạt động → mật khẩu đúng.
+    /// </summary>
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
+        // Kiểm tra tài khoản tồn tại; dùng cùng thông báo lỗi để không lộ tên đăng nhập
         var taiKhoan = await uow.TaiKhoans.GetByTenDangNhapAsync(request.TenDangNhap)
             ?? throw new BadRequestException("Tên đăng nhập hoặc mật khẩu không đúng.");
 
@@ -22,12 +30,13 @@ public class AuthService(
         if (!BCrypt.Net.BCrypt.Verify(request.MatKhau, taiKhoan.MatKhau))
             throw new BadRequestException("Tên đăng nhập hoặc mật khẩu không đúng.");
 
-        var accessToken  = jwt.GenerateAccessToken(taiKhoan);
-        var refreshToken = jwt.GenerateRefreshToken();
+        var accessToken  = jwtTokenService.GenerateAccessToken(taiKhoan);
+        var refreshToken = jwtTokenService.GenerateRefreshToken();
 
-        var refreshDays = int.Parse(configuration["JWT:RefreshTokenExpiryDays"] ?? "7");
+        // Lưu refresh token và thời hạn vào database để dùng cho lần làm mới sau
+        var soNgayRefresh = int.Parse(configuration["JWT:RefreshTokenExpiryDays"] ?? "7");
         taiKhoan.RefreshToken       = refreshToken;
-        taiKhoan.RefreshTokenExpiry = DateTime.UtcNow.AddDays(refreshDays);
+        taiKhoan.RefreshTokenExpiry = DateTime.UtcNow.AddDays(soNgayRefresh);
         uow.TaiKhoans.Update(taiKhoan);
         await uow.CommitAsync();
 
@@ -46,6 +55,10 @@ public class AuthService(
         };
     }
 
+    /// <summary>
+    /// Xoay vòng refresh token — vô hiệu hoá token cũ, cấp cặp token mới.
+    /// Token cũ không thể dùng lại sau khi gọi phương thức này.
+    /// </summary>
     public async Task<LoginResponseDto> RefreshTokenAsync(string refreshToken)
     {
         var taiKhoan = await uow.TaiKhoans.GetByRefreshTokenAsync(refreshToken)
@@ -54,19 +67,20 @@ public class AuthService(
         if (taiKhoan.RefreshTokenExpiry < DateTime.UtcNow)
             throw new BadRequestException("Refresh token đã hết hạn. Vui lòng đăng nhập lại.");
 
-        var newAccessToken  = jwt.GenerateAccessToken(taiKhoan);
-        var newRefreshToken = jwt.GenerateRefreshToken();
+        var accessTokenMoi  = jwtTokenService.GenerateAccessToken(taiKhoan);
+        var refreshTokenMoi = jwtTokenService.GenerateRefreshToken();
 
-        var refreshDays = int.Parse(configuration["JWT:RefreshTokenExpiryDays"] ?? "7");
-        taiKhoan.RefreshToken       = newRefreshToken;
-        taiKhoan.RefreshTokenExpiry = DateTime.UtcNow.AddDays(refreshDays);
+        // Xoay vòng: ghi đè token cũ bằng token mới (token cũ bị vô hiệu hoá)
+        var soNgayRefresh = int.Parse(configuration["JWT:RefreshTokenExpiryDays"] ?? "7");
+        taiKhoan.RefreshToken       = refreshTokenMoi;
+        taiKhoan.RefreshTokenExpiry = DateTime.UtcNow.AddDays(soNgayRefresh);
         uow.TaiKhoans.Update(taiKhoan);
         await uow.CommitAsync();
 
         return new LoginResponseDto
         {
-            AccessToken  = newAccessToken,
-            RefreshToken = newRefreshToken,
+            AccessToken  = accessTokenMoi,
+            RefreshToken = refreshTokenMoi,
             UserInfo     = new UserInfoDto
             {
                 Id         = taiKhoan.Id,
@@ -78,6 +92,10 @@ public class AuthService(
         };
     }
 
+    /// <summary>
+    /// Thu hồi refresh token của tài khoản — người dùng sẽ phải đăng nhập lại.
+    /// Được gọi khi người dùng đăng xuất.
+    /// </summary>
     public async Task RevokeTokenAsync(int taiKhoanId)
     {
         var taiKhoan = await uow.TaiKhoans.GetByIdAsync(taiKhoanId)

@@ -5,13 +5,16 @@
  * Phân quyền : Admin / GiaoVu (CRUD), GiaoVien (xem lớp mình phụ trách), SinhVien (xem lớp mình)
  *
  * Danh sách endpoint:
- *   GET    /api/lop-sinh-hoat        — Danh sách (phân trang + lọc)  [Admin, GiaoVu]
- *   GET    /api/lop-sinh-hoat/all    — Tất cả lớp (dropdown)         [Authenticated]
- *   GET    /api/lop-sinh-hoat/{id}   — Chi tiết lớp sinh hoạt        [Authenticated]
- *   POST   /api/lop-sinh-hoat        — Tạo mới lớp (ThuKyId = null)  [Admin, GiaoVu]
- *   PUT    /api/lop-sinh-hoat/{id}   — Cập nhật lớp (gán thư ký)    [Admin, GiaoVu]
- *   DELETE /api/lop-sinh-hoat/{id}   — Xoá lớp (phải trống SV)      [Admin]
+ *   GET    /api/lop-sinh-hoat            — Danh sách (phân trang + lọc)      [Admin, GiaoVu]
+ *   GET    /api/lop-sinh-hoat/all        — Tất cả lớp (dropdown)             [Authenticated]
+ *   GET    /api/lop-sinh-hoat/me         — Lớp của sinh viên đang đăng nhập  [SinhVien]
+ *   GET    /api/lop-sinh-hoat/me-gvcn    — (Các) lớp GVCN đang đăng nhập     [GiaoVien]
+ *   GET    /api/lop-sinh-hoat/{id}       — Chi tiết lớp sinh hoạt            [Authenticated]
+ *   POST   /api/lop-sinh-hoat            — Tạo mới lớp (ThuKyId = null)      [Admin, GiaoVu]
+ *   PUT    /api/lop-sinh-hoat/{id}       — Cập nhật lớp (gán thư ký)         [Admin, GiaoVu]
+ *   DELETE /api/lop-sinh-hoat/{id}       — Xoá lớp (phải trống SV)          [Admin]
  */
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UniversityPortal.Application.DTOs.Common;
@@ -25,6 +28,30 @@ namespace UniversityPortal.API.Controllers;
 [Authorize]
 public class LopSinhHoatController(ILopSinhHoatService service) : ControllerBase
 {
+    /// <summary>
+    /// Lấy chi tiết lớp sinh hoạt của sinh viên đang đăng nhập, kèm roster bạn cùng lớp.
+    /// </summary>
+    [HttpGet("me")]
+    [Authorize(Roles = "Sinh viên")]
+    public async Task<ActionResult<ApiResponseDto<LopSinhHoatDto>>> GetMe()
+    {
+        var taiKhoanId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await service.GetMeAsync(taiKhoanId);
+        return Ok(ApiResponseDto<LopSinhHoatDto>.Ok(result));
+    }
+
+    /// <summary>
+    /// Lấy (các) lớp mà giáo viên đang đăng nhập là GVCN.
+    /// </summary>
+    [HttpGet("me-gvcn")]
+    [Authorize(Roles = "Giáo viên")]
+    public async Task<ActionResult<ApiResponseDto<IEnumerable<LopSinhHoatDto>>>> GetMeGvcn()
+    {
+        var taiKhoanId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await service.GetMeGvcnAsync(taiKhoanId);
+        return Ok(ApiResponseDto<IEnumerable<LopSinhHoatDto>>.Ok(result));
+    }
+
     /// <summary>
     /// Lấy danh sách lớp sinh hoạt có phân trang.
     /// Lọc theo mã lớp (keyword) hoặc GVCN (gvcnId).

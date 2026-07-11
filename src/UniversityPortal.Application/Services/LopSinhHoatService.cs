@@ -30,9 +30,12 @@ public class LopSinhHoatService(IUnitOfWork uow, IMapper mapper) : ILopSinhHoatS
         };
     }
 
-    /// <summary>Lấy tất cả lớp sinh hoạt (không phân trang, dùng cho dropdown).</summary>
+    /// <summary>
+    /// Lấy tất cả lớp sinh hoạt (không phân trang, dùng cho dropdown).
+    /// Kèm Ngành/Khoa/Khoá học (qua ChuongTrinhDT) để client lọc dropdown khi thêm sinh viên.
+    /// </summary>
     public async Task<IEnumerable<LopSinhHoatDto>> GetAllAsync()
-        => mapper.Map<IEnumerable<LopSinhHoatDto>>(await uow.LopSinhHoats.GetAllAsync());
+        => mapper.Map<IEnumerable<LopSinhHoatDto>>(await uow.LopSinhHoats.GetAllDetailAsync());
 
     /// <summary>Lấy chi tiết lớp sinh hoạt theo id. Ném NotFoundException nếu không tồn tại.</summary>
     public async Task<LopSinhHoatDto> GetByIdAsync(int id)
@@ -109,5 +112,30 @@ public class LopSinhHoatService(IUnitOfWork uow, IMapper mapper) : ILopSinhHoatS
 
         uow.LopSinhHoats.Delete(lop);
         await uow.CommitAsync();
+    }
+
+    /// <summary>Lấy chi tiết lớp sinh hoạt của sinh viên đang đăng nhập, kèm roster bạn cùng lớp.</summary>
+    public async Task<LopSinhHoatDto> GetMeAsync(int taiKhoanId)
+    {
+        var sv = await uow.SinhViens.GetByTaiKhoanIdAsync(taiKhoanId)
+            ?? throw new NotFoundException("Không tìm thấy hồ sơ sinh viên.");
+
+        if (sv.LopId is null)
+            throw new NotFoundException("Bạn chưa được phân vào lớp sinh hoạt nào.");
+
+        var lop = await uow.LopSinhHoats.GetDetailAsync(sv.LopId.Value)
+            ?? throw new NotFoundException($"Không tìm thấy lớp sinh hoạt id = {sv.LopId}.");
+
+        return mapper.Map<LopSinhHoatDto>(lop);
+    }
+
+    /// <summary>Lấy (các) lớp mà giáo viên đang đăng nhập là GVCN.</summary>
+    public async Task<IEnumerable<LopSinhHoatDto>> GetMeGvcnAsync(int taiKhoanId)
+    {
+        var gv = await uow.GiaoViens.GetByTaiKhoanIdAsync(taiKhoanId)
+            ?? throw new NotFoundException("Không tìm thấy hồ sơ giáo viên.");
+
+        var lops = await uow.LopSinhHoats.GetByGvcnIdAsync(gv.Id);
+        return mapper.Map<IEnumerable<LopSinhHoatDto>>(lops);
     }
 }

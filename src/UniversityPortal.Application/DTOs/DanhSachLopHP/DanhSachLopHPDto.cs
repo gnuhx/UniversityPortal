@@ -9,6 +9,8 @@ public class DanhSachLopHPDto
     public string TenMon { get; set; } = string.Empty;
     public int HocKyId { get; set; }
     public string TenHocKy { get; set; } = string.Empty;
+    public int NamHocId { get; set; }
+    public string TenNamHoc { get; set; } = string.Empty;
     public string TenGiaoVien { get; set; } = string.Empty;
     public string LoaiDangKy { get; set; } = string.Empty;
     public string TrangThaiDuyet { get; set; } = string.Empty;
@@ -19,4 +21,6 @@ public class DanhSachLopHPDto
     public decimal? SoTienPhaiDong { get; set; }
     public string? TrangThaiDongTien { get; set; }
     public bool KhoaBangDiem { get; set; }
+    public string? TenSinhVien { get; set; }
+    public string? Mssv { get; set; }
 }

@@ -14,10 +14,10 @@ namespace UniversityPortal.Application.Services;
 /// </summary>
 public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
 {
-    /// <summary>Lấy danh sách ngành học có phân trang và lọc keyword.</summary>
-    public async Task<PagedResultDto<NganhHocDto>> GetPagedAsync(int page, int pageSize, string? keyword)
+    /// <summary>Lấy danh sách ngành học có phân trang, lọc keyword, ngành (id) và khoá học.</summary>
+    public async Task<PagedResultDto<NganhHocDto>> GetPagedAsync(int page, int pageSize, string? keyword, int? nganhId = null, string? khoaHoc = null)
     {
-        var paged = await uow.NganhHocs.GetPagedFilterAsync(page, pageSize, keyword);
+        var paged = await uow.NganhHocs.GetPagedFilterAsync(page, pageSize, keyword, nganhId, khoaHoc);
         return new PagedResultDto<NganhHocDto>
         {
             Data     = mapper.Map<IEnumerable<NganhHocDto>>(paged.Data),
@@ -49,7 +49,8 @@ public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
         {
             MaNganh    = dto.MaNganh,
             TenNganh   = dto.TenNganh,
-            NganhChaId = dto.NganhChaId
+            NganhChaId = dto.NganhChaId,
+            PhongBanId = dto.PhongBanId
         };
 
         await uow.NganhHocs.AddAsync(nganh);
@@ -71,6 +72,7 @@ public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
         nganh.MaNganh    = dto.MaNganh;
         nganh.TenNganh   = dto.TenNganh;
         nganh.NganhChaId = dto.NganhChaId;
+        nganh.PhongBanId = dto.PhongBanId;
 
         uow.NganhHocs.Update(nganh);
         await uow.CommitAsync();
@@ -85,7 +87,7 @@ public class NganhHocService(IUnitOfWork uow, IMapper mapper) : INganhHocService
             ?? throw new NotFoundException($"Không tìm thấy ngành học id = {id}.");
 
         // Kiểm tra ràng buộc trước khi xoá để tránh lỗi FK từ DB
-        var coCtdt = await uow.ChuongTrinhDTs.GetPagedFilterAsync(1, 1, null, id);
+        var coCtdt = await uow.ChuongTrinhDTs.GetPagedFilterAsync(1, 1, null, id, null);
         if (coCtdt.Total > 0)
             throw new BadRequestException("Không thể xoá ngành đang có chương trình đào tạo liên kết.");
 

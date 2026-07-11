@@ -8,8 +8,8 @@ namespace UniversityPortal.Application.Interfaces.Repositories;
 /// </summary>
 public interface IChuongTrinhDTRepository : IRepository<ChuongTrinhDT>
 {
-    /// <summary>Lấy danh sách CTDT có phân trang, lọc theo keyword và ngành.</summary>
-    Task<PagedResultDto<ChuongTrinhDT>> GetPagedFilterAsync(int page, int pageSize, string? keyword, int? nganhId);
+    /// <summary>Lấy danh sách CTDT có phân trang, lọc theo keyword, ngành và khoá học (exact match).</summary>
+    Task<PagedResultDto<ChuongTrinhDT>> GetPagedFilterAsync(int page, int pageSize, string? keyword, int? nganhId, string? khoaHoc);
 
     /// <summary>Tìm CTDT theo mã CTDT.</summary>
     Task<ChuongTrinhDT?> GetByMaCtdtAsync(string maCtdt);

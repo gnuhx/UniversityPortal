@@ -47,13 +47,14 @@ public class SinhVienRepository(AppDbContext context) : BaseRepository<SinhVien>
             .Include(x => x.Lop)
             .AsQueryable();
 
-        // Lọc không phân biệt hoa thường theo họ tên hoặc MSSV
+        // Lọc không phân biệt hoa thường theo họ tên, MSSV hoặc email
         if (!string.IsNullOrWhiteSpace(keyword))
         {
-            var kw = keyword.ToLower();
+            var tuKhoa = keyword.ToLower();
             query = query.Where(x =>
-                x.TaiKhoan.HoTen.ToLower().Contains(kw) ||
-                x.Mssv.ToLower().Contains(kw));
+                x.TaiKhoan.HoTen.ToLower().Contains(tuKhoa) ||
+                x.Mssv.ToLower().Contains(tuKhoa) ||
+                x.TaiKhoan.Email.ToLower().Contains(tuKhoa));
         }
 
         if (lopId.HasValue)
@@ -74,5 +75,21 @@ public class SinhVienRepository(AppDbContext context) : BaseRepository<SinhVien>
         => await DbSet
             .Include(x => x.TaiKhoan)
             .Include(x => x.Lop)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+    /// <summary>Lấy sinh viên theo id kèm Lop sinh hoạt và Chương trình đào tạo của lớp (dùng để xác định CTDT hiện tại).</summary>
+    public async Task<SinhVien?> GetByIdWithLopCtdtAsync(int id)
+        => await DbSet
+            .Include(x => x.Lop)
+                .ThenInclude(l => l!.ChuongTrinhDT)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+    /// <summary>Lấy sinh viên theo id kèm TaiKhoan, Lop, Chương trình đào tạo và Ngành học (dùng cho /me).</summary>
+    public async Task<SinhVien?> GetByIdWithLopCtdtNganhAsync(int id)
+        => await DbSet
+            .Include(x => x.TaiKhoan)
+            .Include(x => x.Lop)
+                .ThenInclude(l => l!.ChuongTrinhDT)
+                    .ThenInclude(c => c.Nganh)
             .FirstOrDefaultAsync(x => x.Id == id);
 }

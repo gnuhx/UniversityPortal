@@ -38,6 +38,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<DatPhongThucHanh> DatPhongThucHanhs => Set<DatPhongThucHanh>();
     public DbSet<KhaoSatYKien> KhaoSatYKiens => Set<KhaoSatYKien>();
     public DbSet<DienDanGiaoVien> DienDanGiaoViens => Set<DienDanGiaoVien>();
+    public DbSet<NoiDungTinh> NoiDungTinhs => Set<NoiDungTinh>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,6 +46,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         base.OnModelCreating(modelBuilder);
     }
 
+    /// <summary>
+    /// Tự động gán CreatedAt khi thêm mới và UpdatedAt mỗi lần lưu,
+    /// cho tất cả entity kế thừa AuditableEntity — không cần set thủ công ở tầng service.
+    /// </summary>
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
         foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
