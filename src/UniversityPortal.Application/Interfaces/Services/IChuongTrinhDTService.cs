@@ -9,8 +9,8 @@ namespace UniversityPortal.Application.Interfaces.Services;
 /// </summary>
 public interface IChuongTrinhDTService
 {
-    /// <summary>Lấy danh sách CTDT có phân trang và lọc theo keyword và ngành.</summary>
-    Task<PagedResultDto<ChuongTrinhDTDto>> GetPagedAsync(int page, int pageSize, string? keyword, int? nganhId);
+    /// <summary>Lấy danh sách CTDT có phân trang và lọc theo keyword, ngành và khoá học.</summary>
+    Task<PagedResultDto<ChuongTrinhDTDto>> GetPagedAsync(int page, int pageSize, string? keyword, int? nganhId, string? khoaHoc);
 
     /// <summary>Lấy tất cả CTDT (dùng cho dropdown).</summary>
     Task<IEnumerable<ChuongTrinhDTDto>> GetAllAsync();
@@ -26,4 +26,10 @@ public interface IChuongTrinhDTService
 
     /// <summary>Xoá CTDT; ném BadRequestException nếu còn lớp sinh hoạt liên kết.</summary>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Nhân bản CTDT mới nhất của 1 ngành sang khoá học mới — tạo CTDT mới và sao chép
+    /// toàn bộ môn học, ánh xạ đúng học kỳ tương ứng theo năm/thứ tự trong khoá học mới.
+    /// </summary>
+    Task<CloneChuongTrinhDTResultDto> CloneAsync(CloneChuongTrinhDTDto dto);
 }

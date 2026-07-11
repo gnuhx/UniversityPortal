@@ -1,4 +1,5 @@
 // Dịch vụ quản lý chương trình đào tạo
+using System.Text.RegularExpressions;
 using AutoMapper;
 using UniversityPortal.Application.DTOs.Common;
 using UniversityPortal.Application.DTOs.ChuongTrinhDT;
@@ -16,9 +17,9 @@ public class ChuongTrinhDTService(IUnitOfWork uow, IMapper mapper) : IChuongTrin
 {
     /// <summary>Lấy danh sách CTDT có phân trang và lọc.</summary>
     public async Task<PagedResultDto<ChuongTrinhDTDto>> GetPagedAsync(
-        int page, int pageSize, string? keyword, int? nganhId)
+        int page, int pageSize, string? keyword, int? nganhId, string? khoaHoc)
     {
-        var paged = await uow.ChuongTrinhDTs.GetPagedFilterAsync(page, pageSize, keyword, nganhId);
+        var paged = await uow.ChuongTrinhDTs.GetPagedFilterAsync(page, pageSize, keyword, nganhId, khoaHoc);
         return new PagedResultDto<ChuongTrinhDTDto>
         {
             Data     = mapper.Map<IEnumerable<ChuongTrinhDTDto>>(paged.Data),
@@ -93,5 +94,95 @@ public class ChuongTrinhDTService(IUnitOfWork uow, IMapper mapper) : IChuongTrin
 
         uow.ChuongTrinhDTs.Delete(ctdt);
         await uow.CommitAsync();
+    }
+
+    /// <summary>
+    /// Nhân bản CTDT có khoá học mới nhất của 1 ngành sang khoá học mới. Môn học được ánh xạ
+    /// theo vị trí tương đối (năm thứ mấy trong khoá + thứ tự học kỳ trong năm đó) chứ không
+    /// sao chép nguyên `hocKyId` — vì học kỳ là mốc thời gian tuyệt đối, sao chép nguyên sẽ gán
+    /// nhầm môn học của khoá mới vào các học kỳ đã qua của khoá cũ. Môn nào không tìm được học kỳ
+    /// tương ứng ở khoá mới (vd năm học đó chưa được tạo) sẽ bị bỏ qua và liệt kê trong kết quả.
+    /// </summary>
+    public async Task<CloneChuongTrinhDTResultDto> CloneAsync(CloneChuongTrinhDTDto dto)
+    {
+        var allCtdtCuaNganh = await uow.ChuongTrinhDTs.GetPagedFilterAsync(1, int.MaxValue, null, dto.NganhId, null);
+        var nguon = allCtdtCuaNganh.Data
+            .OrderByDescending(x => x.KhoaHoc, StringComparer.Ordinal)
+            .FirstOrDefault()
+            ?? throw new BadRequestException("Ngành này chưa có chương trình đào tạo nào để nhân bản.");
+
+        var namBatDauNguon = ParseNamBatDau(nguon.KhoaHoc);
+        var namBatDauMoi = ParseNamBatDau(dto.KhoaHocMoi);
+        if (namBatDauNguon is null || namBatDauMoi is null)
+            throw new BadRequestException("Khoá học phải theo định dạng \"YYYY-YYYY\" để nhân bản đúng học kỳ tương ứng.");
+
+        if (await uow.ChuongTrinhDTs.GetByMaCtdtAsync(dto.MaCtdtMoi) is not null)
+            throw new BadRequestException($"Mã CTDT '{dto.MaCtdtMoi}' đã tồn tại.");
+
+        var ctdtMoi = new ChuongTrinhDT { MaCtdt = dto.MaCtdtMoi, NganhId = dto.NganhId, KhoaHoc = dto.KhoaHocMoi };
+        await uow.ChuongTrinhDTs.AddAsync(ctdtMoi);
+        await uow.CommitAsync();
+
+        var tatCaHocKy = (await uow.HocKys.GetAllAsync()).ToList();
+        // ThenBy(Id) để có thứ tự ổn định khi 2 học kỳ trùng NgayBatDau (dữ liệu trùng lặp/không sạch) —
+        // nếu không, vị trí thứ tự trong năm có thể đổi giữa các lần chạy, ánh xạ sai học kỳ đích.
+        List<HocKy> HocKyCuaNam(int namBatDau) => tatCaHocKy
+            .Where(hk => ParseNamBatDau(hk.NamHoc.TenNamHoc) == namBatDau)
+            .OrderBy(hk => hk.NgayBatDau).ThenBy(hk => hk.Id)
+            .ToList();
+
+        var monHocNguon = await uow.ChiTietCTDTs.GetByCtdtIdAsync(nguon.Id);
+        var soMonDaSaoChep = 0;
+        var monBoQua = new List<string>();
+
+        foreach (var mon in monHocNguon)
+        {
+            var namBatDauMonNguon = ParseNamBatDau(mon.HocKy.NamHoc.TenNamHoc);
+            if (namBatDauMonNguon is null)
+            {
+                monBoQua.Add($"{mon.MonHoc.MaMon} (không xác định được năm học nguồn)");
+                continue;
+            }
+
+            var hocKyCuaNamNguon = HocKyCuaNam(namBatDauMonNguon.Value);
+            var thuTu = hocKyCuaNamNguon.FindIndex(hk => hk.Id == mon.HocKyId);
+
+            var namBatDauDich = namBatDauMoi.Value + (namBatDauMonNguon.Value - namBatDauNguon.Value);
+            var hocKyCuaNamDich = HocKyCuaNam(namBatDauDich);
+
+            if (thuTu < 0 || thuTu >= hocKyCuaNamDich.Count)
+            {
+                monBoQua.Add($"{mon.MonHoc.MaMon} (chưa có học kỳ tương ứng ở năm học {namBatDauDich}-{namBatDauDich + 1})");
+                continue;
+            }
+
+            await uow.ChiTietCTDTs.AddAsync(new ChiTietCTDT
+            {
+                CtdtId     = ctdtMoi.Id,
+                MonHocId   = mon.MonHocId,
+                HocKyId    = hocKyCuaNamDich[thuTu].Id,
+                SoTinChi   = mon.SoTinChi,
+                TinhDiemTb = mon.TinhDiemTb,
+            });
+            soMonDaSaoChep++;
+        }
+
+        if (soMonDaSaoChep > 0)
+            await uow.CommitAsync();
+
+        return new CloneChuongTrinhDTResultDto
+        {
+            CtdtMoiId      = ctdtMoi.Id,
+            MaCtdtMoi      = ctdtMoi.MaCtdt,
+            SoMonDaSaoChep = soMonDaSaoChep,
+            MonBoQua       = monBoQua,
+        };
+    }
+
+    /// <summary>Suy năm bắt đầu từ chuỗi "YYYY-YYYY" (khoá học hoặc tên năm học). Trả null nếu không đúng định dạng.</summary>
+    private static int? ParseNamBatDau(string value)
+    {
+        var match = Regex.Match(value, @"^(\d{4})-(\d{4})$");
+        return match.Success ? int.Parse(match.Groups[1].Value) : null;
     }
 }

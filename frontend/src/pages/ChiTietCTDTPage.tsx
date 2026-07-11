@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
-import { Button, Tag, Space } from "antd";
+import { Button, Tag, Space, Collapse, Table, Modal, Form, Select, InputNumber, Switch, Popconfirm, App } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
-import { CrudTable, type CrudFormField } from "../components/CrudTable";
-import { chiTietCTDTApi, chuongTrinhDTApi, monHocApi } from "../api/modules";
-import type { ChiTietCTDT } from "../types";
+import { chiTietCTDTApi, chuongTrinhDTApi, monHocApi, hocKyApi } from "../api/modules";
+import type { ChiTietCTDT, CreateChiTietCTDT } from "../types";
 import { useAuthStore } from "../store/authStore";
 import { ROLES } from "../constants/roles";
 
@@ -15,6 +15,8 @@ export function ChiTietCTDTPage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.vaiTro === ROLES.ADMIN;
+  const { message } = App.useApp();
+  const queryClient = useQueryClient();
 
   const { data: ctdt } = useQuery({
     queryKey: ["chuong-trinh-dt", ctdtId],
@@ -24,37 +26,174 @@ export function ChiTietCTDTPage() {
     queryKey: ["mon-hoc-all"],
     queryFn: () => monHocApi.getAll(),
   });
+  const { data: hocKys = [], isLoading: hocKysLoading } = useQuery({
+    queryKey: ["hoc-ky"],
+    queryFn: () => hocKyApi.getAll(),
+  });
+  // Lấy hết (không phân trang) để nhóm theo học kỳ chính xác trên toàn bộ danh sách.
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["chi-tiet-ctdt-all", ctdtId],
+    queryFn: () => chiTietCTDTApi.getPaged({ ctdtId, page: 1, pageSize: 500 }),
+    select: (res) => res.data,
+    enabled: !!ctdtId,
+  });
+
+  // Suy ra khoảng năm học hợp lệ của CTĐT từ `khoaHoc` (định dạng "YYYY-YYYY", vd "2023-2027")
+  // để không liệt kê học kỳ trước khi CTĐT này tồn tại hay sau khi sinh viên đã tốt nghiệp.
+  // `khoaHoc` là text tự do (xem hạn chế đã ghi ở task #04) — nếu không đúng định dạng khoảng
+  // năm thì không lọc được, đành hiện toàn bộ học kỳ như trước (thà dư còn hơn ẩn nhầm).
+  const relevantNamHoc = useMemo(() => {
+    const match = ctdt?.khoaHoc?.match(/^(\d{4})-(\d{4})$/);
+    if (!match) return null;
+    const start = Number(match[1]);
+    const end = Number(match[2]);
+    const set = new Set<string>();
+    for (let y = start; y < end; y++) set.add(`${y}-${y + 1}`);
+    return set;
+  }, [ctdt?.khoaHoc]);
+
+  const relevantHocKys = useMemo(
+    () => (relevantNamHoc ? hocKys.filter((h) => relevantNamHoc.has(h.tenNamHoc)) : hocKys),
+    [hocKys, relevantNamHoc],
+  );
+
+  // Sắp học kỳ tăng dần theo ngày bắt đầu (lộ trình học từ sớm đến muộn), rồi gom môn học của
+  // CTĐT này vào từng học kỳ — học kỳ không có môn nào vẫn hiện ra để thấy ngay chỗ còn thiếu.
+  const hocKyGroups = useMemo(() => {
+    const sorted = [...relevantHocKys].sort((a, b) => a.ngayBatDau.localeCompare(b.ngayBatDau));
+    return sorted.map((hk) => ({
+      hocKy: hk,
+      items: items.filter((it) => it.hocKyId === hk.id),
+    }));
+  }, [relevantHocKys, items]);
+
+  // Collapse cần activeKey điều khiển (controlled) vì nhóm chỉ có dữ liệu thật sau khi
+  // 2 query trên tải xong — defaultActiveKey chỉ đọc 1 lần lúc mount nên sẽ bỏ lỡ mốc đó.
+  const [activeKeys, setActiveKeys] = useState<string[]>();
+  useEffect(() => {
+    if (activeKeys === undefined && !hocKysLoading && !isLoading) {
+      setActiveKeys(hocKyGroups.filter((g) => g.items.length > 0).map((g) => String(g.hocKy.id)));
+    }
+  }, [hocKyGroups, activeKeys, hocKysLoading, isLoading]);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<ChiTietCTDT | null>(null);
+  const [form] = Form.useForm();
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["chi-tiet-ctdt-all", ctdtId] });
+
+  const createMutation = useMutation({
+    mutationFn: (dto: Omit<CreateChiTietCTDT, "ctdtId">) => chiTietCTDTApi.create({ ...dto, ctdtId }),
+    onSuccess: () => {
+      message.success("Thêm môn học thành công");
+      setModalOpen(false);
+      invalidate();
+    },
+    onError: (err: any) => message.error(err?.response?.data?.message || "Có lỗi xảy ra"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, soTinChi, tinhDiemTb }: { id: number; soTinChi: number; tinhDiemTb: boolean }) =>
+      chiTietCTDTApi.update(id, { soTinChi, tinhDiemTb }),
+    onSuccess: () => {
+      message.success("Cập nhật thành công");
+      setModalOpen(false);
+      invalidate();
+    },
+    onError: (err: any) => message.error(err?.response?.data?.message || "Có lỗi xảy ra"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => chiTietCTDTApi.remove(id),
+    onSuccess: () => {
+      message.success("Xoá thành công");
+      invalidate();
+    },
+    onError: (err: any) => message.error(err?.response?.data?.message || "Có lỗi xảy ra"),
+  });
+
+  // Chọn nhiều môn học (theo từng học kỳ) để xoá cùng lúc — mỗi học kỳ có 1 bảng riêng
+  // nên lưu selection riêng theo hocKyId, tránh 1 dòng đang chọn ở bảng này ảnh hưởng bảng khác.
+  const [selectedByHocKy, setSelectedByHocKy] = useState<Record<number, number[]>>({});
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: number[]) => Promise.allSettled(ids.map((id) => chiTietCTDTApi.remove(id))),
+    onSuccess: (results, ids) => {
+      const failed = results.filter((r) => r.status === "rejected");
+      if (failed.length === 0) {
+        message.success(`Đã xoá ${ids.length} môn học.`);
+      } else if (failed.length === ids.length) {
+        message.error("Không xoá được môn học nào (có thể đã có lớp học phần liên kết).");
+      } else {
+        message.warning(`Đã xoá ${ids.length - failed.length}/${ids.length} môn học — ${failed.length} môn không xoá được (có thể đã có lớp học phần liên kết).`);
+      }
+      invalidate();
+    },
+  });
+
+  const handleBulkDelete = (hocKyId: number, ids: number[]) => {
+    bulkDeleteMutation.mutate(ids, {
+      onSettled: () => setSelectedByHocKy((prev) => ({ ...prev, [hocKyId]: [] })),
+    });
+  };
+
+  const openCreate = (hocKyId?: number) => {
+    setEditingRecord(null);
+    form.resetFields();
+    form.setFieldsValue({ tinhDiemTb: true, hocKyId });
+    setModalOpen(true);
+  };
+
+  const openEdit = (record: ChiTietCTDT) => {
+    setEditingRecord(record);
+    form.setFieldsValue(record);
+    setModalOpen(true);
+  };
+
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
+    if (editingRecord) {
+      updateMutation.mutate({ id: editingRecord.id, soTinChi: values.soTinChi, tinhDiemTb: values.tinhDiemTb });
+    } else {
+      createMutation.mutate(values);
+    }
+  };
 
   const columns: ColumnsType<ChiTietCTDT> = [
     { title: "Mã môn", dataIndex: "maMon" },
     { title: "Tên môn", dataIndex: "tenMon" },
-    { title: "Học kỳ", dataIndex: "tenHocKy" },
     { title: "Số tín chỉ", dataIndex: "soTinChi" },
     {
       title: "Tính điểm TB",
       dataIndex: "tinhDiemTb",
       render: (v: boolean) => (v ? <Tag color="green">Có</Tag> : <Tag color="default">Không</Tag>),
     },
-  ];
-
-  const formFields: CrudFormField[] = [
-    {
-      name: "monHocId",
-      label: "Môn học",
-      type: "select",
-      required: true,
-      hideOnEdit: true,
-      options: (monHocOptions || []).map((m) => ({ label: `${m.maMon} - ${m.tenMon}`, value: m.id })),
-    },
-    { name: "hocKyId", label: "Mã học kỳ (Id)", type: "number", required: true, hideOnEdit: true },
-    { name: "soTinChi", label: "Số tín chỉ", type: "number", required: true },
-    { name: "tinhDiemTb", label: "Tính điểm trung bình", type: "switch" },
+    ...(isAdmin
+      ? [
+          {
+            title: "Hành động",
+            key: "actions",
+            render: (_: unknown, record: ChiTietCTDT) => (
+              <Space>
+                <Button size="small" onClick={() => openEdit(record)}>
+                  Sửa
+                </Button>
+                <Popconfirm title="Xác nhận xoá?" onConfirm={() => deleteMutation.mutate(record.id)}>
+                  <Button size="small" danger>
+                    Xoá
+                  </Button>
+                </Popconfirm>
+              </Space>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/chuong-trinh-dt")}>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/nganh-hoc")}>
           Quay lại
         </Button>
         <h2 style={{ margin: 0 }}>
@@ -62,20 +201,96 @@ export function ChiTietCTDTPage() {
         </h2>
       </Space>
 
-      <CrudTable<ChiTietCTDT, any, any>
-        title="Môn học"
-        queryKey="chi-tiet-ctdt"
-        fetchPaged={chiTietCTDTApi.getPaged}
-        extraParams={{ ctdtId }}
-        columns={columns}
-        formFields={formFields}
-        onCreate={isAdmin ? (dto: any) => chiTietCTDTApi.create({ ...dto, ctdtId }) : undefined}
-        onUpdate={isAdmin ? chiTietCTDTApi.update : undefined}
-        onDelete={isAdmin ? chiTietCTDTApi.remove : undefined}
-        canCreate={isAdmin}
-        canEdit={isAdmin}
-        canDelete={isAdmin}
+      {isAdmin && (
+        <div style={{ marginBottom: 16 }}>
+          <Button type="primary" onClick={() => openCreate()}>
+            Thêm môn học
+          </Button>
+        </div>
+      )}
+
+      <Collapse
+        activeKey={activeKeys}
+        onChange={(keys) => setActiveKeys(Array.isArray(keys) ? keys : [keys])}
+        items={hocKyGroups.map((g) => ({
+          key: String(g.hocKy.id),
+          label: (
+            <Space>
+              <span>
+                {g.hocKy.tenHocKy} ({g.hocKy.tenNamHoc})
+              </span>
+              {g.items.length > 0 ? (
+                <Tag color="blue">{g.items.length} môn</Tag>
+              ) : (
+                <Tag color="red">Chưa có môn học</Tag>
+              )}
+            </Space>
+          ),
+          children: (
+            <>
+              {isAdmin && (selectedByHocKy[g.hocKy.id]?.length ?? 0) > 0 && (
+                <Space style={{ marginBottom: 12 }}>
+                  <span>Đã chọn {selectedByHocKy[g.hocKy.id]!.length} môn học</span>
+                  <Popconfirm
+                    title={`Xác nhận xoá ${selectedByHocKy[g.hocKy.id]!.length} môn học đã chọn?`}
+                    onConfirm={() => handleBulkDelete(g.hocKy.id, selectedByHocKy[g.hocKy.id]!)}
+                  >
+                    <Button size="small" danger loading={bulkDeleteMutation.isPending}>
+                      Xoá đã chọn
+                    </Button>
+                  </Popconfirm>
+                </Space>
+              )}
+              <Table
+                rowKey="id"
+                size="small"
+                loading={isLoading}
+                columns={columns}
+                dataSource={g.items}
+                pagination={false}
+                locale={{ emptyText: "Chưa có môn học trong học kỳ này" }}
+                rowSelection={
+                  isAdmin
+                    ? {
+                        selectedRowKeys: selectedByHocKy[g.hocKy.id] ?? [],
+                        onChange: (keys) =>
+                          setSelectedByHocKy((prev) => ({ ...prev, [g.hocKy.id]: keys as number[] })),
+                      }
+                    : undefined
+                }
+              />
+            </>
+          ),
+        }))}
       />
+
+      <Modal
+        title={editingRecord ? "Sửa môn học" : "Thêm môn học vào CTĐT"}
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        onOk={handleSubmit}
+        confirmLoading={createMutation.isPending || updateMutation.isPending}
+        destroyOnHidden
+      >
+        <Form form={form} layout="vertical">
+          {!editingRecord && (
+            <>
+              <Form.Item name="monHocId" label="Môn học" rules={[{ required: true, message: "Vui lòng chọn môn học" }]}>
+                <Select options={(monHocOptions || []).map((m) => ({ label: `${m.maMon} - ${m.tenMon}`, value: m.id }))} />
+              </Form.Item>
+              <Form.Item name="hocKyId" label="Học kỳ" rules={[{ required: true, message: "Vui lòng chọn học kỳ" }]}>
+                <Select options={relevantHocKys.map((h) => ({ label: `${h.tenHocKy} (${h.tenNamHoc})`, value: h.id }))} />
+              </Form.Item>
+            </>
+          )}
+          <Form.Item name="soTinChi" label="Số tín chỉ" rules={[{ required: true, message: "Vui lòng nhập số tín chỉ" }]}>
+            <InputNumber min={1} max={10} style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item name="tinhDiemTb" label="Tính điểm trung bình" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

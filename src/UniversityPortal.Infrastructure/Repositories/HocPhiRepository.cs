@@ -10,7 +10,7 @@ public class HocPhiRepository(AppDbContext context) : BaseRepository<HocPhi>(con
     public async Task<IEnumerable<HocPhi>> GetBySinhVienAsync(int sinhVienId)
         => await DbSet
             .Where(x => x.SinhVienId == sinhVienId)
-            .Include(x => x.HocKy)
+            .Include(x => x.HocKy).ThenInclude(hk => hk.NamHoc)
             .Include(x => x.SinhVien).ThenInclude(sv => sv.TaiKhoan)
             .OrderByDescending(x => x.HocKy.NgayBatDau)
             .ToListAsync();
@@ -19,9 +19,20 @@ public class HocPhiRepository(AppDbContext context) : BaseRepository<HocPhi>(con
         => await DbSet
             .Where(x => x.HocKyId == hocKyId)
             .Include(x => x.SinhVien).ThenInclude(sv => sv.TaiKhoan)
-            .Include(x => x.HocKy)
+            .Include(x => x.HocKy).ThenInclude(hk => hk.NamHoc)
             .ToListAsync();
 
     public async Task<HocPhi?> GetBySinhVienAndHocKyAsync(int sinhVienId, int hocKyId)
         => await DbSet.FirstOrDefaultAsync(x => x.SinhVienId == sinhVienId && x.HocKyId == hocKyId);
+
+    public async Task<IEnumerable<HocPhi>> GetAllWithDetailsAsync()
+        => await DbSet
+            .Include(x => x.SinhVien).ThenInclude(sv => sv.TaiKhoan)
+            .Include(x => x.HocKy).ThenInclude(hk => hk.NamHoc)
+            .OrderByDescending(x => x.HocKy.NgayBatDau)
+            .ThenBy(x => x.SinhVien.Mssv)
+            .ToListAsync();
+
+    public async Task<int> CountByHocKyAsync(int hocKyId)
+        => await DbSet.CountAsync(x => x.HocKyId == hocKyId);
 }

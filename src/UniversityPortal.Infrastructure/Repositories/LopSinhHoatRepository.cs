@@ -18,8 +18,8 @@ public class LopSinhHoatRepository(AppDbContext context) : BaseRepository<LopSin
         var query = DbSet
             .Include(x => x.Gvcn).ThenInclude(g => g.TaiKhoan)
             .Include(x => x.ThuKy).ThenInclude(s => s!.TaiKhoan)
-            .Include(x => x.ChuongTrinhDT)
-            .Include(x => x.SinhViens)
+            .Include(x => x.ChuongTrinhDT).ThenInclude(c => c.Nganh).ThenInclude(n => n.PhongBan)
+            .Include(x => x.SinhViens).ThenInclude(sv => sv.TaiKhoan)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(keyword))
@@ -45,12 +45,28 @@ public class LopSinhHoatRepository(AppDbContext context) : BaseRepository<LopSin
     public async Task<LopSinhHoat?> GetByMaLopAsync(string maLop)
         => await DbSet.FirstOrDefaultAsync(x => x.MaLop == maLop);
 
-    /// <summary>Lấy chi tiết lớp theo id, bao gồm GVCN, thư ký, CTDT và sinh viên.</summary>
+    /// <summary>Lấy chi tiết lớp theo id, bao gồm GVCN, thư ký, CTDT (kèm Ngành/Khoa) và roster sinh viên.</summary>
     public async Task<LopSinhHoat?> GetDetailAsync(int id)
         => await DbSet
             .Include(x => x.Gvcn).ThenInclude(g => g.TaiKhoan)
             .Include(x => x.ThuKy).ThenInclude(s => s!.TaiKhoan)
-            .Include(x => x.ChuongTrinhDT)
-            .Include(x => x.SinhViens)
+            .Include(x => x.ChuongTrinhDT).ThenInclude(c => c.Nganh).ThenInclude(n => n.PhongBan)
+            .Include(x => x.SinhViens).ThenInclude(sv => sv.TaiKhoan)
             .FirstOrDefaultAsync(x => x.Id == id);
+
+    /// <summary>Lấy tất cả lớp kèm ChuongTrinhDT.Nganh.PhongBan, dùng để dropdown chọn lớp lọc theo Khoa/Ngành/Khoá học.</summary>
+    public async Task<IEnumerable<LopSinhHoat>> GetAllDetailAsync()
+        => await DbSet
+            .Include(x => x.ChuongTrinhDT).ThenInclude(c => c.Nganh).ThenInclude(n => n.PhongBan)
+            .ToListAsync();
+
+    /// <summary>Lấy (các) lớp mà giáo viên này là GVCN — dùng cho trang "Lớp của tôi" phía Giáo viên.</summary>
+    public async Task<IEnumerable<LopSinhHoat>> GetByGvcnIdAsync(int gvcnId)
+        => await DbSet
+            .Include(x => x.Gvcn).ThenInclude(g => g.TaiKhoan)
+            .Include(x => x.ThuKy).ThenInclude(s => s!.TaiKhoan)
+            .Include(x => x.ChuongTrinhDT).ThenInclude(c => c.Nganh).ThenInclude(n => n.PhongBan)
+            .Include(x => x.SinhViens).ThenInclude(sv => sv.TaiKhoan)
+            .Where(x => x.GvcnId == gvcnId)
+            .ToListAsync();
 }

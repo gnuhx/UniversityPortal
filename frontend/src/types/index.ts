@@ -38,6 +38,13 @@ export interface SinhVien {
   anhDaiDien?: string | null;
   trangThai: boolean;
   createdAt: string;
+  // Ngành / CTĐT của lớp sinh hoạt hiện tại — null nếu sinh viên chưa được phân lớp.
+  nganhId?: number | null;
+  maNganh?: string | null;
+  tenNganh?: string | null;
+  ctdtId?: number | null;
+  maCtdt?: string | null;
+  khoaHoc?: string | null;
 }
 
 export interface CreateSinhVien {
@@ -97,8 +104,20 @@ export interface LopSinhHoat {
   tenThuKy?: string | null;
   chuongTrinhDtId: number;
   maCtdt: string;
+  khoaHoc: string;
+  nganhId?: number | null;
+  tenNganh: string;
+  phongBanId?: number | null;
+  tenPhongBan?: string | null;
   soSinhVien: number;
   createdAt: string;
+  danhSachSinhVien: LopSinhHoatThanhVien[];
+}
+
+export interface LopSinhHoatThanhVien {
+  id: number;
+  mssv: string;
+  hoTen: string;
 }
 
 export interface CreateLopSinhHoat {
@@ -121,6 +140,8 @@ export interface NganhHoc {
   tenNganh: string;
   nganhChaId?: number | null;
   tenNganhCha?: string | null;
+  phongBanId?: number | null;
+  tenPhongBan?: string | null;
   createdAt: string;
 }
 
@@ -128,6 +149,13 @@ export interface UpsertNganhHoc {
   maNganh: string;
   tenNganh: string;
   nganhChaId?: number | null;
+  phongBanId?: number | null;
+}
+
+// ===== Phong ban =====
+export interface PhongBan {
+  id: number;
+  tenPhongBan: string;
 }
 
 // ===== Chuong trinh dao tao =====
@@ -144,6 +172,19 @@ export interface UpsertChuongTrinhDT {
   maCtdt: string;
   nganhId: number;
   khoaHoc: string;
+}
+
+export interface CloneChuongTrinhDT {
+  nganhId: number;
+  khoaHocMoi: string;
+  maCtdtMoi: string;
+}
+
+export interface CloneChuongTrinhDTResult {
+  ctdtMoiId: number;
+  maCtdtMoi: string;
+  soMonDaSaoChep: number;
+  monBoQua: string[];
 }
 
 // ===== Chi tiet CTDT =====
@@ -229,6 +270,8 @@ export interface DanhSachLopHP {
   tenMon: string;
   hocKyId: number;
   tenHocKy: string;
+  namHocId: number;
+  tenNamHoc: string;
   tenGiaoVien: string;
   loaiDangKy: string;
   trangThaiDuyet: string;
@@ -241,6 +284,21 @@ export interface DanhSachLopHP {
   khoaBangDiem: boolean;
   tenSinhVien?: string | null;
   mssv?: string | null;
+}
+
+// ===== Kiem tra dieu kien tot nghiep =====
+export interface MonHocConThieu {
+  maMon: string;
+  tenMon: string;
+  soTinChi: number;
+  tenHocKy: string;
+}
+
+export interface TotNghiep {
+  duDieuKienTotNghiep: boolean;
+  tongSoTinChiYeuCau: number;
+  tongSoTinChiDaTichLuy: number;
+  monHocConThieu: MonHocConThieu[];
 }
 
 // ===== Lop hoc phan =====
@@ -288,7 +346,108 @@ export interface CreateThongBao {
   lopNhanId?: number | null;
 }
 
+// ===== Nam hoc =====
+export interface NamHoc {
+  id: number;
+  tenNamHoc: string;
+  createdAt: string;
+}
+
+export interface UpsertNamHoc {
+  tenNamHoc: string;
+}
+
+// ===== Hoc ky =====
+export interface HocKy {
+  id: number;
+  tenHocKy: string;
+  namHocId: number;
+  ngayBatDau: string;
+  tenNamHoc: string;
+}
+
+export interface UpsertHocKy {
+  tenHocKy: string;
+  namHocId: number;
+  ngayBatDau: string;
+}
+
+// ===== Tuan hoc =====
+export interface TuanHoc {
+  id: number;
+  namHocId: number;
+  maTuan: string;
+  soThuTuTuan: number;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  tenNamHoc: string;
+}
+
+// ===== Thoi khoa bieu =====
+export interface ThoiKhoaBieu {
+  id: number;
+  lopHpId: number;
+  maLopHp: string;
+  maMon: string;
+  tenMon: string;
+  tenGiaoVien: string;
+  hocKyId: number;
+  tenHocKy: string;
+  tuanHocId: number;
+  maTuan: string;
+  soThuTuTuan: number;
+  /** 2 = Thứ Hai ... 7 = Thứ Bảy, 8 = Chủ nhật */
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+  ngayHoc: string;
+}
+
+export interface CreateThoiKhoaBieu {
+  lopHpId: number;
+  tuanHocId: number;
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+}
+
+export interface UpdateThoiKhoaBieu {
+  tuanHocId: number;
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+}
+
+export interface GenerateThoiKhoaBieu {
+  lopHpId: number;
+  tuanBatDauId: number;
+  tuanKetThucId: number;
+  thu: number;
+  tietBatDau: number;
+  tietKetThuc: number;
+  phongHoc: string;
+}
+
+export interface GenerateThoiKhoaBieuResult {
+  soBuoiDaTao: number;
+  tuanBiBoQua: string[];
+}
+
 // ===== Hoc phi =====
+export interface GenerateHocPhi {
+  hocKyId: number;
+  tienMotTinChi: number;
+}
+
+export interface GenerateHocPhiResult {
+  created: number;
+  skipped: number;
+  message: string;
+}
+
 export interface HocPhi {
   id: number;
   sinhVienId: number;
@@ -296,6 +455,8 @@ export interface HocPhi {
   mssv: string;
   hocKyId: number;
   tenHocKy: string;
+  namHocId: number;
+  tenNamHoc: string;
   soTien: number;
   trangThaiDong: string;
   createdAt: string;
@@ -314,17 +475,20 @@ export interface YeuCauHanhChinh {
   tenSinhVien: string;
   mssv: string;
   loaiYeuCau: string;
+  loaiGiayXacNhan?: string | null;
   noiDung: string;
   fileDinhKem?: string | null;
   trangThai: string;
   nguoiDuyetId?: number | null;
   tenNguoiDuyet?: string | null;
+  ghiChuAdmin?: string | null;
   ngayTao: string;
   createdAt: string;
 }
 
 export interface CreateYeuCauHanhChinh {
   loaiYeuCau: string;
+  loaiGiayXacNhan?: string | null;
   noiDung: string;
   fileDinhKem?: string | null;
 }
@@ -357,6 +521,100 @@ export interface CreateYeuCauSuaDiem {
 
 export interface DuyetYeuCauSuaDiem {
   trangThai: string;
+}
+
+// ===== Noi dung tinh (Thu vien, Hoc Vu,...) =====
+export interface NoiDungTinh {
+  id: number;
+  khuVuc: string;
+  maMuc: string;
+  tieuDe: string;
+  noiDung?: string | null;
+  thuTu: number;
+  createdAt: string;
+}
+
+export interface UpsertNoiDungTinh {
+  khuVuc: string;
+  maMuc: string;
+  tieuDe: string;
+  noiDung?: string | null;
+  thuTu: number;
+}
+
+// ===== Bien ban sinh hoat chu nhiem (SHCN) =====
+export interface CongViecItem {
+  id: number;
+  tenCongViec: string;
+  trangThaiViec: string;
+}
+
+export interface VangItem {
+  sinhVienId: number;
+  mssv: string;
+  hoTen: string;
+  coPhep: boolean;
+  lyDo?: string | null;
+}
+
+/** Dùng cho Admin/Giáo vụ/GVCN — có đầy đủ danh sách vắng cả lớp. */
+export interface BienBanSHCN {
+  id: number;
+  lopId: number;
+  maLop: string;
+  tuanHocId: number;
+  maTuan: string;
+  thoiGian: string;
+  diaDiem: string;
+  gvcnId: number;
+  tenGvcn: string;
+  thuKyId: number;
+  tenThuKy: string;
+  noiDung: string;
+  phanHoiGvcn?: string | null;
+  createdAt: string;
+  congViecs: CongViecItem[];
+  danhSachVang: VangItem[];
+}
+
+/** Dùng cho Sinh viên — không có lý do vắng của bạn khác, chỉ có tình trạng của chính mình. */
+export interface BienBanSHCNSinhVien {
+  id: number;
+  tuanHocId: number;
+  maTuan: string;
+  thoiGian: string;
+  diaDiem: string;
+  tenGvcn: string;
+  tenThuKy: string;
+  noiDung: string;
+  phanHoiGvcn?: string | null;
+  congViecs: CongViecItem[];
+  /** "CoMat" | "VangCoPhep" | "VangKhongPhep" */
+  tinhTrangCuaToi: string;
+  lyDoVangCuaToi?: string | null;
+}
+
+export interface CongViecInput {
+  tenCongViec: string;
+  trangThaiViec: string;
+}
+
+export interface VangInput {
+  sinhVienId: number;
+  coPhep: boolean;
+  lyDo?: string | null;
+}
+
+export interface CreateBienBanSHCN {
+  lopId: number;
+  tuanHocId: number;
+  thoiGian: string;
+  diaDiem: string;
+  thuKyId: number;
+  noiDung: string;
+  phanHoiGvcn?: string | null;
+  congViecs: CongViecInput[];
+  danhSachVang: VangInput[];
 }
 
 export const VAI_TRO_OPTIONS = [

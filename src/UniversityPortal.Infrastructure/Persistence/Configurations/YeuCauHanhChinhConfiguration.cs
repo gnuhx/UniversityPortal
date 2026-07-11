@@ -12,10 +12,12 @@ public class YeuCauHanhChinhConfiguration : IEntityTypeConfiguration<YeuCauHanhC
         builder.HasKey(x => x.Id);
         builder.Property(x => x.SinhVienId).HasColumnName("sinh_vien_id");
         builder.Property(x => x.LoaiYeuCau).IsRequired().HasMaxLength(100).HasColumnName("loai_yeu_cau");
+        builder.Property(x => x.LoaiGiayXacNhan).HasMaxLength(200).HasColumnName("loai_giay_xac_nhan");
         builder.Property(x => x.NoiDung).IsRequired().HasColumnType("nvarchar(max)").HasColumnName("noi_dung");
         builder.Property(x => x.FileDinhKem).HasMaxLength(500).HasColumnName("file_dinh_kem");
         builder.Property(x => x.TrangThai).IsRequired().HasMaxLength(20).HasColumnName("trang_thai");
         builder.Property(x => x.NguoiDuyetId).HasColumnName("nguoi_duyet_id");
+        builder.Property(x => x.GhiChuAdmin).HasColumnType("nvarchar(max)").HasColumnName("ghi_chu_admin");
         builder.Property(x => x.NgayTao).HasColumnName("ngay_tao");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");

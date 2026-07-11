@@ -10,8 +10,8 @@ namespace UniversityPortal.Application.Interfaces.Services;
 /// </summary>
 public interface INganhHocService
 {
-    /// <summary>Lấy danh sách ngành học có phân trang và lọc theo keyword.</summary>
-    Task<PagedResultDto<NganhHocDto>> GetPagedAsync(int page, int pageSize, string? keyword);
+    /// <summary>Lấy danh sách ngành học có phân trang, lọc theo keyword, ngành (id) và khoá học.</summary>
+    Task<PagedResultDto<NganhHocDto>> GetPagedAsync(int page, int pageSize, string? keyword, int? nganhId = null, string? khoaHoc = null);
 
     /// <summary>Lấy tất cả ngành học (dùng cho dropdown).</summary>
     Task<IEnumerable<NganhHocDto>> GetAllAsync();

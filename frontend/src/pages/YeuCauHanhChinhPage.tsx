@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Tag, Button, Modal, Form, Input, Select, Space, message, Typography } from "antd";
+import { Table, Tag, Button, Modal, Form, Input, Select, Space, message, Typography, Radio, Alert } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
@@ -11,12 +11,24 @@ import type { YeuCauHanhChinh, CreateYeuCauHanhChinh, DuyetYeuCauHanhChinh } fro
 const { TextArea } = Input;
 const { Text } = Typography;
 
+const LOAI_GIAY_XAC_NHAN = "Giấy Xác Nhận";
+
 const LOAI_OPTIONS = [
   "Xác nhận sinh viên",
   "Hoãn học phí",
   "Bảo lưu",
   "Miễn giảm học phí",
+  LOAI_GIAY_XAC_NHAN,
   "Khác",
+];
+
+const LOAI_GIAY_XAC_NHAN_OPTIONS = [
+  "Giấy tạm hoãn nghĩa vụ quân sự",
+  "Giấy bổ túc hồ sơ thuế thu nhập cá nhân",
+  "Giấy đi xe buýt tháng (do chưa có thẻ SV)",
+  "Giấy vay vốn học sinh sinh viên",
+  "Giấy bổ túc hồ sơ tạm trú, tạm vắng",
+  "Giấy bổ túc hồ sơ xin học bổng",
 ];
 
 function TrangThaiTag({ v }: { v: string }) {
@@ -34,6 +46,7 @@ export function YeuCauHanhChinhPage() {
   const [filterTrangThai, setFilterTrangThai] = useState<string | undefined>();
   const [form] = Form.useForm<CreateYeuCauHanhChinh>();
   const [duyetForm] = Form.useForm<{ ghiChu?: string }>();
+  const watchedLoaiYeuCau = Form.useWatch("loaiYeuCau", form);
 
   const { data: myData, isLoading: myLoading } = useQuery({
     queryKey: ["yeu-cau-hanh-chinh-me"],
@@ -76,6 +89,7 @@ export function YeuCauHanhChinhPage() {
   });
 
   const studentColumns: ColumnsType<YeuCauHanhChinh> = [
+    { title: "Số biên nhận", dataIndex: "id", width: 110 },
     { title: "Loại yêu cầu", dataIndex: "loaiYeuCau", width: 170 },
     { title: "Nội dung", dataIndex: "noiDung", ellipsis: true },
     {
@@ -90,7 +104,13 @@ export function YeuCauHanhChinhPage() {
       title: "Người duyệt", dataIndex: "tenNguoiDuyet", width: 150,
       render: (v?: string) => v ?? <Text type="secondary">—</Text>,
     },
+    {
+      title: "Phản hồi", dataIndex: "ghiChuAdmin", width: 200,
+      render: (v?: string | null) => v ?? <Text type="secondary">—</Text>,
+    },
   ];
+
+  const soDangChoXuLy = !isAdmin ? items.filter((x) => x.trangThai === "Chờ duyệt") : [];
 
   const adminColumns: ColumnsType<YeuCauHanhChinh> = [
     { title: "Sinh viên", dataIndex: "tenSinhVien", width: 150 },
@@ -147,6 +167,19 @@ export function YeuCauHanhChinhPage() {
         )}
       </Space>
 
+      {!isAdmin && soDangChoXuLy.length > 0 && (
+        <Alert
+          type="info"
+          showIcon
+          style={{ marginBottom: 16 }}
+          message={
+            soDangChoXuLy.length === 1
+              ? `Bạn có 1 đăng ký đang chờ xử lý. Số Biên nhận: ${soDangChoXuLy[0].id}`
+              : `Bạn có ${soDangChoXuLy.length} đăng ký đang chờ xử lý. Số Biên nhận: ${soDangChoXuLy.map((x) => x.id).join(", ")}`
+          }
+        />
+      )}
+
       <Table<YeuCauHanhChinh>
         rowKey="id"
         columns={isAdmin ? adminColumns : studentColumns}
@@ -169,8 +202,26 @@ export function YeuCauHanhChinhPage() {
       >
         <Form form={form} layout="vertical" onFinish={(v) => createMutation.mutate(v)}>
           <Form.Item name="loaiYeuCau" label="Loại yêu cầu" rules={[{ required: true }]}>
-            <Select options={LOAI_OPTIONS.map((v) => ({ value: v, label: v }))} />
+            <Select
+              options={LOAI_OPTIONS.map((v) => ({ value: v, label: v }))}
+              onChange={() => form.setFieldValue("loaiGiayXacNhan", undefined)}
+            />
           </Form.Item>
+          {watchedLoaiYeuCau === LOAI_GIAY_XAC_NHAN && (
+            <Form.Item
+              name="loaiGiayXacNhan"
+              label="Chọn loại giấy xác nhận (*)"
+              rules={[{ required: true, message: "Vui lòng chọn loại giấy xác nhận." }]}
+            >
+              <Radio.Group>
+                <Space direction="vertical">
+                  {LOAI_GIAY_XAC_NHAN_OPTIONS.map((v) => (
+                    <Radio key={v} value={v}>{v}</Radio>
+                  ))}
+                </Space>
+              </Radio.Group>
+            </Form.Item>
+          )}
           <Form.Item name="noiDung" label="Nội dung chi tiết" rules={[{ required: true }]}>
             <TextArea rows={4} placeholder="Mô tả chi tiết yêu cầu của bạn..." />
           </Form.Item>

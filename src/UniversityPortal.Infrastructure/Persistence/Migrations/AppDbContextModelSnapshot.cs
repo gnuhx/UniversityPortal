@@ -1023,6 +1023,10 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasColumnName("nganh_cha_id");
 
+                    b.Property<int?>("PhongBanId")
+                        .HasColumnType("int")
+                        .HasColumnName("phong_ban_id");
+
                     b.Property<string>("TenNganh")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -1040,7 +1044,58 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("NganhChaId");
 
+                    b.HasIndex("PhongBanId");
+
                     b.ToTable("nganh_hoc", (string)null);
+                });
+
+            modelBuilder.Entity("UniversityPortal.Domain.Entities.NoiDungTinh", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("KhuVuc")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("khu_vuc");
+
+                    b.Property<string>("MaMuc")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("ma_muc");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("noi_dung");
+
+                    b.Property<int>("ThuTu")
+                        .HasColumnType("int")
+                        .HasColumnName("thu_tu");
+
+                    b.Property<string>("TieuDe")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("tieu_de");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KhuVuc", "ThuTu");
+
+                    b.ToTable("noi_dung_tinh", (string)null);
                 });
 
             modelBuilder.Entity("UniversityPortal.Domain.Entities.PhongBan", b =>
@@ -1442,6 +1497,15 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)")
                         .HasColumnName("file_dinh_kem");
+
+                    b.Property<string>("GhiChuAdmin")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ghi_chu_admin");
+
+                    b.Property<string>("LoaiGiayXacNhan")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("loai_giay_xac_nhan");
 
                     b.Property<string>("LoaiYeuCau")
                         .IsRequired()
@@ -1915,7 +1979,14 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
                         .HasForeignKey("NganhChaId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("UniversityPortal.Domain.Entities.PhongBan", "PhongBan")
+                        .WithMany("NganhHocs")
+                        .HasForeignKey("PhongBanId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("NganhCha");
+
+                    b.Navigation("PhongBan");
                 });
 
             modelBuilder.Entity("UniversityPortal.Domain.Entities.SinhVien", b =>
@@ -2157,6 +2228,8 @@ namespace UniversityPortal.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("UniversityPortal.Domain.Entities.PhongBan", b =>
                 {
+                    b.Navigation("NganhHocs");
+
                     b.Navigation("TaiKhoans");
                 });
 

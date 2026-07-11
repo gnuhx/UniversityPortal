@@ -10,4 +10,5 @@ public class UpsertNganhHocDto
     public string MaNganh { get; set; } = string.Empty;
     public string TenNganh { get; set; } = string.Empty;
     public int? NganhChaId { get; set; }
+    public int? PhongBanId { get; set; }
 }

@@ -5,7 +5,7 @@
  * Phân quyền : Admin (CRUD), xem mở cho tất cả user đã đăng nhập
  *
  * Danh sách endpoint:
- *   GET    /api/nganh-hoc        — Danh sách (phân trang + lọc)   [Authenticated]
+ *   GET    /api/nganh-hoc        — Danh sách (phân trang + lọc keyword/ngành/khoá học) [Authenticated]
  *   GET    /api/nganh-hoc/all    — Tất cả ngành (dùng dropdown)   [Authenticated]
  *   GET    /api/nganh-hoc/{id}   — Chi tiết ngành học             [Authenticated]
  *   POST   /api/nganh-hoc        — Tạo mới ngành học              [Admin]
@@ -26,15 +26,18 @@ namespace UniversityPortal.API.Controllers;
 public class NganhHocController(INganhHocService service) : ControllerBase
 {
     /// <summary>
-    /// Lấy danh sách ngành học có phân trang, lọc theo keyword (mã/tên ngành).
+    /// Lấy danh sách ngành học có phân trang, lọc theo keyword (mã/tên ngành), ngành (id) và khoá học
+    /// (chỉ trả ngành có ít nhất 1 CTĐT thuộc khoá học đó).
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<NganhHocDto>>>> GetPaged(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
-        [FromQuery] string? keyword = null)
+        [FromQuery] string? keyword = null,
+        [FromQuery] int? nganhId = null,
+        [FromQuery] string? khoaHoc = null)
     {
-        var result = await service.GetPagedAsync(page, pageSize, keyword);
+        var result = await service.GetPagedAsync(page, pageSize, keyword, nganhId, khoaHoc);
         return Ok(ApiResponseDto<PagedResultDto<NganhHocDto>>.Ok(result));
     }
 

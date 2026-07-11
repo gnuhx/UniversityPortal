@@ -16,4 +16,10 @@ public interface IChiTietCTDTRepository : IRepository<ChiTietCTDT>
 
     /// <summary>Kiểm tra môn học đã tồn tại trong CTDT chưa (tránh thêm trùng).</summary>
     Task<bool> ExistsAsync(int ctdtId, int monHocId);
+
+    /// <summary>Lấy toàn bộ danh sách môn học bắt buộc của một CTDT, include MonHoc và HocKy.</summary>
+    Task<IEnumerable<ChiTietCTDT>> GetByCtdtIdAsync(int ctdtId);
+
+    /// <summary>Đếm số chi tiết CTDT đang gắn với học kỳ này (dùng khi xoá học kỳ).</summary>
+    Task<int> CountByHocKyAsync(int hocKyId);
 }

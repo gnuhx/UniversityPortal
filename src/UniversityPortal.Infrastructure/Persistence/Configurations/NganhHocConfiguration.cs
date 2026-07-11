@@ -14,9 +14,11 @@ public class NganhHocConfiguration : IEntityTypeConfiguration<NganhHoc>
         builder.HasIndex(x => x.MaNganh).IsUnique();
         builder.Property(x => x.TenNganh).IsRequired().HasMaxLength(150).HasColumnName("ten_nganh");
         builder.Property(x => x.NganhChaId).HasColumnName("nganh_cha_id");
+        builder.Property(x => x.PhongBanId).HasColumnName("phong_ban_id");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");
 
         builder.HasOne(x => x.NganhCha).WithMany(n => n.NganhCons).HasForeignKey(x => x.NganhChaId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.PhongBan).WithMany(p => p.NganhHocs).HasForeignKey(x => x.PhongBanId).OnDelete(DeleteBehavior.SetNull);
     }
 }

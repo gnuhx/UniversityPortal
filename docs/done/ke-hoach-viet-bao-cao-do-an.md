@@ -1,6 +1,6 @@
 # Kế hoạch viết Báo cáo Đồ án tốt nghiệp — University Portal
 
-> Mục tiêu: chuẩn bị báo cáo + demo cho giáo viên hướng dẫn, dựa trên source code thực tế hiện có (ASP.NET Core Clean Architecture + MySQL + Docker, đã seed dữ liệu mẫu).
+> Mục tiêu: chuẩn bị báo cáo + demo cho giáo viên hướng dẫn, dựa trên source code thực tế hiện có (ASP.NET Core 10 Clean Architecture + **SQL Server** + React 19/Vite/Ant Design + Docker, đã seed dữ liệu mẫu). Chi tiết kiến trúc & trạng thái đầy đủ: xem `docs/done/project-plan.md`.
 
 ---
 
@@ -14,18 +14,19 @@
 
 ### Chương 2 — Cơ sở lý thuyết / Công nghệ sử dụng
 - Kiến trúc Clean Architecture (Domain – Application – Infrastructure – API), Repository Pattern, Unit of Work, Service Layer.
-- ASP.NET Core Web API, Entity Framework Core (Code First + Migrations).
-- Xác thực & phân quyền: JWT, Role-based Authorization.
+- ASP.NET Core Web API (.NET 10), Entity Framework Core (Code First + Migrations, auto-migrate lúc khởi động), **SQL Server**.
+- Xác thực & phân quyền: JWT access token + refresh token (xoay vòng), Role-based Authorization (Admin/Giáo vụ/Giáo viên/Sinh viên).
 - AutoMapper, FluentValidation.
-- Docker & Docker Compose để đóng gói và triển khai.
-- (Nếu có) ReactJS cho frontend.
+- Docker & Docker Compose để đóng gói; build image đẩy lên **GHCR** rồi pull về server chạy (xem `docs/done/deploy-docker-registrry.md`, `docs/done/deploy-ec2.md`).
+- ReactJS 19 + Vite + TypeScript cho frontend, dùng **Ant Design** làm UI kit (form, table, modal, notification có sẵn), TanStack Query cho data fetching, Zustand cho state, Axios cho gọi API.
 
 ### Chương 3 — Phân tích & Thiết kế hệ thống
 - **Phân tích yêu cầu**: theo từng vai trò (Admin, Giáo vụ, Giáo viên, Sinh viên) — lấy từ các Controller hiện có.
 - **Sơ đồ Use Case** cho từng vai trò.
 - **Thiết kế cơ sở dữ liệu**:
   - Sơ đồ ERD (đã có sẵn tại `docs/erd_schema.html` — render ra ảnh để chèn báo cáo).
-  - Danh sách các bảng/entity chính: `TaiKhoan`, `VaiTro`, `SinhVien`, `GiaoVien`, `LopSinhHoat`, `NganhHoc`, `ChuongTrinhDT`, `ChiTietCTDT`, `MonHoc`, `LopHocPhan`, `DanhSachLopHP`, `DanhSachThiLai`, `HocBa`, `DiemRenLuyen`, `ThoiKhoaBieu`, `HocPhi`, `ThongBao`, `BienBanSHCN`, `YeuCauHanhChinh`, `YeuCauSuaDiem`, `DatPhongThucHanh`, `KhaoSatYKien`, `DienDanGiaoVien`...
+  - Danh sách các bảng/entity chính: `TaiKhoan`, `VaiTro`, `PhongBan`, `SinhVien`, `GiaoVien`, `LopSinhHoat`, `NganhHoc`, `ChuongTrinhDT`, `ChiTietCTDT`, `MonHoc`, `NamHoc`, `HocKy`, `TuanHoc`, `LopHocPhan`, `DanhSachLopHP`, `ThoiKhoaBieu`, `HocPhi`, `ThongBao`, `YeuCauHanhChinh`, `YeuCauSuaDiem`, `NoiDungTinh` (đã có Controller/Service/API/trang UI đầy đủ).
+  - Các entity **chỉ có schema** (Entity + EF Configuration), chưa có Service/Controller/UI riêng: `DanhSachThiLai`, `HocBa`, `DiemRenLuyen`, `KetQuaAnhVanDauVao`, `ThongBaoDaDoc`, `BinhLuanThongBao`, `BienBanSHCN`, `ChiTietCongViec`, `ChiTietVangSHCN`, `DatPhongThucHanh`, `KhaoSatYKien`, `DienDanGiaoVien` — nên nêu rõ trong Chương 7 (hạn chế/hướng phát triển) thay vì trình bày như đã hoàn thiện.
   - Giải thích các Enum: `VaiTroEnum`, `LoaiDangKyEnum`, `TrangThaiDuyetEnum`, `TrangThaiDongTienEnum`, `LoaiThongBaoEnum`, `MucDoThongBaoEnum`.
 - **Thiết kế kiến trúc hệ thống**: vẽ sơ đồ luồng request đi qua API → Application (Service) → Infrastructure (Repository/UnitOfWork) → Domain.
 - **Thiết kế API**: tổng hợp endpoint theo Controller (xem mục 3 bên dưới), có thể export từ `docs/UniversityPortal.postman_collection.json`.
@@ -58,19 +59,31 @@
 
 ---
 
-## 2. Bảng tổng hợp module theo Controller hiện có
+## 2. Bảng tổng hợp module theo Controller hiện có (21 controllers)
 
 | Controller | Chức năng chính | Vai trò sử dụng |
 |---|---|---|
-| `AuthController` | Đăng nhập, refresh token | Tất cả |
+| `AuthController` | Đăng nhập, refresh token, đăng xuất | Tất cả |
 | `TaiKhoanController` | Quản lý tài khoản người dùng | Admin |
 | `SinhVienController` | Quản lý thông tin sinh viên | Admin, Giáo vụ, Sinh viên |
 | `GiaoVienController` | Quản lý thông tin giáo viên | Admin, Giáo vụ, Giáo viên |
+| `PhongBanController` | Quản lý phòng ban/khoa | Admin |
 | `LopSinhHoatController` | Quản lý lớp sinh hoạt (chủ nhiệm, sinh viên trong lớp) | Admin, Giáo viên |
 | `NganhHocController` | Quản lý ngành học | Admin, Giáo vụ |
 | `ChuongTrinhDTController` | Quản lý chương trình đào tạo | Admin, Giáo vụ |
-| `ChiTietCTDTController` | Chi tiết chương trình đào tạo (môn học theo ngành/khóa) | Admin, Giáo vụ |
+| `ChiTietCTDTController` | Chi tiết chương trình đào tạo (môn học theo ngành/khóa/học kỳ) | Admin, Giáo vụ |
 | `MonHocController` | Quản lý môn học | Admin, Giáo vụ |
+| `NamHocController` | Quản lý năm học | Admin, Giáo vụ |
+| `HocKyController` | Quản lý học kỳ | Admin, Giáo vụ |
+| `TuanHocController` | Quản lý tuần học | Admin, Giáo vụ |
+| `LopHocPhanController` | Mở/đóng lớp học phần, khoá/mở bảng điểm | Admin, Giáo vụ, Giáo viên |
+| `DanhSachLopHPController` | Đăng ký học phần, duyệt, **nhập điểm** (qt1/qt2/thi → tổng kết) | Sinh viên, Giáo viên, Giáo vụ |
+| `ThoiKhoaBieuController` | Thời khoá biểu | Tất cả |
+| `HocPhiController` | Học phí | Admin, Giáo vụ, Sinh viên |
+| `ThongBaoController` | Thông báo | Tất cả |
+| `YeuCauHanhChinhController` | Yêu cầu hành chính (giấy xác nhận, biên nhận, phản hồi) | Sinh viên, Giáo vụ |
+| `YeuCauSuaDiemController` | Yêu cầu mở lại bảng điểm đã khoá | Giáo viên, Admin |
+| `NoiDungTinhController` | Nội dung tĩnh — khu vực thư viện/học vụ | Tất cả (đọc), Admin (quản trị) |
 
 > Việt hóa lại bảng này trong báo cáo với mô tả chi tiết từng endpoint (HTTP method, route, mô tả, role yêu cầu) — lấy trực tiếp từ source code mỗi Controller.
 
@@ -80,34 +93,36 @@
 
 - `docs/erd_schema.html` → mở bằng browser, chụp/export ảnh ERD cho Chương 3.
 - `docs/schema.txt` → liệt kê schema chi tiết, dùng để viết phần mô tả CSDL.
-- `docs/seed_data.sql` → mô tả dữ liệu mẫu dùng cho demo.
+- `docs/Data/seed_data.sql` (+ các file seed bổ sung trong `docs/Data/`) → mô tả dữ liệu mẫu dùng cho demo.
 - `docs/UniversityPortal.postman_collection.json` → import vào Postman, dùng để test & chụp ảnh kết quả API cho Chương 5/6.
-- `docs/deploy-ec2.md` → tư liệu cho phần triển khai (Chương 4).
-- `docs/project-plan.md` → tư liệu cho phần kiến trúc (Chương 2, 3).
+- `docs/done/deploy-docker-registrry.md`, `docs/done/deploy-ec2.md` → tư liệu cho phần triển khai (Chương 4): build → push GHCR → pull image trên EC2.
+- `docs/done/project-plan.md` → tư liệu cho phần kiến trúc + trạng thái as-built (Chương 2, 3, 7).
+- `docs/features/01`…`22` → nhật ký từng tính năng đã làm (feature-by-feature), hữu ích cho Chương 4 khi chọn ví dụ tiêu biểu; `14_todo_xoa_ctdt_gop_mon_hoc.md` còn ở trạng thái TODO.
 - `README.md` → bảng tài khoản demo cho Chương 6.
 
 ---
 
 ## 4. Kịch bản Demo cho giáo viên (gợi ý 10–15 phút)
 
-1. **Khởi động hệ thống**: `docker compose up --build` → mở Swagger UI (`http://localhost:8080/swagger`).
-2. **Demo đăng nhập & phân quyền**: login bằng `admin`, `gv.tuan`, `sv.an` → cho thấy token JWT chứa role khác nhau.
-3. **Demo CRUD cơ bản**: tạo/sửa/xóa 1 Sinh viên hoặc Môn học qua Swagger, show validation lỗi (FluentValidation) khi nhập sai.
-4. **Demo nghiệp vụ đặc trưng**: ví dụ xem chương trình đào tạo của một ngành (`ChiTietCTDTController`), xem danh sách sinh viên trong lớp sinh hoạt (`LopSinhHoatController`).
+1. **Khởi động hệ thống**: `docker compose up --build` → mở Swagger UI (`http://localhost:8080/swagger`) và frontend (`http://localhost:3100`).
+2. **Demo đăng nhập & phân quyền**: login bằng `admin`, `giaovu01`, `gv.tuan`, `sv.an` (xem README) → cho thấy token JWT chứa role khác nhau, giao diện đổi theo role.
+3. **Demo CRUD cơ bản**: tạo/sửa/xóa 1 Sinh viên hoặc Môn học qua UI (Ant Design table/form) hoặc Swagger, show validation lỗi (FluentValidation) khi nhập sai.
+4. **Demo nghiệp vụ đặc trưng**: xem chương trình đào tạo của một ngành (`ChiTietCTDTController`), nhập điểm học phần rồi khoá bảng điểm (`DanhSachLopHPController` + `LopHocPhanController`), tạo yêu cầu hành chính và duyệt cấp giấy xác nhận (`YeuCauHanhChinhController`).
 5. **Demo xử lý lỗi tập trung**: gọi 1 request gây lỗi (id không tồn tại) → show response lỗi chuẩn từ `GlobalExceptionMiddleware`.
-6. **Demo unit test**: chạy `dotnet test` → show kết quả pass.
-7. (Nếu có) **Demo frontend**: đăng nhập từng vai trò, thao tác 1–2 chức năng chính trên UI.
+6. **Demo frontend đầy đủ theo 4 vai trò**: đăng nhập Admin/Giáo vụ/Giáo viên/Sinh viên, thao tác 1–2 chức năng chính trên UI (thời khoá biểu, bảng điểm, học phí, thông báo).
+
+> Đã bỏ bước "demo unit test" — hiện `tests/UniversityPortal.Tests` chỉ có 1 test rỗng, cần viết test thật trước khi đưa vào kịch bản demo (xem mục 5).
 
 ---
 
 ## 5. Việc cần làm trước khi viết báo cáo
 
-- [ ] Kiểm tra lại frontend: project-plan có đề cập `frontend/university-portal-ui` nhưng hiện chưa thấy trong repo — xác nhận có hay không để quyết định đưa vào báo cáo.
-- [ ] Liệt kê đầy đủ endpoint của từng Controller (method, route, request/response DTO, role) thành 1 bảng phụ lục.
+- [ ] Liệt kê đầy đủ endpoint của từng Controller (method, route, request/response DTO, role) thành 1 bảng phụ lục — 21 controller hiện có, xem `docs/done/project-plan.md`.
 - [ ] Export ERD từ `docs/erd_schema.html` thành ảnh PNG độ phân giải cao.
-- [ ] Chạy `dotnet test` để lấy số liệu test (số lượng, pass/fail) cho Chương 5.
-- [ ] Chuẩn bị bộ ảnh chụp Swagger/Postman cho từng nhóm chức năng.
-- [ ] Viết phụ lục hướng dẫn cài đặt (dựa trên README.md hiện có).
+- [ ] Viết thêm unit test thật cho `tests/UniversityPortal.Tests` trước khi chạy `dotnet test` lấy số liệu cho Chương 5 — hiện chỉ có 1 test case rỗng (`UnitTest1.cs`), chưa đủ để báo cáo.
+- [ ] Chuẩn bị bộ ảnh chụp Swagger/Postman + UI (Ant Design) cho từng nhóm chức năng.
+- [ ] Viết phụ lục hướng dẫn cài đặt (dựa trên README.md hiện có — lưu ý CSDL là SQL Server, không phải MySQL).
+- [ ] Quyết định cách trình bày các entity chỉ có schema chưa có API/UI (`HocBa`, `DiemRenLuyen`, `DanhSachThiLai`, `BienBanSHCN`, `DatPhongThucHanh`, `KhaoSatYKien`, `DienDanGiaoVien`, ...) — đưa vào Chương 7 "hướng phát triển" thay vì Chương 4 "đã triển khai".
 
 ---
 

@@ -11,11 +11,12 @@ namespace UniversityPortal.Infrastructure.Repositories;
 /// </summary>
 public class NganhHocRepository(AppDbContext context) : BaseRepository<NganhHoc>(context), INganhHocRepository
 {
-    /// <summary>Lấy danh sách ngành học phân trang, lọc theo mã ngành hoặc tên ngành.</summary>
-    public async Task<PagedResultDto<NganhHoc>> GetPagedFilterAsync(int page, int pageSize, string? keyword)
+    /// <summary>Lấy danh sách ngành học phân trang, lọc theo mã/tên ngành, ngành (id) và khoá học (qua CTĐT).</summary>
+    public async Task<PagedResultDto<NganhHoc>> GetPagedFilterAsync(int page, int pageSize, string? keyword, int? nganhId = null, string? khoaHoc = null)
     {
         var query = DbSet
             .Include(x => x.NganhCha)
+            .Include(x => x.PhongBan)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(keyword))
@@ -25,6 +26,12 @@ public class NganhHocRepository(AppDbContext context) : BaseRepository<NganhHoc>
                 x.MaNganh.ToLower().Contains(kw) ||
                 x.TenNganh.ToLower().Contains(kw));
         }
+
+        if (nganhId.HasValue)
+            query = query.Where(x => x.Id == nganhId.Value);
+
+        if (!string.IsNullOrWhiteSpace(khoaHoc))
+            query = query.Where(x => x.ChuongTrinhDTs.Any(c => c.KhoaHoc == khoaHoc));
 
         var total = await query.CountAsync();
         var data  = await query
@@ -44,5 +51,6 @@ public class NganhHocRepository(AppDbContext context) : BaseRepository<NganhHoc>
     public async Task<NganhHoc?> GetDetailAsync(int id)
         => await DbSet
             .Include(x => x.NganhCha)
+            .Include(x => x.PhongBan)
             .FirstOrDefaultAsync(x => x.Id == id);
 }

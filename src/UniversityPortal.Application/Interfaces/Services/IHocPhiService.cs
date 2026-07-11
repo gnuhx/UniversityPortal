@@ -15,4 +15,10 @@ public interface IHocPhiService
 
     /// <summary>Admin cập nhật trạng thái đóng tiền.</summary>
     Task<HocPhiDto> UpdateTrangThaiAsync(int id, string trangThai);
+
+    /// <summary>Admin tạo hàng loạt học phí cho tất cả sinh viên đã đăng ký trong một học kỳ.</summary>
+    Task<GenerateHocPhiResultDto> GenerateAsync(GenerateHocPhiDto dto);
+
+    /// <summary>Admin xem toàn bộ học phí (không lọc theo học kỳ).</summary>
+    Task<IEnumerable<HocPhiDto>> GetAllAsync();
 }

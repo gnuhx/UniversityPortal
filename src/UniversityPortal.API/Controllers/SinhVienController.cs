@@ -5,6 +5,7 @@
  * Phân quyền : Admin / GiaoVu (CRUD), SinhVien (xem bản thân)
  *
  * Danh sách endpoint:
+ *   GET    /api/sinh-vien/me/tot-nghiep — Kiểm tra điều kiện tốt nghiệp          [SinhVien]
  *   GET    /api/sinh-vien        — Danh sách (phân trang + lọc keyword, lopId) [Admin, GiaoVu]
  *   GET    /api/sinh-vien/{id}   — Chi tiết sinh viên                          [Admin, GiaoVu]
  *   POST   /api/sinh-vien        — Tạo mới sinh viên + tài khoản               [Admin]
@@ -35,6 +36,18 @@ public class SinhVienController(ISinhVienService service) : ControllerBase
         var taiKhoanId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var result = await service.GetMeAsync(taiKhoanId);
         return Ok(ApiResponseDto<SinhVienDto>.Ok(result));
+    }
+
+    /// <summary>
+    /// Kiểm tra điều kiện tốt nghiệp của sinh viên đang đăng nhập.
+    /// </summary>
+    [HttpGet("me/tot-nghiep")]
+    [Authorize(Roles = "Sinh viên")]
+    public async Task<ActionResult<ApiResponseDto<TotNghiepDto>>> GetTotNghiepMe()
+    {
+        var taiKhoanId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await service.GetTotNghiepMeAsync(taiKhoanId);
+        return Ok(ApiResponseDto<TotNghiepDto>.Ok(result));
     }
 
     /// <summary>

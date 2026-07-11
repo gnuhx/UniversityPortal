@@ -28,4 +28,10 @@ public interface ILopSinhHoatService
 
     /// <summary>Xoá lớp sinh hoạt; ném BadRequestException nếu còn sinh viên trong lớp.</summary>
     Task DeleteAsync(int id);
+
+    /// <summary>Lấy chi tiết lớp sinh hoạt của sinh viên đang đăng nhập (kèm roster). Ném NotFoundException nếu chưa được phân lớp.</summary>
+    Task<LopSinhHoatDto> GetMeAsync(int taiKhoanId);
+
+    /// <summary>Lấy (các) lớp mà giáo viên đang đăng nhập là GVCN.</summary>
+    Task<IEnumerable<LopSinhHoatDto>> GetMeGvcnAsync(int taiKhoanId);
 }

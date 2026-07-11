@@ -35,14 +35,18 @@ public class YeuCauHanhChinhService(IUnitOfWork uow) : IYeuCauHanhChinhService
         var sv = await uow.SinhViens.GetByTaiKhoanIdAsync(taiKhoanId)
             ?? throw new NotFoundException("Không tìm thấy hồ sơ sinh viên.");
 
+        if (dto.LoaiYeuCau == "Giấy Xác Nhận" && string.IsNullOrWhiteSpace(dto.LoaiGiayXacNhan))
+            throw new BadRequestException("Vui lòng chọn loại giấy xác nhận.");
+
         var yc = new YeuCauHanhChinh
         {
-            SinhVienId  = sv.Id,
-            LoaiYeuCau  = dto.LoaiYeuCau,
-            NoiDung     = dto.NoiDung,
-            FileDinhKem = dto.FileDinhKem,
-            TrangThai   = "Chờ duyệt",
-            NgayTao     = DateTime.UtcNow,
+            SinhVienId       = sv.Id,
+            LoaiYeuCau       = dto.LoaiYeuCau,
+            LoaiGiayXacNhan  = dto.LoaiYeuCau == "Giấy Xác Nhận" ? dto.LoaiGiayXacNhan : null,
+            NoiDung          = dto.NoiDung,
+            FileDinhKem      = dto.FileDinhKem,
+            TrangThai        = "Chờ duyệt",
+            NgayTao          = DateTime.UtcNow,
         };
 
         await uow.YeuCauHanhChinhs.AddAsync(yc);
@@ -68,6 +72,7 @@ public class YeuCauHanhChinhService(IUnitOfWork uow) : IYeuCauHanhChinhService
 
         yc.TrangThai    = dto.TrangThai;
         yc.NguoiDuyetId = taiKhoanId;
+        yc.GhiChuAdmin  = dto.GhiChu;
 
         await uow.CommitAsync();
 
@@ -81,13 +86,15 @@ public class YeuCauHanhChinhService(IUnitOfWork uow) : IYeuCauHanhChinhService
         SinhVienId     = yc.SinhVienId,
         TenSinhVien    = yc.SinhVien?.TaiKhoan?.HoTen ?? string.Empty,
         Mssv           = yc.SinhVien?.Mssv ?? string.Empty,
-        LoaiYeuCau     = yc.LoaiYeuCau,
-        NoiDung        = yc.NoiDung,
-        FileDinhKem    = yc.FileDinhKem,
-        TrangThai      = yc.TrangThai,
-        NguoiDuyetId   = yc.NguoiDuyetId,
-        TenNguoiDuyet  = yc.NguoiDuyet?.HoTen,
-        NgayTao        = yc.NgayTao,
-        CreatedAt      = yc.CreatedAt,
+        LoaiYeuCau       = yc.LoaiYeuCau,
+        LoaiGiayXacNhan  = yc.LoaiGiayXacNhan,
+        NoiDung          = yc.NoiDung,
+        FileDinhKem      = yc.FileDinhKem,
+        TrangThai        = yc.TrangThai,
+        NguoiDuyetId     = yc.NguoiDuyetId,
+        TenNguoiDuyet    = yc.NguoiDuyet?.HoTen,
+        GhiChuAdmin      = yc.GhiChuAdmin,
+        NgayTao          = yc.NgayTao,
+        CreatedAt        = yc.CreatedAt,
     };
 }
